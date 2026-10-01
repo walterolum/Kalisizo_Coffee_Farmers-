@@ -1,0 +1,59 @@
+# Caddy configuration for the Kalisizo Coffee site.
+#
+# Responsibilities, and nothing else:
+#   - terminate TLS (certificate issued and renewed automatically)
+#   - proxy to the Next.js container on the internal network
+#   - cap request bodies before they reach the app
+#
+# Compression, security headers and caching are NOT set here. The app already
+# sends its own headers from `next.config.ts` and `Cache-Control` from the
+# `/uploads/[file]` route; declaring them in two places is how they drift apart.
+#
+# HTTP-01 challenges need no configuration: Caddy answers them itself before
+# any request matching runs, so there is deliberately no `/.well-known` block.
+
+{
+	# Nothing on this host needs the admin API. Leaving it open would add an
+	# unauthenticated way to change the TLS configuration at runtime.
+	admin off
+}
+
+{$SITE_DOMAIN} {
+	encode zstd gzip
+
+	# Contact forms and admin uploads POST multipart bodies. The cap sits above
+	# the 8 MB per-file limit enforced in the upload route, so a legitimate
+	# image is rejected by the app with a proper validation message rather than
+	# by the proxy with a bare 413.
+	request_body {
+		max_size 12MB
+	}
+
+	# The SSE stream at /api/v1/realtime/stream stays open with a 25 second
+	# heartbeat. A proxy that buffers responses or times out the connection
+	# silently breaks live updates in the admin panels, so this route gets
+	# buffering disabled and a read timeout well beyond any browser's patience.
+	@realtime path /api/v1/realtime/stream
+	handle @realtime {
+		reverse_proxy app:3000 {
+			flush_interval -1
+			transport http {
+				read_timeout 24h
+			}
+		}
+	}
+
+	handle {
+		reverse_proxy app:3000 {
+			# Set from the real connection, not forwarded from the client, so a
+			# caller cannot spoof its own address in these headers.
+			header_up X-Real-IP {remote_host}
+			header_up X-Forwarded-Proto {scheme}
+		}
+	}
+
+	log {
+		output stdout
+		format console
+	}
+}

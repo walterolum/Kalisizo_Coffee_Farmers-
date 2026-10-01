@@ -1,0 +1,77 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# local process/build logs from running the dev server or a build by hand
+*.log
+
+# Env files. Real secrets must never be committed; the annotated templates must
+# be, because the first step of deployment is copying one of them to `.env`.
+# Both negations are needed: the `.env*` glob above matches every file whose
+# name starts with `.env`, template or not.
+.env*
+!.env.example
+!.env.example.production
+
+# local uploads — served by the /uploads/[file] route, never by public/
+/public/uploads
+
+# runtime data: uploaded media and database backups (the dumps contain
+# password hashes, so they must never be committed)
+/data/
+/backups/*
+!/backups/.gitkeep
+
+# a PostgreSQL data directory created by a local experiment
+#
+# This one matters more than its size suggests. `git add -A` walks the whole
+# tree, and walking a live data directory reaches binary files that Windows
+# refuses to read. When that happens git aborts the entire add and reports
+# `error: unable to create temporary file` — so nothing gets staged and the
+# failure looks like a git problem rather than an untracked database.
+# .dockerignore already excluded this; .gitignore has to as well.
+.pgdata/
+
+# local verification env files (.env.verify, .env.buildtest) are already covered
+# by the `.env*` glob above
+
+# CDP DOM dump artifacts (local debugging only)
+/*_dom.html
+
+# raw source images (originals; site serves from /public/images & /public/leadership)
+/images
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts

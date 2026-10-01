@@ -1,0 +1,574 @@
+// Prisma schema for the Kalisizo Coffee Farmers Cooperative Society Ltd platform.
+//
+// Structure:
+//   1. Authentication & access control  — User, UserRole, AuditLog
+//   2. Site configuration               — CooperativeInfo, SiteSetting, SocialLink
+//   3. Editorial content (with workflow)— Category, Tag, NewsArticle, Event, Project,
+//                                        Announcement, Publication, Page, Program (Service)
+//   4. Media library                    — GalleryAlbum, GalleryImage
+//   5. Home-page modules                — HeroContent, Product, FaqItem, SuccessStory,
+//                                        LeadershipMember, StoreLocation
+//   6. Public contact                   — ContactInquiry
+//
+// Editorial content follows a shared lifecycle: DRAFT -> IN_REVIEW -> PUBLISHED -> ARCHIVED.
+// `deletedAt` provides soft deletion so published content is never destroyed by accident.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// 1. Authentication & access control
+// ---------------------------------------------------------------------------
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  /// Optional short handle for sign-in, stored lowercase. Nullable so existing
+  /// accounts keep working when they only have an email address.
+  username     String?  @unique
+  passwordHash String
+  role         UserRole @default(EDITOR)
+  isActive     Boolean  @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  articles NewsArticle[]
+  galleryImages GalleryImage[]
+
+  @@index([role])
+  @@index([isActive])
+}
+
+/// Three-tier access model.
+/// SUPER_ADMIN   — full control including CMS user management and destructive actions.
+/// CONTENT_ADMIN — manages all content, cannot manage users.
+/// EDITOR        — drafts and edits content, cannot publish, delete or manage users.
+enum UserRole {
+  SUPER_ADMIN
+  CONTENT_ADMIN
+  EDITOR
+}
+
+/// Immutable record of every mutating CMS action. Used by the dashboard activity feed.
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actorName  String
+  action     String // CREATE | UPDATE | DELETE | STATUS_CHANGE | LOGIN | USER_CHANGE
+  targetType String // news | event | project | service | gallery | announcement | publication | page | user | ...
+  targetId   String?
+  summary    String
+  status     String   @default("SUCCESS") // SUCCESS | ERROR
+  before     Json?
+  after      Json?
+  createdAt  DateTime @default(now())
+
+  @@index([targetType, targetId])
+  @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// 2. Site configuration
+// ---------------------------------------------------------------------------
+
+/// Singleton row (id = "primary") holding the cooperative's core identity,
+/// mission/vision statements and primary contact details.
+model CooperativeInfo {
+  id              String   @id @default(cuid())
+  mission         String?
+  vision          String?
+  taglines        String[]
+  phoneNumbers    String[]
+  officialEmail   String?
+  address         String?
+  logoUrl         String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+/// Key/value store for miscellaneous site-wide facts that do not warrant a
+/// dedicated model — founded year, member counts, registration number, etc.
+/// `value` holds a JSON-encoded value so numbers, strings and arrays are all
+/// supported without schema changes.
+model SiteSetting {
+  key         String   @id
+  value       String   @default("")
+  group       String   @default("general")
+  label       String
+  description String?
+  updatedAt   DateTime @updatedAt
+
+  @@index([group])
+}
+
+/// Social profiles shown in the header, footer and social section.
+/// Replaces the previous fixed socialYouTube/socialInstagram/socialTikTok columns.
+model SocialLink {
+  id           String   @id @default(cuid())
+  platform     String // YouTube | Instagram | TikTok | Facebook | X | WhatsApp | LinkedIn | Email
+  handle       String
+  url          String
+  description  String?
+  displayOrder Int      @default(0)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([displayOrder])
+}
+
+// ---------------------------------------------------------------------------
+// 3. Editorial content
+// ---------------------------------------------------------------------------
+
+/// Shared publishing lifecycle for all editorial content.
+enum ContentStatus {
+  DRAFT
+  IN_REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+/// Taxonomy shared by news articles and projects.
+model Category {
+  id           String   @id @default(cuid())
+  name         String
+  slug         String   @unique
+  description  String?
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  articles NewsArticle[]
+  projects Project[]
+
+  @@index([displayOrder])
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  articles NewsArticle[]
+}
+
+model NewsArticle {
+  id               String        @id @default(cuid())
+  title            String
+  slug             String        @unique
+  excerpt          String
+  content          String
+  featuredImageUrl String?
+  imageAlt         String?
+  isFeatured       Boolean       @default(false)
+  viewCount        Int           @default(0)
+  authorId         String?
+  author           User?         @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  categoryId       String?
+  category         Category?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  tags             Tag[]
+  status           ContentStatus @default(DRAFT)
+  publishedAt      DateTime?
+  seoTitle         String?
+  seoDescription   String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  deletedAt        DateTime?
+
+  @@index([status, publishedAt])
+  @@index([deletedAt])
+  @@index([categoryId])
+  /// Both are nullable relations with `onDelete: SetNull`. Prisma does not add
+  /// an index for a relation automatically, so without these a category or
+  /// author lookup degrades into a sequential scan as articles accumulate.
+  @@index([authorId])
+}
+
+model Event {
+  id               String        @id @default(cuid())
+  title            String
+  slug             String        @unique
+  summary          String
+  description      String?
+  startAt          DateTime
+  endAt            DateTime?
+  location         String?
+  organizer        String?
+  imageUrl         String?
+  imageAlt         String?
+  registrationInfo String?
+  status           ContentStatus @default(DRAFT)
+  publishedAt      DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  deletedAt        DateTime?
+
+  @@index([status, startAt])
+  @@index([deletedAt])
+}
+
+/// Operational state of a project, independent of its editorial workflow state.
+enum ProjectStage {
+  PLANNED
+  ONGOING
+  COMPLETED
+}
+
+model Project {
+  id             String        @id @default(cuid())
+  title          String
+  slug           String        @unique
+  summary        String
+  description    String?
+  location       String?
+  startDate      DateTime?
+  endDate        DateTime?
+  stage          ProjectStage  @default(ONGOING)
+  imageUrl       String?
+  imageAlt       String?
+  partners       String[]
+  impact         String?
+  categoryId     String?
+  category       Category?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  status         ContentStatus @default(DRAFT)
+  publishedAt    DateTime?
+  seoTitle       String?
+  seoDescription String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  deletedAt      DateTime?
+
+  images GalleryImage[]
+
+  @@index([status, stage])
+  @@index([deletedAt])
+  /// Same reason as `NewsArticle.authorId`: a nullable relation does not get an
+  /// index for free.
+  @@index([categoryId])
+}
+
+enum AnnouncementSeverity {
+  INFO
+  WARNING
+  CRITICAL
+}
+
+/// Short-lived notices pinned to the top of the public site.
+model Announcement {
+  id        String               @id @default(cuid())
+  title     String
+  slug      String               @unique
+  body      String
+  severity  AnnouncementSeverity @default(INFO)
+  startsAt  DateTime?
+  endsAt    DateTime?
+  linkUrl   String?
+  linkLabel String?
+  isPinned  Boolean              @default(false)
+  status    ContentStatus        @default(DRAFT)
+  publishedAt DateTime?
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+  deletedAt DateTime?
+
+  @@index([status, startsAt])
+  @@index([deletedAt])
+}
+
+enum PublicationKind {
+  REPORT
+  BROCHURE
+  FORM
+  POLICY
+  OTHER
+}
+
+/// Downloadable documents (PDF etc.) served from object storage — never stored
+/// as blobs in PostgreSQL.
+model Publication {
+  id            String           @id @default(cuid())
+  title         String
+  slug          String           @unique
+  summary       String?
+  fileUrl       String
+  fileName      String
+  fileSizeBytes Int
+  mimeType      String
+  kind          PublicationKind  @default(OTHER)
+  status        ContentStatus    @default(DRAFT)
+  publishedAt   DateTime?
+  downloadCount Int              @default(0)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  deletedAt     DateTime?
+
+  @@index([status, kind])
+  @@index([deletedAt])
+}
+
+/// Free-form content pages (About, Membership, Privacy, ...) editable by the CMS.
+model Page {
+  id             String        @id @default(cuid())
+  title          String
+  slug           String        @unique
+  excerpt        String?
+  content        String
+  imageUrl       String?
+  imageAlt       String?
+  showInFooter   Boolean       @default(false)
+  displayOrder   Int           @default(0)
+  status         ContentStatus @default(DRAFT)
+  publishedAt    DateTime?
+  seoTitle       String?
+  seoDescription String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  deletedAt      DateTime?
+
+  @@index([status, displayOrder])
+  @@index([deletedAt])
+}
+
+// ---------------------------------------------------------------------------
+// 4. Media library
+// ---------------------------------------------------------------------------
+
+model GalleryAlbum {
+  id           String        @id @default(cuid())
+  title        String
+  slug         String        @unique
+  description  String?
+  coverImageUrl String?
+  displayOrder Int           @default(0)
+  status       ContentStatus @default(DRAFT)
+  publishedAt  DateTime?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  deletedAt    DateTime?
+
+  images GalleryImage[]
+
+  @@index([displayOrder])
+  @@index([deletedAt])
+}
+
+/// Image metadata only. The binary itself always lives in Cloudinary (or another
+/// object store); `url` and `thumbnailUrl` hold the delivered URLs.
+model GalleryImage {
+  id            String        @id @default(cuid())
+  url           String
+  thumbnailUrl  String?
+  alt           String
+  caption       String?
+  description   String?
+  displayOrder  Int           @default(0)
+  albumId       String?
+  album         GalleryAlbum? @relation(fields: [albumId], references: [id], onDelete: SetNull)
+  projectId     String?
+  project       Project?      @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  uploadedById  String?
+  uploadedBy    User?         @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  status        ContentStatus @default(DRAFT)
+  publishedAt   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  deletedAt     DateTime?
+
+  @@index([status, displayOrder])
+  @@index([albumId])
+  @@index([projectId])
+  @@index([deletedAt])
+}
+
+// ---------------------------------------------------------------------------
+// 5. Home-page modules
+// ---------------------------------------------------------------------------
+
+model LeadershipMember {
+  id           String   @id @default(cuid())
+  name         String
+  title        String // e.g. Chairman / CEO, Manager, Treasurer
+  bio          String?
+  photoUrl     String?
+  icon         String? // mapped to the frontend lookup (crown/briefcase/wallet/file/users)
+  gradient     String? // tailwind gradient classes for the portrait fallback
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt    DateTime?
+
+  @@index([displayOrder])
+}
+
+model Product {
+  id          String          @id @default(cuid())
+  title       String
+  category    ProductCategory
+  description String?
+  price       String? // optional free text (e.g. "Request quote" / "UGX 165,000 / 50kg bag")
+  unit        String? // e.g. "50kg bag", "60kg bag"
+  badge       String?
+  cta         String?
+  tone        String? // tailwind gradient classes for the card header
+  icon        String? // lucide icon hint (coffee/flask/sprout/leaf/piggybank/users/landmark)
+  imageUrl    String?
+  isAvailable Boolean         @default(true)
+  displayOrder Int            @default(0)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  deletedAt   DateTime?
+
+  @@index([category, isAvailable])
+  @@index([displayOrder])
+}
+
+enum ProductCategory {
+  COFFEE_BEANS
+  FERTILIZER_INPUTS
+  EQUIPMENT
+  SACCO_PRODUCT
+}
+
+model StoreLocation {
+  id           String   @id @default(cuid())
+  name         String
+  address      String?
+  district     String?
+  subCounty    String?
+  latitude     Float?
+  longitude    Float?
+  phone        String?
+  email        String?
+  isMainBranch Boolean  @default(false)
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt    DateTime?
+
+  @@index([district, isMainBranch])
+  @@index([displayOrder])
+}
+
+model HeroContent {
+  id                String   @id @default(cuid())
+  headlinePrefix    String
+  headlineHighlight String
+  headlineSuffix    String
+  subtitle          String
+  badges            String[]
+  todayItems        Json
+  backgroundImage   String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+/// The cooperative's services/programs. `slug` gives each one a shareable
+/// detail page under /programs/[slug].
+model Service {
+  id           String        @id @default(cuid())
+  title        String
+  slug         String        @unique
+  tagline      String
+  summary      String?
+  content      String?
+  points       String[]
+  details      String[]
+  icon         String?
+  accent       String?
+  ring         String?
+  imageUrl     String?
+  imageAlt     String?
+  category     String?
+  /// Defaults to DRAFT like every other content model, so new content is never
+  /// live by accident. This column used to default to PUBLISHED, which let a
+  /// direct write (the seed, a maintenance script) skip the editorial workflow
+  /// altogether. The seed now sets `status` on each row it creates, so a fresh
+  /// install is unchanged.
+  status       ContentStatus @default(DRAFT)
+  publishedAt  DateTime?
+  displayOrder Int           @default(1)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  deletedAt    DateTime?
+
+  @@index([status, displayOrder])
+  @@index([deletedAt])
+}
+
+model FaqItem {
+  id           String   @id @default(cuid())
+  question     String
+  answer       String
+  displayOrder Int      @default(1)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt    DateTime?
+
+  @@index([displayOrder])
+  @@index([deletedAt])
+}
+
+/// Member testimonials and impact highlights shown on the home page.
+model SuccessStory {
+  id           String   @id @default(cuid())
+  title        String
+  quote        String?
+  description  String
+  metric       String?
+  imageUrl     String?
+  authorName   String?
+  authorRole   String?
+  displayOrder Int      @default(1)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt    DateTime?
+
+  @@index([displayOrder])
+  @@index([deletedAt])
+}
+
+// ---------------------------------------------------------------------------
+// 6. Public contact
+// ---------------------------------------------------------------------------
+
+model ContactInquiry {
+  id        String          @id @default(cuid())
+  fullName  String
+  phone     String?
+  email     String
+  subject   String?
+  userType  InquiryUserType @default(GENERAL)
+  message   String
+  status    InquiryStatus   @default(PENDING)
+  notes     String?
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@index([status, createdAt])
+  /// The CMS lists and filters inquiries by the sender's address, and this is
+  /// the only personal-data column on the table.
+  @@index([email])
+}
+
+enum InquiryUserType {
+  FARMER
+  BUYER
+  GENERAL
+}
+
+enum InquiryStatus {
+  PENDING
+  REVIEWED
+  RESOLVED
+}

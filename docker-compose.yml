@@ -1,0 +1,138 @@
+# Production compose stack: web app, PostgreSQL, and a TLS-terminating proxy.
+#
+#   docker compose up -d --build          start everything
+#   docker compose run --rm migrate       apply migrations (one-shot)
+#   docker compose exec app npm run db:seed   seed content, idempotent
+#   docker compose logs -f app            follow the app log
+#
+# Copy .env.example.production to .env and fill it in first. `docker compose`
+# reads .env automatically for variable substitution.
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-kalisizo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-kalisizo_coffee}
+      # Postgres refuses to initialise into a non-empty directory mounted from
+      # the host, which is exactly what a bind mount on Linux provides.
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      # Backup script and dump directory, so the cron entry on the host is a
+      # single `docker exec` with nothing to copy by hand after a redeploy.
+      - ./deploy/backup.sh:/opt/kalisizo/backup.sh:ro
+      - ./backups:/backups
+    # Not published to the host. Only the app reaches it, over the internal
+    # network, so the database is not exposed to the internet even if the
+    # firewall is misconfigured.
+    expose:
+      - "5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-kalisizo} -d ${POSTGRES_DB:-kalisizo_coffee}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - backend
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runner
+      args:
+        # Inlined into the client bundle at build time. Changing the domain
+        # requires a rebuild: `docker compose up -d --build app`.
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://kalisizo.coffee}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-kalisizo}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-kalisizo_coffee}?schema=public&connection_limit=5&pool_timeout=20
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://kalisizo.coffee}
+      ALLOWED_ORIGINS: ${NEXT_PUBLIC_SITE_URL:-https://kalisizo.coffee}
+      # Local disk uploads. `uploads` is a named volume, so images survive both a
+      # container rebuild and a redeploy. Set the CLOUDINARY_* variables and drop
+      # ALLOW_LOCAL_UPLOADS to move images off this box.
+      ALLOW_LOCAL_UPLOADS: ${ALLOW_LOCAL_UPLOADS:-true}
+      UPLOAD_DIR: /app/data/uploads
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      RESEND_FROM: ${RESEND_FROM:-}
+      CONTACT_INBOX: ${CONTACT_INBOX:-kalisizocoop@gmail.com}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@kalisizocoop.coop}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      # Behind a proxy, Next needs these to trust X-Forwarded-* and to build
+      # correct absolute URLs.
+      NODE_OPTIONS: --max-old-space-size=768
+    volumes:
+      - uploads:/app/data/uploads
+    expose:
+      - "3000"
+    networks:
+      - backend
+
+  # One-shot. Apply migrations before the first `curl` against the site, and
+  # again after every deploy that ships a new migration. Not started by
+  # `up`, which is why it has no `restart` policy.
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: migrate
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-kalisizo}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-kalisizo_coffee}?schema=public&connection_limit=5&pool_timeout=20
+      # The seed refuses to run without both, and enforces a password policy in
+      # production. Only read when `db:seed` is invoked on this service.
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@kalisizocoop.coop}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+    command: ["npx", "prisma", "migrate", "deploy"]
+    networks:
+      - backend
+
+  # TLS termination. Caddy obtains and renews a certificate automatically, so
+  # there is no certbot cron and no certificate to expire by hand.
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:-localhost}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      # A small persistent volume so a container restart does not trigger a new
+      # Let's Encrypt rate-limit request.
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      - backend
+
+volumes:
+  db-data:
+  uploads:
+  caddy-data:
+  caddy-config:
+
+networks:
+  # `internal: true` would cut the app off from the internet, which breaks
+  # outbound email and Cloudinary. The two-network split below is deliberate:
+  # only Caddy reaches the outside world.
+  backend:
+    driver: bridge

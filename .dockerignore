@@ -1,0 +1,39 @@
+# Build context hygiene. Everything here is either rebuilt inside the image or
+# must never be copied into it. Keeping this tight matters most for .env: the app
+# reads env at runtime, but a stray copy baked into a layer stays in the image
+# history forever.
+
+node_modules
+.next
+.git
+.gitignore
+
+# Local env files. The image gets its configuration from the orchestrator, never
+# from a file on disk in the repo.
+.env
+.env.*
+!.env.example
+
+# Runtime state: uploaded media and database dumps. The dumps contain password
+# hashes. In Docker these live in a named volume instead.
+data
+backups
+.pgdata
+
+# Raw source photographs. The site serves the optimised copies under public/.
+images
+
+# Logs and editor cruft
+*.log
+*.tsbuildinfo
+next-env.d.ts
+.vscode
+.idea
+.claude
+worktrees
+
+# Docs are useful in the repo and useless in a runtime image.
+docs
+README.md
+AGENTS.md
+CLAUDE.md
