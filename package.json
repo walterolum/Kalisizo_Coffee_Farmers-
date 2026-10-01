@@ -19,7 +19,8 @@
     "db:studio": "prisma studio",
     "db:drift": "tsx scripts/check-migration-drift.ts",
     "storage:migrate": "tsx scripts/migrate-uploads.ts",
-    "storage:status": "tsx scripts/storage-status.ts"
+    "storage:status": "tsx scripts/storage-status.ts",
+    "db:rls-verify": "tsx scripts/verify-rls.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

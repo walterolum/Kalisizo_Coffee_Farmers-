@@ -19,7 +19,19 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+
+  // The application connects as `kalisizo_app`, a non-superuser role without
+  // BYPASSRLS. Row level security is a no-op for the application and a total
+  // deny for the public Supabase keys, so the policies below are real controls
+  // rather than documentation.
+  url = env("DATABASE_URL")
+
+  // Migrations run as the table owner, over a direct (non-pooled) connection.
+  // Separating the two is what allows the application role to hold no DDL
+  // rights at all: it cannot alter the schema whose row security it depends on.
+  // A transaction pooler cannot run `CREATE ROLE` or `ALTER TABLE ... FORCE`, so
+  // this must be a direct connection on port 5432, not the pooler on 6543.
+  directUrl = env("DIRECT_DATABASE_URL")
 }
 
 // ---------------------------------------------------------------------------
