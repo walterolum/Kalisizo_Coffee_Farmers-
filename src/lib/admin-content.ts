@@ -5,6 +5,7 @@ import { adminRateLimit, can, requirePermission, roleLabel } from "@/lib/admin-g
 import { badRequest, notFound, parseBody, serviceUnavailable } from "@/lib/http";
 import { assertFresh, publish, publishMeta, recordAudit } from "@/lib/publish";
 import { uniqueSlug } from "@/lib/slug";
+import { RESERVED_PAGE_SLUGS } from "@/lib/reserved-slugs";
 import { sanitizeContentRow } from "@/lib/sanitize";
 import { resolvePublishedAt, transitionError } from "@/lib/workflow";
 import type { z } from "zod";
@@ -153,6 +154,38 @@ export async function handleContentWrite<S extends z.ZodTypeAny>(
         );
       }
 
+      // A slug sent on update is a *rename*, and it has to go through the same
+      // derivation as a create. Without this the reserved-slug protection only
+      // covers creation: an editor could create a page as `careers`, then edit it
+      // and set the slug to `about`. The validator accepts that � `about` matches
+      // its pattern perfectly � and the write is applied verbatim, so the static
+      // /about route starts shadowing the row and /p/about becomes a second URL
+      // for the same content.
+      //
+      // Skipped when the slug is absent or unchanged, so an ordinary edit does not
+      // spend a query or churn the URL. `excludeId` keeps the row's own slug
+      // available to it, so re-saving an unchanged name is a no-op rather than
+      // appending -2 to itself.
+      if (SLUG_MODELS.has(model) && typeof input.slug === "string" && input.slug.trim()) {
+        const currentSlug = typeof existing.slug === "string" ? existing.slug : undefined;
+        const requestedSlug = input.slug.trim();
+        if (requestedSlug !== currentSlug) {
+          data.slug = await uniqueSlug(
+            delegate as unknown as {
+              findFirst(args: {
+                where: { slug: string; NOT?: { id: string } };
+                select: { slug: true };
+              }): Promise<{ slug: string } | null>;
+            },
+            requestedSlug,
+            id,
+            // Only `Page` is served from a catch-all that competes with the
+            // hand-written routes; see reserved-slugs.ts.
+            model === "page" ? RESERVED_PAGE_SLUGS : undefined
+          );
+        }
+      }
+
       const updated = await delegate.update({ where: { id }, data });
       if (config.afterWrite) await config.afterWrite(updated, parsed.data);
 
@@ -210,7 +243,13 @@ export async function handleContentWrite<S extends z.ZodTypeAny>(
             select: { slug: true };
           }): Promise<{ slug: string } | null>;
         },
-        base
+        base,
+        undefined,
+        // Only `Page` is served from a catch-all that competes with hand-written
+        // routes. The other slug models each own a dedicated prefix
+        // (`/news/<slug>`, `/events/<slug>`, ...), so a slug of `about` there is
+        // unambiguous and reserving it would only be surprising.
+        model === "page" ? RESERVED_PAGE_SLUGS : undefined
       );
     }
 
@@ -239,7 +278,7 @@ export async function handleContentWrite<S extends z.ZodTypeAny>(
 
 /**
  * Models that take part in the DRAFT/IN_REVIEW/PUBLISHED workflow. The
- * home-page modules below do not — they are live-or-archived by `deletedAt`
+ * home-page modules below do not � they are live-or-archived by `deletedAt`
  * alone, so writing `status`/`publishedAt` on them would be rejected by Prisma.
  */
 const WORKFLOW_MODELS: ReadonlySet<ContentModel> = new Set([

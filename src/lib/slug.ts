@@ -30,15 +30,24 @@ type SlugModel = {
  * Returns a slug that is unique within `model`, appending -2, -3, ... when the
  * base slug is taken. `excludeId` keeps a record's own slug stable when it is
  * being renamed.
+ *
+ * `reserved` names slugs unavailable for reasons the table cannot know about — for
+ * `Page`, the hand-written routes that `/p/[slug]` must not shadow. They are
+ * treated exactly like a collision, so `about` becomes `about-2`. See
+ * `reserved-slugs.ts` for why suffixing beats rejecting the save.
  */
 export async function uniqueSlug(
   model: SlugModel,
   base: string,
-  excludeId?: string
+  excludeId?: string,
+  reserved?: ReadonlySet<string>
 ): Promise<string> {
   const root = slugify(base) || "item";
   for (let suffix = 1; suffix <= 200; suffix++) {
     const candidate = suffix === 1 ? root : `${root}-${suffix}`;
+    // Checked before the query rather than after: a reserved slug can never
+    // become available, so asking the database to confirm it is taken is pure cost.
+    if (reserved?.has(candidate)) continue;
     const existing = await model.findFirst({
       where: { slug: candidate, ...(excludeId ? { NOT: { id: excludeId } } : {}) },
       select: { slug: true },
