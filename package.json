@@ -21,7 +21,9 @@
     "storage:migrate": "tsx scripts/migrate-uploads.ts",
     "storage:status": "tsx scripts/storage-status.ts",
     "db:rls-verify": "tsx scripts/verify-rls.ts",
-    "realtime:status": "tsx scripts/realtime-status.ts"
+    "realtime:status": "tsx scripts/realtime-status.ts",
+    "og:image": "tsx scripts/generate-og-image.ts",
+    "og:image:verify": "tsx scripts/verify-og-image.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -51,6 +53,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.5",
     "prisma": "^6.19.0",
+    "sharp": "^0.35.4",
     "tailwindcss": "^4",
     "tsx": "^4.23.13",
     "typescript": "^5",
