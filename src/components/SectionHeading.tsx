@@ -5,6 +5,15 @@ type SectionHeadingProps = {
   align?: "center" | "left";
   tone?: "light" | "dark";
   id?: string;
+  /**
+   * Heading level to render.
+   *
+   * Defaults to `h2` because this component is nearly always a section *within*
+   * a page whose hero already supplied the `h1`. A page whose first and only
+   * heading comes from here must pass `h1`, or it ships with no `h1` at all —
+   * which is what `/contact` did.
+   */
+  as?: "h1" | "h2";
 };
 
 /**
@@ -25,6 +34,7 @@ export function SectionHeading({
   align = "center",
   tone = "light",
   id,
+  as: Heading = "h2",
 }: SectionHeadingProps) {
   const light = tone === "dark";
   const centered = align === "center";
@@ -41,14 +51,14 @@ export function SectionHeading({
         {eyebrow}
       </p>
 
-      <h2
+      <Heading
         id={id}
         className={`mt-7 font-display text-balance text-[clamp(1.85rem,0.9rem+2.7vw,3.2rem)] font-semibold leading-[1.1] tracking-[-0.018em] ${
           light ? "text-cream" : "text-forest"
         }`}
       >
         {title}
-      </h2>
+      </Heading>
 
       {description && (
         <p

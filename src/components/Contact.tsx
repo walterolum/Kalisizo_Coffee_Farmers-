@@ -37,7 +37,13 @@ const INITIAL: FormState = {
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export function Contact() {
+/**
+ * @param headingLevel
+ *   `1` on `/contact`, where this section is the page's main heading. Left at `2`
+ *   on the home page, where `Hero` already supplies the `h1` and this is one
+ *   section among many.
+ */
+export function Contact({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
   const [form, setForm] = useState<FormState>(INITIAL);
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
@@ -158,6 +164,7 @@ export function Contact() {
         <Reveal>
           <SectionHeading
             id="contact-heading"
+            as={headingLevel === 1 ? "h1" : "h2"}
             eyebrow="Get In Touch"
             title="Contact & Inquiries"
             description="Join the cooperative, ask for farmer support or enquire about coffee and wholesale supply."
