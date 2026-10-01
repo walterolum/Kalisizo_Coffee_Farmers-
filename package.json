@@ -16,7 +16,8 @@
     "db:generate": "prisma generate",
     "db:seed": "tsx prisma/seed.ts",
     "db:reset": "tsx prisma/reset.ts",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "db:drift": "tsx scripts/check-migration-drift.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
