@@ -3,6 +3,7 @@ import {
   getRealtimeVersion,
   realtimeClientCount,
   removeRealtimeClient,
+  streamBackendActive,
 } from "@/lib/realtime-server";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
 
@@ -24,6 +25,15 @@ const CONNECTIONS_PER_IP = 6;
 const CONNECT_WINDOW_MS = 60_000;
 
 export async function GET(req: Request) {
+  // When Supabase Broadcast is the selected transport, nothing subscribes here.
+  // 204 is deliberate: the browser spec says EventSource stops reconnecting on
+  // 204, whereas a 503 would make it retry against a server that will never
+  // deliver. Left serving, every open tab would hold a connection open for ever
+  // receiving nothing.
+  if (!streamBackendActive()) {
+    return new Response(null, { status: 204 });
+  }
+
   const limit = rateLimit(`sse:${clientIp(req)}`, CONNECTIONS_PER_IP, CONNECT_WINDOW_MS);
   if (!limit.ok) {
     return new Response("Too many live-update connections from this address.", {

@@ -167,7 +167,7 @@ export async function handleContentWrite<S extends z.ZodTypeAny>(
         before: existing,
         after: updated,
       });
-      publish(user, [collection]);
+      await publish(user, [collection]);
 
       return NextResponse.json({ ...updated, ...publishMeta(user) });
     }
@@ -228,7 +228,7 @@ export async function handleContentWrite<S extends z.ZodTypeAny>(
       summary: `Created ${label(targetType).toLowerCase()} "${titleOf(created)}" as ${requestedStatus}`,
       after: created,
     });
-    publish(user, [collection]);
+    await publish(user, [collection]);
 
     return NextResponse.json({ ...created, ...publishMeta(user) }, { status: 201 });
   } catch (error) {
@@ -325,7 +325,7 @@ export async function handleContentDelete(
       before: existing,
       after: updated,
     });
-    publish(user, [collection]);
+    await publish(user, [collection]);
 
     return NextResponse.json({ ok: true, archivedId: id, ...publishMeta(user) });
   } catch (error) {
@@ -378,7 +378,7 @@ export async function handleContentRestore(
       before: existing,
       after: updated,
     });
-    publish(user, [collection]);
+    await publish(user, [collection]);
 
     return NextResponse.json({ ok: true, restoredId: id, ...publishMeta(user) });
   } catch (error) {

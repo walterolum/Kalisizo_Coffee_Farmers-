@@ -20,7 +20,10 @@ export async function POST(req: Request) {
   if (limited) return limited;
 
   try {
-    broadcastRealtimeUpdate({ source: "admin-bump" });
+    // Awaited: the Supabase transport is a network call, and on Vercel work still
+    // in flight when the response is returned can be frozen. The publish never
+    // throws, so this cannot fail the request — it only bounds how long it takes.
+    await broadcastRealtimeUpdate({ source: "admin-bump" });
   } catch {
     /* ignore */
   }

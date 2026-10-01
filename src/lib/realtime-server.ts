@@ -1,96 +1,101 @@
-// Server-side realtime broadcaster for SSE.
-// Uses globalThis to survive HMR / keep singleton across hot reloads in dev.
+/**
+ * Server-side realtime entry point.
+ *
+ * A facade over `@/lib/realtime-transport`, which selects a transport from the
+ * environment. It exists so there is exactly one server import path. The
+ * transport directory is deliberately *not* called `realtime`: `@/lib/realtime`
+ * resolves to the sibling client hook file, and a `realtime/` directory beside a
+ * `realtime.ts` resolves to the file, not the directory — so the abstraction
+ * would have been unreachable by its own name.
+ *
+ * The client-registry exports (`addRealtimeClient` and friends) belong to the SSE
+ * backend specifically. They are re-exported here because the stream route needs
+ * them, and the route is the only consumer — see `streamBackendActive` for how
+ * the route behaves when SSE is not the selected transport.
+ */
+import { realtimeStatus, getRealtimePublisher } from "@/lib/realtime-transport";
+import type { RealtimeUpdateInput } from "@/lib/realtime-transport/protocol";
 
-type Client = {
-  id: number;
-  controller: ReadableStreamDefaultController<Uint8Array>;
+// Imported from the SSE module directly rather than through the index, because
+// the client registry is specific to that backend: the index deliberately exports
+// the transport contract and nothing backend-shaped.
+import {
+  addRealtimeClient,
+  getRealtimeVersion,
+  realtimeClientCount,
+  removeRealtimeClient,
+  sendRawSse,
+} from "@/lib/realtime-transport/sse";
+
+export {
+  addRealtimeClient,
+  getRealtimeVersion,
+  realtimeClientCount,
+  removeRealtimeClient,
+  realtimeStatus,
 };
 
-declare global {
-  var __kcRealtimeClients: Set<Client> | undefined;
-  var __kcRealtimeNextId: number | undefined;
-  var __kcRealtimeVersion: number | undefined;
-}
-
-function getClients(): Set<Client> {
-  if (!globalThis.__kcRealtimeClients) {
-    globalThis.__kcRealtimeClients = new Set<Client>();
-  }
-  return globalThis.__kcRealtimeClients;
+/**
+ * Whether SSE is the transport actually in use.
+ *
+ * The stream route checks this: with Supabase Broadcast selected, nothing
+ * subscribes over SSE, and serving streams anyway would leave every browser
+ * holding an open connection that can never receive anything.
+ */
+export function streamBackendActive(): boolean {
+  return getRealtimePublisher()?.name === "sse";
 }
 
 /**
- * Ceiling on concurrent SSE subscribers.
+ * Tell every connected subscriber that something changed.
  *
- * The stream endpoint is reachable without a session — the admin client and any
- * public page both subscribe — so it is an open connection an unauthenticated
- * caller can hold. Each one costs a Set entry and a 25s heartbeat timer for as
- * long as it stays open, and EventSource reconnects automatically, so a single
- * script opening hundreds of tabs is enough to exhaust file descriptors and
- * timers. Rejecting past this ceiling turns that from a resource leak into a
- * clean 503. A real deployment has a handful of tabs open, nowhere near this.
+ * Now asynchronous because the Supabase backend is a network call, and the
+ * previous fire-and-forget call site was quietly wrong for it: on Vercel work
+ * still in flight when the response is sent can be frozen, so a broadcast not
+ * awaited would be dropped under load. Callers await this.
+ *
+ * Returns rather than throws. The row is already committed by the time this runs,
+ * and reporting the save as failed would tell an admin their content was lost
+ * when it is not.
  */
-const MAX_CLIENTS = 200;
-
-export function realtimeClientCount(): number {
-  return getClients().size;
-}
-
-function nextId(): number {
-  if (globalThis.__kcRealtimeNextId == null) globalThis.__kcRealtimeNextId = 1;
-  return globalThis.__kcRealtimeNextId++;
-}
-
-export function getRealtimeVersion(): number {
-  if (globalThis.__kcRealtimeVersion == null) globalThis.__kcRealtimeVersion = Date.now();
-  return globalThis.__kcRealtimeVersion;
-}
-
-export function bumpRealtimeVersion(): number {
-  const v = Date.now();
-  globalThis.__kcRealtimeVersion = v;
-  return v;
-}
-
-export function addRealtimeClient(controller: ReadableStreamDefaultController<Uint8Array>): Client | null {
-  const clients = getClients();
-  if (clients.size >= MAX_CLIENTS) return null;
-  const client: Client = { id: nextId(), controller };
-  clients.add(client);
-  return client;
-}
-
-export function removeRealtimeClient(client: Client): void {
-  const clients = getClients();
-  clients.delete(client);
-}
-
-export function broadcastRealtimeUpdate(payload: Record<string, unknown> = {}): void {
-  const version = bumpRealtimeVersion();
-  const data = JSON.stringify({ type: "update", version, at: new Date().toISOString(), ...payload });
-  const chunk = `event: update\ndata: ${data}\n\n`;
-  const encoded = new TextEncoder().encode(chunk);
-  const clients = getClients();
-  for (const client of Array.from(clients)) {
-    try {
-      client.controller.enqueue(encoded);
-    } catch {
-      // client disconnected
-      clients.delete(client);
-    }
+export async function broadcastRealtimeUpdate(
+  payload: RealtimeUpdateInput = {}
+): Promise<void> {
+  const publisher = getRealtimePublisher();
+  if (!publisher) {
+    // Only reachable when a backend is pinned and unusable. Logged rather than
+    // silent, because this is the configuration mistake that presents as "live
+    // updates just quietly stopped working".
+    console.error(
+      `[realtime] no usable transport; update dropped. Status: ${JSON.stringify(realtimeStatus())}`
+    );
+    return;
   }
-  // also send a heartbeat to keep connections alive (optional)
+
+  await publisher.publishUpdate(payload);
 }
 
-export function broadcastRaw(event: string, data: unknown): void {
-  const chunk = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
-  const encoded = new TextEncoder().encode(chunk);
-  const clients = getClients();
-  for (const client of Array.from(clients)) {
-    try {
-      client.controller.enqueue(encoded);
-    } catch {
-      clients.delete(client);
-    }
+/**
+ * Send a named raw event to subscribers.
+ *
+ * Currently unused by the application — retained because it is the seam for
+ * anything richer than a collection list (presence, typing indicators) and
+ * removing it would mean re-deriving the fan-out for the SSE case later.
+ *
+ * The SSE backend has a generic fan-out; the Supabase backend does not implement
+ * arbitrary event names, because every message on a public topic goes to every
+ * subscriber anyway and inventing per-event semantics would not survive the
+ * round trip. It logs rather than silently no-opping.
+ */
+export async function broadcastRaw(event: string, data: unknown): Promise<void> {
+  const publisher = getRealtimePublisher();
+
+  if (publisher?.name === "sse") {
+    sendRawSse(event, data);
+    return;
   }
+
+  console.error(
+    `[realtime] broadcastRaw("${event}") is not supported on the ${publisher?.name ?? "unavailable"} backend`
+  );
 }

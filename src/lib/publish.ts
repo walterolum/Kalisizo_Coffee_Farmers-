@@ -92,10 +92,25 @@ export async function assertFresh(
   );
 }
 
-/** Publish + tell every connected client (public pages included) which collection changed. */
-export function publish(actor: AuthUser, collections: string[], meta?: Record<string, unknown>): void {
+/**
+ * Publish + tell every connected client (public pages included) which collection changed.
+ *
+ * Awaited rather than fired and forgotten. The Supabase transport is a network
+ * call, and on Vercel anything still in flight once the response is returned can
+ * be frozen — so a broadcast that was not awaited would be dropped under exactly
+ * the load that matters, while appearing to work in development.
+ *
+ * Errors are still contained here. The row is already committed by the time this
+ * runs; letting a delivery failure propagate would report the save as failed and
+ * tell an admin their content was lost when it is sitting in the database.
+ */
+export async function publish(
+  actor: AuthUser,
+  collections: string[],
+  meta?: Record<string, unknown>
+): Promise<void> {
   try {
-    broadcastRealtimeUpdate({ collections, publishedBy: actor.name, ...meta });
+    await broadcastRealtimeUpdate({ collections, publishedBy: actor.name, ...meta });
   } catch {
     /* ignore */
   }

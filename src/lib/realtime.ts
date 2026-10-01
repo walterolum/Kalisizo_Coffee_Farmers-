@@ -1,6 +1,11 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+// Shared with the server publisher so the topic cannot drift. Note that this is a
+// different channel from REALTIME_CHANNEL below: that one is a same-browser
+// BroadcastChannel used to sync tabs on this device, while REALTIME_TOPIC is the
+// Supabase Realtime topic. They happen to share a name and are unrelated.
+import { REALTIME_TOPIC, REALTIME_UPDATE_EVENT } from "@/lib/realtime-transport/protocol";
 
 export const REALTIME_TICK_KEY = "kc_realtime_tick";
 export const REALTIME_CHANNEL = "kc_realtime";
@@ -77,6 +82,7 @@ type Listener = {
 const listeners = new Set<Listener>();
 
 let source: EventSource | null = null;
+let unsubscribeSupabase: (() => void) | null = null;
 let timer: number | null = null;
 let intervalMs = REALTIME_INTERVAL_MS;
 let globalsAttached = false;
@@ -154,6 +160,14 @@ function readCollections(data: string | undefined): string[] | undefined {
 }
 
 function connect(): void {
+  // One transport at a time, matching whichever the server publishes on. Running
+  // both would double every wake-up and leave an SSE connection open that can
+  // never receive anything.
+  if (clientTransport() === "supabase") {
+    if (!unsubscribeSupabase) unsubscribeSupabase = connectSupabase();
+    return;
+  }
+
   if (source) return;
   try {
     source = new EventSource(REALTIME_SSE_URL);
@@ -174,6 +188,14 @@ function connect(): void {
 }
 
 function disconnect(): void {
+  if (unsubscribeSupabase) {
+    try {
+      unsubscribeSupabase();
+    } catch {
+      /* ignore */
+    }
+    unsubscribeSupabase = null;
+  }
   if (!source) return;
   try {
     source.close();
@@ -245,6 +267,70 @@ function detachGlobals(): void {
 }
 
 /**
+ * Which transport the browser subscribes on.
+ *
+ * Must agree with the server's selection (see `realtimeStatus` on the server, and
+ * `streamBackendActive`). Both sides read the same `REALTIME_BACKEND` variable, so
+ * they cannot disagree — but a browser only ever sees its own `NEXT_PUBLIC_*`
+ * variables, which is why a missing public URL falls back to SSE rather than
+ * guessing.
+ *
+ * Served from public env on purpose: it is a URL and the anon key, both of which
+ * are designed to be public. The service role key is never referenced here.
+ */
+function clientTransport(): "supabase" | "sse" {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (url && key) return "supabase";
+  return "sse";
+}
+
+/**
+ * Subscribe to Supabase Realtime Broadcast.
+ *
+ * Returns a teardown function. Supabase's client is created lazily and kept at
+ * module scope: `createClient` opens a websocket, and building a new one per
+ * subscriber would mean one socket per mounted component — the same connection
+ * pile-up the shared SSE stream was built to avoid.
+ */
+function connectSupabase(): () => void {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
+
+  let closed = false;
+
+  void (async () => {
+    try {
+      const { createClient } = await import("@supabase/supabase-js");
+      // No session is persisted or auto-refreshed: this client exists solely to
+      // receive broadcast messages. Attaching the Supabase Auth session to it would
+      // blur which credential is doing the subscribing, which matters once the
+      // channel becomes private.
+      const supabase = createClient(url, anonKey, {
+        auth: { persistSession: false, autoRefreshToken: false },
+        realtime: { params: { eventsPerSecond: 10 } },
+      });
+
+      const channel = supabase.channel(REALTIME_TOPIC);
+      channel.on("broadcast", { event: REALTIME_UPDATE_EVENT }, (message) => {
+        if (closed) return;
+        const payload = message.payload as { collections?: unknown } | undefined;
+        emit(readCollections(JSON.stringify(payload ?? {})));
+      });
+      channel.subscribe();
+    } catch {
+      // A failed subscription is not fatal: the poll timer, the focus and
+      // visibility handlers, and the cross-tab channel all still run, so the
+      // page stays correct and merely stops being instant.
+    }
+  })();
+
+  return () => {
+    closed = true;
+  };
+}
+
+/**
  * Poll `callback` every `intervalMs` and also on:
  * - storage event (cross-tab localStorage tick)
  * - BroadcastChannel message
@@ -254,17 +340,18 @@ function detachGlobals(): void {
  *
  * `callback` is stable via ref so caller can memoise without re-subscribing.
  *
- * `collection` opts into *targeted* updates: when the server broadcasts an SSE "update" event
- * that names specific collections (e.g. ["hero"]), only callbacks subscribed to a matching
- * collection re-run — other components stay untouched. All non-SSE triggers (poll, focus,
- * cross-tab, etc.) always re-run as a safety net.
+ * `collection` opts into *targeted* updates: when the server broadcasts an "update"
+ * naming specific collections (e.g. ["hero"]), only callbacks subscribed to a
+ * matching collection re-run — other components stay untouched. All non-broadcast
+ * triggers (poll, focus, cross-tab, etc.) always re-run as a safety net.
  *
  * `options.minIntervalMs` sets a floor on how often this subscriber may be woken
  * by the *timer*. It exists because `requestedIntervalMs` can only move the shared
  * timer one way — every subscriber races to make it faster, and nothing can ask for
  * slower. A view that issues several rate-limited requests per run therefore has no
  * way to stay inside its own budget except by not polling. Event-driven triggers
- * (SSE, focus, cross-tab) are unaffected, so live updates still land immediately.
+ * (broadcast, focus, cross-tab) are unaffected, so live updates still land
+ * immediately.
  */
 export function useRealtimePoll(
   callback: () => void,
