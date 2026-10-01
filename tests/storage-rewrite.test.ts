@@ -169,35 +169,59 @@ describe("buildUrlMap", () => {
 
 describe("rewrite scope", () => {
   it("discovers URL columns from the schema rather than a hard-coded list", async () => {
-    const { readFileSync } = await import("node:fs");
     const { URL_COLUMN_SQL } = await import("@/lib/storage/rewrite");
 
     // A hard-coded list of 23 columns would silently miss a model added later,
     // and the only symptom would be an image that broke at cutover.
+    //
+    // This half is a pure assertion and needs no database, so it always runs.
     expect(URL_COLUMN_SQL).toMatch(/information_schema\.columns/);
     expect(URL_COLUMN_SQL).toMatch(/table_schema\s*=\s*'public'/);
-
-    // And the real schema must still satisfy the query.
-    const { prisma } = await import("@/lib/prisma");
-    const columns = await prisma.$queryRawUnsafe<
-      Array<{ table_name: string; column_name: string }>
-    >(URL_COLUMN_SQL);
-
-    // The columns that actually hold this project's images today.
-    const found = columns.map((c) => `${c.table_name}.${c.column_name}`);
-    expect(found).toContain("Product.imageUrl");
-    expect(found).toContain("CooperativeInfo.logoUrl");
-    expect(found).toContain("LeadershipMember.photoUrl");
-    expect(found).toContain("HeroContent.backgroundImage");
-    expect(found).toContain("GalleryImage.url");
-
-    // Nothing text-shaped that is obviously not a URL should have been swept in.
-    for (const entry of found) {
-      const column = entry.split(".")[1].toLowerCase();
-      expect(column).toMatch(/image|url|logo|photo/);
-    }
-
-    await prisma.$disconnect();
-    expect(readFileSync).toBeDefined();
   });
+
+  it(
+    "matches the columns the real schema actually has",
+    // Generous, because the first probe pays for a cold connection and the rest
+    // of the suite competes for Postgres backends. The default 5s was tight
+    // enough to fail intermittently on a loaded machine, which made this file
+    // look flaky for a reason that had nothing to do with the code under test.
+    { timeout: 30_000 },
+    async (ctx) => {
+      const { URL_COLUMN_SQL } = await import("@/lib/storage/rewrite");
+      const { databaseAvailable, disconnectQuietly } = await import(
+        "./support/database"
+      );
+
+      if (!(await databaseAvailable())) {
+        // Skipped rather than failed: "correct" for this assertion is defined
+        // against the live schema, so with no database there is nothing to be
+        // correct against. Reported as a skip so it is visible rather than
+        // silently missing from a green run.
+        return ctx.skip();
+      }
+
+      const { prisma } = await import("@/lib/prisma");
+      try {
+        const columns = await prisma.$queryRawUnsafe<
+          Array<{ table_name: string; column_name: string }>
+        >(URL_COLUMN_SQL);
+
+        // The columns that actually hold this project's images today.
+        const found = columns.map((c) => `${c.table_name}.${c.column_name}`);
+        expect(found).toContain("Product.imageUrl");
+        expect(found).toContain("CooperativeInfo.logoUrl");
+        expect(found).toContain("LeadershipMember.photoUrl");
+        expect(found).toContain("HeroContent.backgroundImage");
+        expect(found).toContain("GalleryImage.url");
+
+        // Nothing text-shaped that is obviously not a URL should have been swept in.
+        for (const entry of found) {
+          const column = entry.split(".")[1].toLowerCase();
+          expect(column).toMatch(/image|url|logo|photo/);
+        }
+      } finally {
+        await disconnectQuietly();
+      }
+    }
+  );
 });

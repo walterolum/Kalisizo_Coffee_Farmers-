@@ -1,4 +1,4 @@
-import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { mkdtempSync, readFileSync, rmSync, mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -42,8 +42,12 @@ const PNG_BYTES = Buffer.from([
 /** A well-formed stored name, as `newUploadName` would produce. */
 const KEY = "1700000000000-deadbeef.jpg";
 
+/** Every temp dir this file created, so none of them outlive the run. */
+const tempDirs: string[] = [];
+
 beforeEach(() => {
   tempDir = mkdtempSync(join(tmpdir(), "kc-storage-"));
+  tempDirs.push(tempDir);
   process.env.UPLOAD_DIR = tempDir;
   delete process.env.STORAGE_BACKEND;
   delete process.env.SUPABASE_URL;
@@ -55,10 +59,15 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.resetModules();
-});
 
-afterAll(() => {
-  if (tempDir) rmSync(tempDir, { recursive: true, force: true });
+  // Each test gets its own directory, so removing only the last one in `afterAll`
+  // leaked about thirty directories per run. That is not cosmetic: they built up
+  // into the hundreds on a developer's machine, and the growing directory count is
+  // what pushed these tests past the default 5s timeout intermittently — the file
+  // looked flaky for a reason that had nothing to do with the code under test.
+  for (const dir of tempDirs.splice(0)) {
+    rmSync(dir, { recursive: true, force: true });
+  }
 });
 
 async function readAll(stream: ReadableStream<Uint8Array>): Promise<Buffer> {
