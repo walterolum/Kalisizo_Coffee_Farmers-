@@ -3,19 +3,22 @@
  *
  * `public/` cannot be used for this: Next.js serves it from a file list captured
  * when the server starts, so a file uploaded afterwards 404s until the process
- * restarts. This handler reads from the upload directory on every request, so an
+ * restarts. This handler reads from the storage backend on every request, so an
  * upload is live immediately.
+ *
+ * This route exists for the *local* backend only. Supabase and Cloudinary return
+ * absolute public URLs, so their objects are fetched directly from those origins
+ * and never pass through here. The route is kept because the CMS already has
+ * `/uploads/<name>` values stored against it, and those have to keep resolving.
  *
  * The route is intentionally narrow. It serves only names the upload module
  * could have written, only regular files, and only with a `Content-Type` taken
- * from a fixed table — never from anything in the request.
+ * from a fixed table - never from anything in the request.
  */
 
-import { createReadStream } from "fs";
-import { realpath, stat } from "fs/promises";
-import path from "path";
-import { Readable } from "stream";
-import { contentTypeFor, resolveStoredFile, uploadsDir } from "@/lib/upload-storage";
+import { NextResponse } from "next/server";
+import { isStoredName } from "@/lib/upload-storage";
+import { getStorageBackend } from "@/lib/storage";
 
 /** Uploads are immutable: each name is unique and never overwritten. */
 const CACHE_CONTROL = "public, max-age=31536000, immutable";
@@ -26,41 +29,38 @@ export async function GET(
 ) {
   const { file } = await params;
 
-  const absolute = resolveStoredFile(file);
-  if (!absolute) return notFound();
+  // The name allowlist is a security boundary, not a naming convention: anything
+  // it rejects never reaches a filesystem or a bucket. The backend re-checks it
+  // too.
+  if (!isStoredName(file)) return notFound();
 
-  const type = contentTypeFor(file);
-  if (!type) return notFound();
-
-  let info: Awaited<ReturnType<typeof stat>>;
-  try {
-    info = await stat(absolute);
-  } catch {
+  const backend = getStorageBackend();
+  if (!backend || backend.name !== "local") {
+    // A `/uploads/...` URL only means anything while local disk is the backend.
+    // If it is not, those URLs belong to a different origin and returning 404 is
+    // the honest answer — the object's real URL is what the CMS stores now.
     return notFound();
   }
 
-  // Directories and symlinks are refused. A symlink could otherwise point
-  // outside the upload directory, so the real path is re-checked for
-  // containment before a single byte is read.
-  if (!info.isFile()) return notFound();
-
+  let object;
   try {
-    const real = await realpath(absolute);
-    const root = await realpath(uploadsDir()).catch(() => uploadsDir());
-    if (real !== path.join(root, file)) return notFound();
-  } catch {
+    object = await backend.get(file);
+  } catch (error) {
+    console.error(`[uploads] GET /uploads/${file} failed:`, error);
     return notFound();
   }
 
-  const stream = createReadStream(absolute);
-  return new Response(Readable.toWeb(stream) as ReadableStream, {
-    headers: {
-      "Content-Type": type,
-      "Content-Length": String(info.size),
-      "Cache-Control": CACHE_CONTROL,
-      "X-Content-Type-Options": "nosniff",
-    },
-  });
+  if (!object) return notFound();
+
+  const headers: Record<string, string> = {
+    "Content-Type": object.contentType,
+    "Cache-Control": CACHE_CONTROL,
+    "X-Content-Type-Options": "nosniff",
+  };
+  if (typeof object.size === "number") headers["Content-Length"] = String(object.size);
+  if (object.etag) headers.ETag = object.etag;
+
+  return new NextResponse(object.body, { headers });
 }
 
 function notFound() {

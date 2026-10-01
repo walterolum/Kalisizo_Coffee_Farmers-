@@ -21,7 +21,6 @@ async function main() {
   `;
 
   const { readdirSync, existsSync } = await import("node:fs");
-  const { join } = await import("node:path");
 
   const onDisk = existsSync("prisma/migrations")
     ? readdirSync("prisma/migrations", { withFileTypes: true })

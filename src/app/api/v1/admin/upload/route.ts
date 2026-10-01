@@ -1,21 +1,21 @@
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
 import { NextResponse } from "next/server";
 import { broadcastRealtimeUpdate } from "@/lib/realtime-server";
-import { v2 as cloudinary } from "cloudinary";
 import { adminRateLimit, requirePermission } from "@/lib/admin-guard";
 import { sniffImageType } from "@/lib/image-sniff";
-import {
-  imageExtensionFor,
-  localUploadsEnabled,
-  newUploadName,
-  publicUrlFor,
-  uploadsDir,
-} from "@/lib/upload-storage";
+import { newUploadName } from "@/lib/upload-storage";
+import { getStorageBackend, storageStatus } from "@/lib/storage";
 
 const ACCEPTED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 const MAX_BYTES = 8 * 1024 * 1024; // 8 MB
 
+/**
+ * Accepts an image and hands it to the configured storage backend.
+ *
+ * Validation stays in this route rather than moving behind the storage
+ * interface, so there is exactly one place that decides what is an acceptable
+ * upload regardless of which backend is configured. The backends deliberately
+ * receive bytes that are already known to be an image of the declared type.
+ */
 export async function POST(req: Request) {
   const guard = await requirePermission(req, "manageMedia");
   if ("response" in guard) return guard.response;
@@ -72,77 +72,6 @@ export async function POST(req: Request) {
     );
   }
 
-  const folder = `kalisizo-coffee/${user.role === "EDITOR" ? "editor" : "admin"}`;
-
-  const cloudName = process.env.CLOUDINARY_CLOUD_NAME?.trim();
-  const cloudKey = process.env.CLOUDINARY_API_KEY?.trim();
-  const cloudSecret = process.env.CLOUDINARY_API_SECRET?.trim();
-
-  if (cloudName && cloudKey && cloudSecret) {
-    cloudinary.config({
-      cloud_name: cloudName,
-      api_key: cloudKey,
-      api_secret: cloudSecret,
-    });
-
-    const result = await new Promise<{
-      secureUrl: string;
-      publicId: string;
-    } | null>((resolve) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { folder, resource_type: "image" },
-        (error, uploaded) => {
-          if (error || !uploaded) {
-            console.error("[api] POST /api/v1/admin/upload (cloudinary):", error);
-            resolve(null);
-            return;
-          }
-          resolve({ secureUrl: uploaded.secure_url, publicId: uploaded.public_id });
-        }
-      );
-      stream.end(buffer);
-    });
-
-    if (!result) {
-      return NextResponse.json(
-        { error: "upload_failed", message: "Cloud upload failed. Try again." },
-        { status: 502 }
-      );
-    }
-    try { broadcastRealtimeUpdate(); } catch {}
-    return NextResponse.json({
-      url: result.secureUrl,
-      publicId: result.publicId,
-      provider: "cloudinary",
-    });
-  }
-
-  // Local disk storage. This is the development path and the fallback for a
-  // self-hosted server with a persistent filesystem. Uploads are written outside
-  // `public/` and served by the `/uploads/[file]` route, because `public/` is
-  // resolved from a file list captured at server start and would 404 until the
-  // process restarted.
-  if (!localUploadsEnabled()) {
-    console.error(
-      "[api] POST /api/v1/admin/upload: no upload backend configured for production."
-    );
-    return NextResponse.json(
-      {
-        error: "upload_unavailable",
-        message:
-          "File uploads are not configured. Set the CLOUDINARY_* variables, or set ALLOW_LOCAL_UPLOADS=true on a server with a persistent filesystem.",
-      },
-      { status: 503 }
-    );
-  }
-
-  const ext = imageExtensionFor(file.type);
-  if (!ext) {
-    return NextResponse.json(
-      { error: "validation", message: "Unsupported file type." },
-      { status: 400 }
-    );
-  }
   const name = newUploadName(file.type);
   if (!name) {
     return NextResponse.json(
@@ -151,19 +80,60 @@ export async function POST(req: Request) {
     );
   }
 
-  const dir = uploadsDir();
-  await mkdir(dir, { recursive: true });
-  await writeFile(path.join(dir, name), buffer);
+  const backend = getStorageBackend();
+  if (!backend) {
+    // Name the missing configuration rather than failing somewhere inside a
+    // write. This is the response a deployment with no storage configured gets.
+    const status = storageStatus();
+    console.error(
+      "[api] POST /api/v1/admin/upload: no storage backend configured.",
+      status
+    );
+    return NextResponse.json(
+      {
+        error: "upload_unavailable",
+        message: status.problem
+          ? `File uploads are not available. ${status.problem}`
+          : "File uploads are not configured on this server.",
+      },
+      { status: 503 }
+    );
+  }
 
-  try { broadcastRealtimeUpdate(); } catch {}
-  console.warn(
-    `[api] POST /api/v1/admin/upload: stored ${name} on local disk at ${dir}. ` +
-      "Set the CLOUDINARY_* variables to move media off this server."
-  );
+  const folder = `kalisizo-coffee/${user.role === "EDITOR" ? "editor" : "admin"}`;
+
+  let stored;
+  try {
+    stored = await backend.put({
+      key: name,
+      body: buffer,
+      contentType: file.type,
+      folder,
+    });
+  } catch (error) {
+    console.error(
+      `[api] POST /api/v1/admin/upload (${backend.name}) failed:`,
+      error
+    );
+    return NextResponse.json(
+      { error: "upload_failed", message: "Upload failed. Please try again." },
+      { status: 502 }
+    );
+  }
+
+  try {
+    broadcastRealtimeUpdate();
+  } catch {
+    /* realtime is best-effort and must not fail the upload */
+  }
+
   return NextResponse.json({
-    url: publicUrlFor(name),
-    fileName: name,
-    provider: "local",
+    // `url` is the field the CMS persists and renders. It must keep working for
+    // content stored before this change, which is why the local backend still
+    // returns a `/uploads/...` path.
+    url: stored.url,
+    key: stored.key,
+    provider: backend.name,
   });
 }
 
