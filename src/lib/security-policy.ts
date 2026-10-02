@@ -102,6 +102,67 @@ export type RemoteImagePattern = {
 };
 
 /**
+ * The origins the API will answer cross-origin browser requests for.
+ *
+ * Lives here rather than inline in `next.config.ts` for the same reason the CSP
+ * does: `next.config.ts` reads `process.env` at module scope, so asserting on it
+ * directly means scraping a child process's stdout, which tests the scraper at
+ * least as much as the policy.
+ *
+ * Browsers only mirror a single origin back, or `*`. For a multi-origin setup
+ * there is no way to express "these three, and only these three", so this serves
+ * `*` and relies on the API being token-authenticated.
+ *
+ * That reliance is worth stating plainly rather than inheriting quietly. It holds
+ * because the API uses bearer tokens and never cookies, so a cross-origin request
+ * arrives without credentials and cannot be replayed as the signed-in user. The
+ * moment sessions move to cookies it stops holding, and `*` is not permitted
+ * alongside credentials. The Supabase Auth migration is the change that makes this
+ * true, so it is flagged for that work rather than left for someone to discover.
+ */
+export function resolveAllowedOrigins(
+  env: Record<string, string | undefined> = process.env
+): { origins: string[]; allowOrigin: string; warning: string | null } {
+  // `??` alone is not enough. An unset variable and a variable set to "" are two
+  // different mistakes, and only the second one is dangerous: "" splits to an
+  // empty list, which the rule below would turn into `*` — so a trailing `=` in
+  // the env file would open the API to every origin, while deleting the line
+  // entirely closes it to all but localhost. The blank case has to be the same
+  // mistake with the same outcome.
+  // Parse the variable as given. Applying the default first would make every
+  // unconfigured case look configured, and the warning below could then never
+  // fire — the "did you forget it?" signal is derived from what was actually set.
+  const origins = (env.ALLOWED_ORIGINS ?? "")
+    .split(",")
+    .map((o) => o.trim())
+    .filter(Boolean);
+
+  // Nothing survived: unset, empty, or nothing but separators. All three are the
+  // same mistake, so they get the same outcome. The check is on the *parsed*
+  // list rather than the raw string, because `" , "` is non-blank yet yields no
+  // origins, and treating that as configured would be the asymmetry this guards.
+  const configured = origins.length > 0;
+  const effective = configured ? origins : ["http://localhost:3000"];
+
+  return {
+    origins: effective,
+    allowOrigin: effective.length === 1 ? effective[0] : "*",
+    // The default names a host unrelated to most deployments, which fails closed
+    // and correctly, but silently: a cross-origin fetch is refused with an opaque
+    // network error that never names the variable at fault. `docker-compose.yml`
+    // sets ALLOWED_ORIGINS correctly, so the shipping path is unaffected — this
+    // exists for anyone deploying the standalone bundle some other way.
+    warning:
+      env.NODE_ENV === "production" && !configured
+        ? "ALLOWED_ORIGINS is not set to any origin, so the API will answer with " +
+          `'Access-Control-Allow-Origin: ${effective[0]}'. Same-origin use is ` +
+          "unaffected, but every cross-origin client will be blocked. Set " +
+          "ALLOWED_ORIGINS to the comma-separated browser origins that need API access."
+        : null,
+  };
+}
+
+/**
  * Hosts `next/image` may optimise.
  *
  * Cloudinary stays regardless, because it is the current upload backend and the

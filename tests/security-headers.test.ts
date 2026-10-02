@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildContentSecurityPolicy,
   buildRemoteImagePatterns,
+  resolveAllowedOrigins,
   supabaseHost,
 } from "@/lib/security-policy";
 
@@ -229,6 +230,97 @@ describe("buildRemoteImagePatterns", () => {
     for (const pattern of buildRemoteImagePatterns(CONFIGURED)) {
       expect(pattern.protocol).toBe("https");
       expect(pattern.pathname).toBe("/**");
+    }
+  });
+});
+
+/**
+ * The CORS origin the API advertises.
+ *
+ * The property that matters is the one that is easy to break by accident: a
+ * deployment that forgets `ALLOWED_ORIGINS` gets a header naming
+ * `localhost:3000`, which fails closed — correct, and completely silent. The only
+ * symptom is a cross-origin request refused with an opaque browser error that
+ * never mentions the variable at fault. `docker-compose.yml` sets it, so the
+ * shipping path is fine; anyone running the standalone bundle elsewhere is the one
+ * who needs to be told. Hence the warning, asserted below.
+ */
+describe("resolveAllowedOrigins", () => {
+  it("advertises the single configured origin verbatim", () => {
+    const result = resolveAllowedOrigins({
+      ALLOWED_ORIGINS: "https://kalisizo.coffee",
+    });
+
+    // A browser mirrors the response origin back only if it matches exactly, so
+    // this string has to survive the round trip unchanged.
+    expect(result.allowOrigin).toBe("https://kalisizo.coffee");
+  });
+
+  it("trims whitespace and drops empty entries", () => {
+    const result = resolveAllowedOrigins({
+      ALLOWED_ORIGINS: " https://kalisizo.coffee , ,https://www.kalisizo.coffee ",
+    });
+
+    expect(result.origins).toEqual([
+      "https://kalisizo.coffee",
+      "https://www.kalisizo.coffee",
+    ]);
+  });
+
+  it("serves '*' for a multi-origin setup", () => {
+    // There is no way to express "these two, and only these two" in
+    // `Access-Control-Allow-Origin`, so this is a deliberate trade: the API is
+    // token-authenticated and cookie-free, so a cross-origin call arrives
+    // unauthenticated and cannot act as the signed-in user. Sessions moving to
+    // cookies invalidates this, which is why the reasoning lives next to the code.
+    const result = resolveAllowedOrigins({
+      ALLOWED_ORIGINS: "https://kalisizo.coffee,https://www.kalisizo.coffee",
+    });
+
+    expect(result.allowOrigin).toBe("*");
+  });
+
+  it("fails closed to the local default when unset", () => {
+    const result = resolveAllowedOrigins({});
+
+    expect(result.origins).toEqual(["http://localhost:3000"]);
+    expect(result.allowOrigin).toBe("http://localhost:3000");
+  });
+
+  it("warns in production when unset, and names the variable", () => {
+    const result = resolveAllowedOrigins({ NODE_ENV: "production" });
+
+    // The warning is the whole point: without it this misconfiguration is
+    // invisible until a browser refuses a request.
+    expect(result.warning).toBeTruthy();
+    expect(result.warning).toContain("ALLOWED_ORIGINS");
+  });
+
+  it("stays silent in production when the variable is set", () => {
+    expect(
+      resolveAllowedOrigins({
+        NODE_ENV: "production",
+        ALLOWED_ORIGINS: "https://kalisizo.coffee",
+      }).warning
+    ).toBeNull();
+  });
+
+  it("stays silent outside production, so local dev is not nagged", () => {
+    expect(resolveAllowedOrigins({ NODE_ENV: "development" }).warning).toBeNull();
+  });
+
+  it("treats a blank value as unset rather than as a wildcard", () => {
+    // The dangerous asymmetry this guards: `""` splits to an empty list, and an
+    // empty list would otherwise fall through to `*`. So a trailing `=` in the
+    // env file would open the API to every origin, while deleting the line
+    // entirely closes it to all but localhost. Same mistake, opposite security
+    // posture, purely from how it was typed.
+    for (const blank of ["", "   ", " , "]) {
+      const result = resolveAllowedOrigins({ NODE_ENV: "production", ALLOWED_ORIGINS: blank });
+
+      expect(result.allowOrigin).not.toBe("*");
+      expect(result.origins).toEqual(["http://localhost:3000"]);
+      expect(result.warning).toBeTruthy();
     }
   });
 });

@@ -2,21 +2,18 @@ import type { NextConfig } from "next";
 import {
   buildContentSecurityPolicy,
   buildRemoteImagePatterns,
+  resolveAllowedOrigins,
 } from "./src/lib/security-policy";
 
-const allowedOrigins = (process.env.ALLOWED_ORIGINS ?? "http://localhost:3000")
-  .split(",")
-  .map((o) => o.trim())
-  .filter(Boolean);
+// Resolved, and the reasoning recorded, in `security-policy.ts` so it can be
+// tested directly — see the note on `resolveAllowedOrigins` about why `*` is
+// safe here today and what would invalidate it.
+const { allowOrigin: accessControlAllowOrigin, warning: corsWarning } =
+  resolveAllowedOrigins();
 
-// Browsers only mirror a single origin (or "*"). For multi-origin setups we
-// intentionally serve "*" — the API uses bearer tokens, never cookies, so
-// "*" is safe here.
-//
-// Note for the Supabase Auth migration: this stops being true the moment sessions
-// move to cookies, because "*" is not allowed with credentials. Re-evaluate this
-// line as part of that change rather than inheriting it.
-const accessControlAllowOrigin = allowedOrigins.length === 1 ? allowedOrigins[0] : "*";
+if (corsWarning) {
+  console.warn(`[next.config] ${corsWarning}`);
+}
 
 const apiHeaders = [
   { key: "Access-Control-Allow-Origin", value: accessControlAllowOrigin },
