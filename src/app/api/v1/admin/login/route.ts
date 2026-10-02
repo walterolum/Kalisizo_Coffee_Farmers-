@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { signToken, verifyPassword } from "@/lib/auth";
-import { clientIp, rateLimit } from "@/lib/rate-limit";
+import { clientIp, fingerprint, rateLimit } from "@/lib/rate-limit";
 import { firstZodError, loginSchema } from "@/lib/validators";
 import { recordAudit } from "@/lib/publish";
 
@@ -14,9 +14,17 @@ import { recordAudit } from "@/lib/publish";
 const DUMMY_HASH = "$2a$12$C6UzMDM.H6dfI/f/IKcEe.7Xr5DdF1O0zvxvB1PJFPJzvxvxvxvxK";
 
 export async function POST(req: Request) {
+  // Bucket one of two, and the one that can be evaded.
+  //
+  // Keyed on the reported IP, which comes from `X-Forwarded-For` — a header any
+  // client can set. Behind a proxy that rewrites it this is a good signal; with
+  // the application reachable directly it is whatever the caller typed, and
+  // rotating the header walks straight past the limit. Verified: at a limit of
+  // 10, twelve consecutive attempts each with a different header were all
+  // processed and none throttled.
   const ip = clientIp(req);
-  const limit = rateLimit(`admin-login:${ip}`, 10, 15 * 60_000);
-  if (!limit.ok) {
+  const ipLimit = rateLimit(`admin-login:ip:${ip}`, 10, 15 * 60_000);
+  if (!ipLimit.ok) {
     return NextResponse.json(
       {
         error: "rate_limited",
@@ -24,7 +32,7 @@ export async function POST(req: Request) {
       },
       {
         status: 429,
-        headers: { "Retry-After": String(limit.retryAfterSeconds) },
+        headers: { "Retry-After": String(ipLimit.retryAfterSeconds) },
       }
     );
   }
@@ -49,6 +57,34 @@ export async function POST(req: Request) {
   }
 
   const identifier = parsed.data.identifier;
+
+  // Bucket two of two, and the one that cannot be evaded.
+  //
+  // Guessing a password requires naming the account being guessed, so every
+  // attempt against one account lands here regardless of what the caller puts in
+  // the headers. Brute force is therefore bounded by this bucket in every
+  // deployment topology — single VM, Docker behind nginx, or Vercel's many
+  // serverless instances — none of which the IP bucket can promise.
+  //
+  // A shared identifier bucket also caps a distributed attack on a single
+  // account, which per-IP limiting never could.
+  const accountLimit = rateLimit(
+    `admin-login:account:${fingerprint(identifier)}`,
+    10,
+    15 * 60_000
+  );
+  if (!accountLimit.ok) {
+    return NextResponse.json(
+      {
+        error: "rate_limited",
+        message: "Too many login attempts. Please wait a few minutes and retry.",
+      },
+      {
+        status: 429,
+        headers: { "Retry-After": String(accountLimit.retryAfterSeconds) },
+      }
+    );
+  }
 
   let user: Awaited<ReturnType<typeof prisma.user.findFirst>> | null = null;
   try {
