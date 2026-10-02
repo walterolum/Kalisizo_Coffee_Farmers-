@@ -2,6 +2,12 @@
 
 Production deployment for the Kalisizo Coffee Cooperative website and CMS.
 
+> **Choosing where to host?** [HOSTING.md](./HOSTING.md) compares the options with
+> costs, explains why Vercel does not fit this app, documents the intended
+> `frontend/` / `backend/` / `shared/` code layout, and covers database topology.
+> This document assumes you have already made that choice and covers the
+> operational side only.
+
 The recommended target is **one Linux server running Docker Compose**, which is
 what the `Dockerfile` and `docker-compose.yml` in this repository implement. A
 bare-metal Node server works too and is covered in §9.

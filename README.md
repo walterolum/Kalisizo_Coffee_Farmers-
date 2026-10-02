@@ -164,7 +164,7 @@ src/lib/realtime.ts         Client poll/SSE subscription used by the admin panel
 src/lib/upload-storage.ts   Upload paths, filename allowlist and the production gate
 tests/                      Vitest unit tests
 deploy/                     Dockerfile targets, Caddyfile, deploy and backup scripts
-docs/                       CMS, deployment and backup guides
+docs/                       CMS, hosting, deployment and backup guides
 ```
 
 Public pages are React Server Components that read the database directly through
