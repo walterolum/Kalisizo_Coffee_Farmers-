@@ -75,3 +75,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Generated PDF render of the docs/ markdown. Not source: it is produced from
+# docs/*.md, so it duplicates content already tracked and goes stale the moment
+# a doc changes. Commit the markdown and regenerate the PDF on demand instead.
+docs/*.pdf
