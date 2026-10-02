@@ -1,0 +1,166 @@
+# Deploys to the production VPS on every push to main.
+#
+# The heavy lifting is already done by deploy/deploy.sh: it validates .env, rejects
+# a URL-unsafe POSTGRES_PASSWORD, then runs build -> migrate -> start and
+# health-checks the result. This workflow's only job is to decide WHEN that runs
+# and to get the commit onto the server.
+#
+# Two decisions worth knowing about:
+#
+# 1. `.env` is NOT a GitHub secret. It lives only on the VPS. The workflow SSHes
+#    in and runs deploy.sh, which reads the server's own .env. Rotating a secret
+#    is then a `ssh server vim .env` with no GitHub change, and there is one copy
+#    of the production configuration instead of two that can drift.
+#
+# 2. No third-party actions. The only `uses:` entries are GitHub's own checkout and
+#    setup-node. Everything else is the runner's built-in ssh client, so there is no
+#    outside code between a commit and the production host. They are pinned to
+#    major-version tags rather than SHAs; pinning `actions/checkout@<sha>` is the
+#    stricter option if you want the tag itself to be immutable.
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Never let two deploys overlap. Without this, two pushes in quick succession
+# produce two concurrent `docker compose up` calls against the same host, and the
+# loser can roll the container back to an older image mid-migration.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Read from .nvmrc rather than restating a version, so the CI runner, the
+      # local machine and the Dockerfile cannot drift apart.
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      # No database service. All 413 tests mock the Prisma client and the suite
+      # passes with DATABASE_URL unset - verified by running it with the variable
+      # emptied. Standing up Postgres here would add a container pull and boot for
+      # a database nothing connects to.
+      - name: Test
+        run: npm test
+
+      # JWT_SECRET is genuinely required here, and this is not obvious. src/lib/auth.ts
+      # calls resolveJwtSecret() at module scope, and it throws when NODE_ENV is
+      # production and the secret is unset - which is exactly what `next build` sets.
+      # Confirmed by building with .env moved aside: it fails on that check. The
+      # value below is a build-time placeholder that never signs a real token; the
+      # server's own .env supplies the real secret to the running container.
+      #
+      # Nothing else is needed. Every page is dynamically rendered (all routes show
+      # as dynamic in the build output, not prerendered), so the build never queries
+      # the database. Verified by building with DATABASE_URL pointed at a dead port.
+      - name: Build
+        env:
+          JWT_SECRET: ci-build-placeholder-not-a-real-secret-000000000000
+        run: npm run build
+
+  deploy:
+    name: Deploy to production
+    needs: verify
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      # The key is generated per job and never written to the repository. The
+      # private half exists only in this runner's filesystem, for this job.
+      - name: Configure SSH
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_SSH_KNOWN_HOSTS: ${{ secrets.VPS_SSH_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$VPS_SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Deploy
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_SSH_PORT: ${{ secrets.VPS_SSH_PORT }}
+        run: |
+          set -euo pipefail
+          PORT="${VPS_SSH_PORT:-22}"
+
+          # Fail loudly if the host key is missing rather than reaching for
+          # StrictHostKeyChecking=no. That flag is the usual shortcut here and it
+          # accepts any key, which removes the protection against a MITM on the one
+          # path that runs arbitrary code on the production host.
+          if [ ! -s ~/.ssh/known_hosts ]; then
+            echo "error: VPS_SSH_KNOWN_HOSTS secret is empty" >&2
+            exit 1
+          fi
+
+          ssh -i ~/.ssh/id_ed25519 -p "$PORT" \
+            -o BatchMode=yes \
+            -o IdentitiesOnly=yes \
+            -o StrictHostKeyChecking=yes \
+            "${VPS_USER}@${VPS_HOST}" \
+            'set -euo pipefail
+             cd /srv/kalisizo
+             git fetch origin main
+             git checkout --quiet FETCH_HEAD
+             git reset --hard origin/main
+             ./deploy/deploy.sh'
+
+      # deploy.sh already health-checks from inside the container. This one checks
+      # through Caddy over real TLS, from outside, because a container-local check
+      # cannot see a failed certificate, a wrong SITE_DOMAIN, or a proxy that never
+      # started - all of which present as a healthy container serving a site nobody
+      # can reach. Retried, because Caddy needs a few seconds to obtain a
+      # certificate on a first deploy after DNS changes.
+      - name: Verify the site is reachable over TLS
+        env:
+          SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 20); do
+            code="$(curl -s -o /dev/null -w '%{http_code}' "$SITE_URL/api/v1/health" || true)"
+            if [ "$code" = "200" ]; then
+              echo "health 200 after ${i} attempt(s)"
+              curl -fsS "$SITE_URL/api/v1/health"
+              echo
+              exit 0
+            fi
+            echo "attempt ${i}: HTTP ${code:-none}, retrying"
+            sleep 6
+          done
+          echo "error: site never became healthy at $SITE_URL" >&2
+          exit 1
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Deploy \`${GITHUB_SHA::7}\`"
+            echo
+            echo "- branch: \`${GITHUB_REF_NAME}\`"
+            echo "- triggered by: @${GITHUB_ACTOR}"
+            echo "- result: ${{ job.status }}"
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -511,22 +511,114 @@ time on the content, which is what this site is for.
 
 ---
 
-## 10. One thing to fix before you deploy
+## 10. Automated deploys from GitHub
 
-Local Node is **v25.9.0**; Docker runs **node:22**. There is no `.nvmrc` and no
-`engines` field, so nothing pins it.
+`.github/workflows/deploy.yml` deploys on every push to `main`:
 
-Everything passes on both today. But a Node 23+ behaviour change would pass on
-your machine and fail in production — on the one server that holds both the site
-and its only backups. Pin it:
+```
+verify  →  typecheck · lint · 413 tests · build      (a failed gate blocks the deploy)
+deploy  →  SSH in · git reset --hard origin/main · ./deploy/deploy.sh
+        →  curl the site over real TLS, retrying
+```
+
+`deploy/deploy.sh` already does the real work — validating `.env`, rejecting a
+URL-unsafe `POSTGRES_PASSWORD`, then build → migrate → start → health-check. The
+workflow only decides *when* it runs.
+
+### Three deliberate choices
+
+**`.env` is not a GitHub secret.** It lives only on the VPS. The workflow SSHes in
+and runs `deploy.sh`, which reads the server's own `.env`. Rotating a secret is
+`ssh server vim .env` with no GitHub change, and there is one copy of production
+configuration rather than two that can drift.
+
+**No third-party actions.** The only `uses:` entries are GitHub's own `checkout`
+and `setup-node`. Everything else is the runner's built-in `ssh`, so there is no
+outside code between a commit and the production host.
+
+**The CI build sets a throwaway `JWT_SECRET`.** This is not optional. `auth.ts`
+calls `resolveJwtSecret()` at module scope and it throws when `NODE_ENV` is
+`production` and the secret is unset — which is exactly what `next build` sets.
+Verified: building with `.env` moved aside fails on that check. Nothing else is
+needed; every page is dynamically rendered, so the build never touches the
+database. Verified by building with `DATABASE_URL` pointed at a dead port.
+
+### One-time setup
+
+On the server, create a deploy user and authorise your machine's key:
 
 ```bash
-echo "22" > .nvmrc
+# on the VPS, as root
+adduser --disabled-password --gecos "" deploy
+usermod -aG docker deploy            # so deploy.sh can run docker compose
+install -d -m 700 -o deploy -g deploy /home/deploy/.ssh
+
+# from your machine: generate a key pair dedicated to deployment
+ssh-keygen -t ed25519 -C "github-actions-deploy" -f ~/.ssh/kalisizo_deploy
+
+# back on the VPS, append the public key
+echo "ssh-ed25519 AAAA... github-actions-deploy" >> /home/deploy/.ssh/authorized_keys
+chown deploy:deploy /home/deploy/.ssh/authorized_keys
+chmod 600 /home/deploy/.ssh/authorized_keys
+
+# the VPS must be able to pull the repo
+sudo -u deploy git clone https://github.com/walterolum/Kalisizo_Coffee_Farmers-.git /srv/kalisizo
 ```
 
-```jsonc
-// package.json
-"engines": { "node": ">=22 <23" }
+Then set five repository secrets — **Settings → Secrets and variables → Actions →
+New repository secret**, or with the CLI:
+
+```bash
+gh secret set VPS_HOST            --repo walterolum/Kalisizo_Coffee_Farmers-
+gh secret set VPS_USER            --repo walterolum/Kalisizo_Coffee_Farmers-   # deploy
+gh secret set VPS_SSH_KEY         --repo walterolum/Kalisizo_Coffee_Farmers-   < ~/.ssh/kalisizo_deploy
+gh secret set VPS_SSH_KNOWN_HOSTS --repo walterolum/Kalisizo_Coffee_Farmers-   < ~/.ssh/known_hosts
+gh secret set NEXT_PUBLIC_SITE_URL --repo walterolum/Kalisizo_Coffee_Farmers-  # https://your-domain
 ```
 
-This is a two-line change that removes an entire class of "works on my machine."
+`VPS_SSH_KNOWN_HOSTS` deserves a note. The workflow connects with
+`StrictHostKeyChecking=yes`, so an absent host key is a hard failure rather than a
+`StrictHostKeyChecking=no` that silently accepts anything — which would remove the
+protection against a man-in-the-middle on the one path that executes code on
+production. Refresh it whenever the server is rebuilt:
+
+```bash
+ssh-keyscan -p 22 <server-ip> | gh secret set VPS_SSH_KNOWN_HOSTS --repo walterolum/Kalisizo_Coffee_Farmers-
+```
+
+Also create the **`production` environment** (Settings → Environments) if you want
+GitHub to require approval before a deploy, or to hold environment-scoped secrets.
+
+Then verify by pushing:
+
+```bash
+git commit --allow-empty -m "trigger: test deploy pipeline"
+git push
+```
+
+The run appears under the repo's **Actions** tab. If it fails, the failing step
+names the cause; the deploy job will not touch the server unless `verify` passes.
+
+---
+
+## 11. Node version pinning
+
+Local Node is **v25.9.0**; Docker runs **node:22**. Nothing used to pin that, so a
+Node 23+ behaviour change would have passed on your machine and failed in
+production — on the one server holding both the site and its only backups.
+
+Pinned as of the automated-deploy work:
+
+| File | Value | Purpose |
+|---|---|---|
+| `.nvmrc` | `22` | Single source of truth; read by the CI runner |
+| `package.json` `engines.node` | `>=22` | Floor, not a ceiling — warns on anything older |
+| `Dockerfile` | `FROM node:22-bookworm-slim` | Production runtime |
+
+The `engines` bound is deliberately open-ended. `>=22 <23` would make `npm`
+complain on this machine, which runs 25.9.0, and a warning that fires on every
+local command trains people to ignore it. `>=22` documents the minimum and stays
+quiet on anything newer.
+
+CI reads `.nvmrc` via `node-version-file`, so the runner, the workstation and the
+container now resolve to one number instead of three that can drift.
