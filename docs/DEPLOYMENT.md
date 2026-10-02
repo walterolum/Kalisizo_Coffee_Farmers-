@@ -247,9 +247,36 @@ npm run build
 npm start                     # listens on :3000
 ```
 
+`npm start` does **not** run `next start`. With `output: "standalone"` set in
+`next.config.ts`, `next start` is rejected outright — it prints
+
+```
+⚠ "next start" does not work with "output: standalone" configuration.
+  Use "node .next/standalone/server.js" instead.
+```
+
+and exits. `npm start` instead runs `scripts/start-standalone.mjs`, which performs
+the copies `next build` does not make and then execs the generated server:
+
+| From | To | Why |
+| --- | --- | --- |
+| `public/` | `.next/standalone/public/` | static files; never traced |
+| `.next/static/` | `.next/standalone/.next/static/` | JS/CSS chunks; never traced |
+| `node_modules/.prisma`, `@prisma/client` | `.next/standalone/node_modules/` | Prisma query engine, when the trace misses it |
+
+Skipping those copies produces a **deceptive** failure, which is why they are done
+automatically rather than documented as a step to remember. The server starts, the
+homepage returns 200, and `/api/v1/health` passes — while every stylesheet, script
+and image 404s. Health checks and uptime monitors see a healthy service; a visitor
+sees an unstyled page.
+
+On Docker none of this is manual: the image's `runner` stage performs the same
+three copies and `CMD` is `node server.js`.
+
 Put nginx or Caddy in front for TLS, and set `UPLOAD_DIR` to a persistent path.
-`output: "standalone"` in `next.config.ts` is additive; `next start` reads the
-same build.
+When running the standalone bundle outside Docker, `UPLOAD_DIR` must be an absolute
+path: `server.js` runs with its working directory set to `.next/standalone`, so the
+relative default `data/uploads` resolves inside the bundle and uploads 404.
 
 Vercel and other serverless platforms need three changes first: set the
 `CLOUDINARY_*` variables (local uploads return 503), accept truncated SSE

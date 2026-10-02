@@ -61,7 +61,14 @@ const nextConfig: NextConfig = {
   // Emit `.next/standalone`, a self-contained server bundle with only the
   // node_modules actually reached at build time. The Docker runtime stage copies
   // this instead of `node_modules`, which is what keeps the final image small.
-  // A file/CLI deployment is unaffected: `next start` reads the same build.
+  //
+  // `next start` is NOT an alternative entry point once this is set. Next.js
+  // rejects it: "next start does not work with output: standalone
+  // configuration". `npm start` therefore runs `scripts/start-standalone.mjs`,
+  // which performs the copies the build omits (public/, .next/static/, the
+  // Prisma engine) and then execs the generated server.js. An earlier version of
+  // this comment claimed `next start` read the same build; it does not, which is
+  // why the wrong entry point survived as long as it did.
   output: "standalone",
   images: {
     // Allow the arbitrary quality values used by <Image> across the site.
