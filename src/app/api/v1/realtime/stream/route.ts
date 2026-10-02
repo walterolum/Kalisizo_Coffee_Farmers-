@@ -21,7 +21,41 @@ export const runtime = "nodejs";
  * costs a Set entry and a heartbeat timer, and EventSource reconnects on its
  * own, so an open endpoint is an easy way to run the server out of descriptors.
  */
-const CONNECTIONS_PER_IP = 6;
+/**
+ * Connection attempts allowed per IP per minute.
+ *
+ * This was 6, which is below the floor of ordinary use and refused real
+ * visitors. The client opens exactly one EventSource per page load
+ * (`realtime-singleton.test.ts` pins that), so the budget is spent one per page
+ * viewed. The site has eleven public pages: someone reading their way through it,
+ * or using back/forward and the odd refresh, spends twenty or thirty in a minute
+ * without doing anything unusual. Past the sixth, every further page came back
+ * 429.
+ *
+ * The failure was silent and sticky. `EventSource` only auto-reconnects when the
+ * server closes a stream that was already open; per the HTML spec a non-200
+ * response such as 429 fails the connection outright and the browser does not
+ * retry. So the seventh page view turned live updates off for that tab and left
+ * them off, with nothing on screen to say so — the page looked correct and simply
+ * stopped reflecting an editor's changes. A refresh usually did not fix it
+ * either, because the window still had budget left to burn.
+ *
+ * Raising the ceiling does not weaken the protection that matters, because this
+ * counter was never what stood between an attacker and the server. The
+ * concurrent cap in the broadcaster is: `MAX_CLIENTS` in
+ * `realtime-transport/sse.ts`, which counts connections actually held open —
+ * precisely the resource this endpoint spends — and still refuses with a 503.
+ * That one is covered by `realtime-client-cap.test.ts`.
+ *
+ * What remains here is an attempts-per-window brake on connect/disconnect churn,
+ * which a concurrent cap does not cover. It is deliberately the looser of the
+ * two controls: it should never be the one that turns away a real visitor.
+ *
+ * Per-IP is still the wrong instrument for a shared address — an office behind
+ * one NAT, or a mobile carrier collapsing many subscribers into a single IP —
+ * and no value of this constant fixes that.
+ */
+const CONNECTIONS_PER_IP = 30;
 const CONNECT_WINDOW_MS = 60_000;
 
 export async function GET(req: Request) {
