@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
-import { PageHero, EmptyState } from "@/components/PageHero";
-import { Reveal } from "@/components/Reveal";
-import { getPublishedPrograms } from "@/lib/site-content";
-import { SITE_URL } from "@/lib/site";
+import { PageHero, EmptyState } from "@/frontend/components/PageHero";
+import { Reveal } from "@/frontend/components/Reveal";
+import { getPublishedPrograms } from "@/backend/site-content";
+import { SITE_URL } from "@/shared/site";
 
 export const metadata: Metadata = {
   title: "Our Programs",

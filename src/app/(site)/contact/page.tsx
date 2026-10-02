@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { Contact } from "@/components/Contact";
-import { Faq } from "@/components/Faq";
-import { Location } from "@/components/Location";
-import { SITE_URL } from "@/lib/site";
+import { Contact } from "@/frontend/components/Contact";
+import { Faq } from "@/frontend/components/Faq";
+import { Location } from "@/frontend/components/Location";
+import { SITE_URL } from "@/shared/site";
 
 export const metadata: Metadata = {
   title: "Contact Us",

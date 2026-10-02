@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { can, PERMISSIONS, roleLabel, type Permission } from "@/lib/admin-guard";
-import type { AuthUser, UserRole } from "@/lib/auth";
+import { can, PERMISSIONS, roleLabel, type Permission } from "@/backend/admin-guard";
+import type { AuthUser, UserRole } from "@/backend/auth";
 
 /**
  * These assertions encode the role model the cooperative agreed to. They are the

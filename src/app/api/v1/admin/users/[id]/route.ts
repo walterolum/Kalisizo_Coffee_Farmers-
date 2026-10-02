@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { adminRateLimit, requirePermission } from "@/lib/admin-guard";
-import { cmsPasswordResetSchema, cmsUserUpdateSchema, idParamSchema } from "@/lib/validators";
-import { hashPassword, passwordPolicyError } from "@/lib/auth";
-import { badRequest, parseBody, serviceUnavailable } from "@/lib/http";
-import { recordAudit } from "@/lib/publish";
+import { prisma } from "@/backend/prisma";
+import { adminRateLimit, requirePermission } from "@/backend/admin-guard";
+import { cmsPasswordResetSchema, cmsUserUpdateSchema, idParamSchema } from "@/shared/validators";
+import { hashPassword, passwordPolicyError } from "@/backend/auth";
+import { badRequest, parseBody, serviceUnavailable } from "@/shared/http";
+import { recordAudit } from "@/backend/publish";
 
 type Context = { params: Promise<{ id: string }> };
 

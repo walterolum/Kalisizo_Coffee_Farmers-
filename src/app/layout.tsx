@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
-import { ScrollProgress } from "@/components/ScrollProgress";
-import { SITE_URL } from "@/lib/site";
+import { ScrollProgress } from "@/frontend/components/ScrollProgress";
+import { SITE_URL } from "@/shared/site";
 import "./globals.css";
 
 const inter = Inter({

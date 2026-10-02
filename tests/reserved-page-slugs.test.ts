@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import { RESERVED_PAGE_SLUGS, isReservedPageSlug } from "@/lib/reserved-slugs";
-import { slugify, uniqueSlug } from "@/lib/slug";
+import { RESERVED_PAGE_SLUGS, isReservedPageSlug } from "@/shared/reserved-slugs";
+import { slugify, uniqueSlug } from "@/shared/slug";
 
 /**
  * Guards the reserved-slug list against the thing that makes hardcoded lists rot.
@@ -69,7 +69,7 @@ describe("RESERVED_PAGE_SLUGS", () => {
       missing.length
         ? `these routes are not in RESERVED_PAGE_SLUGS: ${missing.join(", ")}.\n` +
             "A CMS page with one of these slugs would shadow the route. Add it to " +
-            "src/lib/reserved-slugs.ts."
+            "src/shared/reserved-slugs.ts."
         : ""
     ).toEqual([]);
   });

@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { broadcastRealtimeUpdate } from "@/lib/realtime-server";
-import { adminRateLimit, requirePermission } from "@/lib/admin-guard";
-import { sniffImageType } from "@/lib/image-sniff";
-import { newUploadName } from "@/lib/upload-storage";
-import { getStorageBackend, storageStatus } from "@/lib/storage";
+import { broadcastRealtimeUpdate } from "@/backend/realtime-server";
+import { adminRateLimit, requirePermission } from "@/backend/admin-guard";
+import { sniffImageType } from "@/shared/image-sniff";
+import { newUploadName } from "@/backend/upload-storage";
+import { getStorageBackend, storageStatus } from "@/backend/storage";
 
 const ACCEPTED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 const MAX_BYTES = 8 * 1024 * 1024; // 8 MB

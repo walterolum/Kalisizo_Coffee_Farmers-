@@ -1,6 +1,6 @@
-import { prisma } from "@/lib/prisma";
-import { serviceUnavailable } from "@/lib/http";
-import { parsePage, parsePageSize, paginate, jsonPage } from "@/lib/paginate";
+import { prisma } from "@/backend/prisma";
+import { serviceUnavailable } from "@/shared/http";
+import { parsePage, parsePageSize, paginate, jsonPage } from "@/shared/paginate";
 
 /** Published announcement archive for the public announcements page. */
 export async function GET(req: Request) {

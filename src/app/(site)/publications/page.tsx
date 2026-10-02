@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Download, FileText } from "lucide-react";
-import { EmptyState, PageHero } from "@/components/PageHero";
-import { Reveal } from "@/components/Reveal";
-import { formatBytes, formatDate } from "@/components/ContentCards";
-import { getPublishedPublications } from "@/lib/site-content";
-import { SITE_URL } from "@/lib/site";
+import { EmptyState, PageHero } from "@/frontend/components/PageHero";
+import { Reveal } from "@/frontend/components/Reveal";
+import { formatBytes, formatDate } from "@/frontend/components/ContentCards";
+import { getPublishedPublications } from "@/backend/site-content";
+import { SITE_URL } from "@/shared/site";
 
 export const metadata: Metadata = {
   title: "Publications & Downloads",

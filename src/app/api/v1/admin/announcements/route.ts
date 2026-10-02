@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
 import type { Prisma } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
-import { adminRateLimit, requirePermission } from "@/lib/admin-guard";
-import { announcementSchema, contentStatusQuery } from "@/lib/validators";
-import { handleContentWrite, includesSoftDeleted } from "@/lib/admin-content";
-import { uniqueSlug } from "@/lib/slug";
-import { parsePage, parsePageSize, paginate, jsonPage } from "@/lib/paginate";
+import { prisma } from "@/backend/prisma";
+import { adminRateLimit, requirePermission } from "@/backend/admin-guard";
+import { announcementSchema, contentStatusQuery } from "@/shared/validators";
+import { handleContentWrite, includesSoftDeleted } from "@/backend/admin-content";
+import { uniqueSlug } from "@/shared/slug";
+import { parsePage, parsePageSize, paginate, jsonPage } from "@/shared/paginate";
 
 /** CMS announcement list, including drafts and expired notices. */
 export async function GET(req: Request) {

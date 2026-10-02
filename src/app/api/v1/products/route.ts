@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import type { Prisma } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
-import { apiCatch } from "@/lib/api-error";
-import { productCategoryQuery } from "@/lib/validators";
+import { prisma } from "@/backend/prisma";
+import { apiCatch } from "@/shared/api-error";
+import { productCategoryQuery } from "@/shared/validators";
 
 export async function GET(req: Request) {
   try {

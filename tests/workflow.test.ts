@@ -6,7 +6,7 @@ import {
   statusHint,
   statusLabel,
   transitionError,
-} from "@/lib/workflow";
+} from "@/shared/workflow";
 
 describe("editorial workflow", () => {
   it("allows the normal forward path", () => {

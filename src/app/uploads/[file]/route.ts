@@ -17,8 +17,8 @@
  */
 
 import { NextResponse } from "next/server";
-import { isStoredName } from "@/lib/upload-storage";
-import { getStorageBackend } from "@/lib/storage";
+import { isStoredName } from "@/backend/upload-storage";
+import { getStorageBackend } from "@/backend/storage";
 
 /** Uploads are immutable: each name is unique and never overwritten. */
 const CACHE_CONTROL = "public, max-age=31536000, immutable";

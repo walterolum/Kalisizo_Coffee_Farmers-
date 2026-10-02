@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { adminRateLimit, requirePermission } from "@/lib/admin-guard";
-import { inquiryStatusQuery } from "@/lib/validators";
+import { prisma } from "@/backend/prisma";
+import { adminRateLimit, requirePermission } from "@/backend/admin-guard";
+import { inquiryStatusQuery } from "@/shared/validators";
 
 export async function GET(req: Request) {
   const guard = await requirePermission(req, "viewCms");

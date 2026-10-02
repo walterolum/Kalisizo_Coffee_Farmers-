@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { buildUrlMap, planUrlRewrite, type UrlRewritePlan } from "@/lib/storage/rewrite";
+import { buildUrlMap, planUrlRewrite, type UrlRewritePlan } from "@/backend/storage/rewrite";
 
 /**
  * Guards the decision logic for repointing stored image URLs.
@@ -169,7 +169,7 @@ describe("buildUrlMap", () => {
 
 describe("rewrite scope", () => {
   it("discovers URL columns from the schema rather than a hard-coded list", async () => {
-    const { URL_COLUMN_SQL } = await import("@/lib/storage/rewrite");
+    const { URL_COLUMN_SQL } = await import("@/backend/storage/rewrite");
 
     // A hard-coded list of 23 columns would silently miss a model added later,
     // and the only symptom would be an image that broke at cutover.
@@ -187,7 +187,7 @@ describe("rewrite scope", () => {
     // look flaky for a reason that had nothing to do with the code under test.
     { timeout: 30_000 },
     async (ctx) => {
-      const { URL_COLUMN_SQL } = await import("@/lib/storage/rewrite");
+      const { URL_COLUMN_SQL } = await import("@/backend/storage/rewrite");
       const { databaseAvailable, disconnectQuietly } = await import(
         "./support/database"
       );
@@ -200,7 +200,7 @@ describe("rewrite scope", () => {
         return ctx.skip();
       }
 
-      const { prisma } = await import("@/lib/prisma");
+      const { prisma } = await import("@/backend/prisma");
       try {
         const columns = await prisma.$queryRawUnsafe<
           Array<{ table_name: string; column_name: string }>

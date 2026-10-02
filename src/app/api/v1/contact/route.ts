@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import type { ContactInquiry } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
-import { sendInquiryNotification } from "@/lib/email";
-import { clientIp, rateLimit } from "@/lib/rate-limit";
-import { contactSchema, firstZodError } from "@/lib/validators";
+import { prisma } from "@/backend/prisma";
+import { sendInquiryNotification } from "@/backend/email";
+import { clientIp, rateLimit } from "@/backend/rate-limit";
+import { contactSchema, firstZodError } from "@/shared/validators";
 
 export async function POST(req: Request) {
   const ip = clientIp(req);

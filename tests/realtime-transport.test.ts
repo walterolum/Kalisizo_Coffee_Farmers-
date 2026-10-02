@@ -20,8 +20,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
  * either side, which is why `realtimeStatus` distinguishes them.
  */
 
-type TransportModule = typeof import("@/lib/realtime-transport");
-type ServerModule = typeof import("@/lib/realtime-server");
+type TransportModule = typeof import("@/backend/realtime-transport");
+type ServerModule = typeof import("@/backend/realtime-server");
 
 const SUPABASE_ENV = [
   "SUPABASE_URL",
@@ -31,12 +31,12 @@ const SUPABASE_ENV = [
 
 async function loadTransport(): Promise<TransportModule> {
   vi.resetModules();
-  return await import("@/lib/realtime-transport");
+  return await import("@/backend/realtime-transport");
 }
 
 async function loadServer(): Promise<ServerModule> {
   vi.resetModules();
-  return await import("@/lib/realtime-server");
+  return await import("@/backend/realtime-server");
 }
 
 const saved = new Map<string, string | undefined>();

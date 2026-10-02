@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import type { Prisma } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
-import { adminRateLimit, requirePermission } from "@/lib/admin-guard";
-import { contentStatusQuery, newsArticleSchema } from "@/lib/validators";
-import { handleContentWrite, includesSoftDeleted } from "@/lib/admin-content";
-import { syncArticleTags } from "@/lib/content";
-import { uniqueSlug } from "@/lib/slug";
-import { parsePage, parsePageSize, paginate, jsonPage } from "@/lib/paginate";
+import { prisma } from "@/backend/prisma";
+import { adminRateLimit, requirePermission } from "@/backend/admin-guard";
+import { contentStatusQuery, newsArticleSchema } from "@/shared/validators";
+import { handleContentWrite, includesSoftDeleted } from "@/backend/admin-content";
+import { syncArticleTags } from "@/backend/content";
+import { uniqueSlug } from "@/shared/slug";
+import { parsePage, parsePageSize, paginate, jsonPage } from "@/shared/paginate";
 
 /** CMS news list — includes drafts so editors can see unpublished work. */
 export async function GET(req: Request) {

@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import type { ContentStatus, Prisma } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
-import { adminRateLimit, requirePermission } from "@/lib/admin-guard";
-import { handleContentWrite, includesSoftDeleted } from "@/lib/admin-content";
-import { serviceSchemaV2 } from "@/lib/validators";
+import { prisma } from "@/backend/prisma";
+import { adminRateLimit, requirePermission } from "@/backend/admin-guard";
+import { handleContentWrite, includesSoftDeleted } from "@/backend/admin-content";
+import { serviceSchemaV2 } from "@/shared/validators";
 
 const LIST_STATUSES = ["DRAFT", "IN_REVIEW", "PUBLISHED", "ARCHIVED"] as const;
 

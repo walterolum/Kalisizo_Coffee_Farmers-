@@ -17,7 +17,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const hash = "$2b$12$C6UzMDM.H6dfI/f/IKcEe.7Xr5DdF1O0zvxvB1PJFPJzvxvxvxvxK";
 
-vi.mock("@/lib/prisma", () => ({
+vi.mock("@/backend/prisma", () => ({
   prisma: {
     user: {
       // An identifier containing "ghost" stands in for an account that does not
@@ -47,7 +47,7 @@ vi.mock("@/lib/prisma", () => ({
 // Every attempt must fail on the password, so the only thing that can change the
 // outcome is the limiter. `verifyPassword` returning false keeps bcrypt out of
 // the test entirely.
-vi.mock("@/lib/auth", () => ({
+vi.mock("@/backend/auth", () => ({
   verifyPassword: vi.fn(async () => false),
   signToken: vi.fn(() => "token"),
   hashPassword: vi.fn(async () => hash),

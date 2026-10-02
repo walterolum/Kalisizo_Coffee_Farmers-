@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/backend/prisma";
 
 /**
  * Whether a real database is reachable from the test run.

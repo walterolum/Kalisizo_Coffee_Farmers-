@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { broadcastRealtimeUpdate } from "@/lib/realtime-server";
-import { getUserFromRequest } from "@/lib/auth";
-import { adminRateLimit } from "@/lib/admin-guard";
+import { broadcastRealtimeUpdate } from "@/backend/realtime-server";
+import { getUserFromRequest } from "@/backend/auth";
+import { adminRateLimit } from "@/backend/admin-guard";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

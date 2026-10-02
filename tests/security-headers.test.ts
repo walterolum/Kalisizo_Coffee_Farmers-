@@ -4,7 +4,7 @@ import {
   buildRemoteImagePatterns,
   resolveAllowedOrigins,
   supabaseHost,
-} from "@/lib/security-policy";
+} from "@/shared/security-policy";
 
 /**
  * Asserts the Content Security Policy opens exactly the Supabase origins the

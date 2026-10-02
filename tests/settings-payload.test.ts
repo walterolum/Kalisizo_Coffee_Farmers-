@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { settingsSchema } from "@/lib/validators";
+import { settingsSchema } from "@/shared/validators";
 
 /**
  * The settings route destructures the keys it handles itself and hands the rest

@@ -18,9 +18,9 @@ function requireEnv(name: string, hint: string): string {
 }
 
 /**
- * Mirrors `passwordPolicyError` in `src/lib/auth.ts`. Duplicated rather than
+ * Mirrors `passwordPolicyError` in `src/backend/auth.ts`. Duplicated rather than
  * imported because this file runs under `tsx` outside the Next.js module graph,
- * and pulling in `src/lib/auth` would evaluate its JWT secret resolution.
+ * and pulling in `src/backend/auth` would evaluate its JWT secret resolution.
  */
 function passwordPolicyError(password: string): string | null {
   if (password.length < 12) return "at least 12 characters";

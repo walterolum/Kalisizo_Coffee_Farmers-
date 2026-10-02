@@ -14,7 +14,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
  * turns that into a 503 rather than accepting the connection.
  */
 
-type ServerModule = typeof import("@/lib/realtime-server");
+type ServerModule = typeof import("@/backend/realtime-server");
 
 const MAX_CLIENTS = 200;
 
@@ -25,7 +25,7 @@ function fakeController() {
 
 async function loadModule(): Promise<ServerModule> {
   vi.resetModules();
-  return await import("@/lib/realtime-server");
+  return await import("@/backend/realtime-server");
 }
 
 /** Clears the module-scoped singleton between tests. */

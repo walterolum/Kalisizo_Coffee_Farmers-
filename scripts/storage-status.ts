@@ -9,8 +9,8 @@
  * Read-only. Exits non-zero when no backend is usable, so it can gate a deploy.
  */
 
-import { storageStatus, preferredBackend, availableBackends } from "@/lib/storage";
-import { uploadsDir, localUploadsEnabled } from "@/lib/upload-storage";
+import { storageStatus, preferredBackend, availableBackends } from "@/backend/storage";
+import { uploadsDir, localUploadsEnabled } from "@/backend/upload-storage";
 
 function main() {
   const status = storageStatus();

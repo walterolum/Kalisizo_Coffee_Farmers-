@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { apiCatch } from "@/lib/api-error";
-import { PUBLIC_WHERE } from "@/lib/workflow";
+import { prisma } from "@/backend/prisma";
+import { apiCatch } from "@/shared/api-error";
+import { PUBLIC_WHERE } from "@/shared/workflow";
 
 export async function GET() {
   try {

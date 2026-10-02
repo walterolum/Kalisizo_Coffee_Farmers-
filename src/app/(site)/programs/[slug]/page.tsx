@@ -3,9 +3,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Check } from "lucide-react";
-import { PageHero } from "@/components/PageHero";
-import { getProgramBySlug } from "@/lib/site-content";
-import { SITE_URL } from "@/lib/site";
+import { PageHero } from "@/frontend/components/PageHero";
+import { getProgramBySlug } from "@/backend/site-content";
+import { SITE_URL } from "@/shared/site";
 
 type PageProps = { params: Promise<{ slug: string }> };
 

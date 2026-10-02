@@ -52,21 +52,21 @@ let updateData: Record<string, unknown> | null = null;
 /** Counts slug lookups, so "did this actually consult the database" is observable. */
 let slugQueries = 0;
 
-vi.mock("@/lib/admin-guard", () => ({
+vi.mock("@/backend/admin-guard", () => ({
   requirePermission: async () => ({ user: ADMIN }),
   adminRateLimit: () => null,
   can: () => true,
   roleLabel: () => "Administrator",
 }));
 
-vi.mock("@/lib/publish", () => ({
+vi.mock("@/backend/publish", () => ({
   recordAudit: async () => {},
   publish: async () => {},
   publishMeta: () => ({ publishedAt: new Date().toISOString(), publishedBy: "Grace N." }),
   assertFresh: async () => null,
 }));
 
-vi.mock("@/lib/prisma", () => {
+vi.mock("@/backend/prisma", () => {
   /** Shared stub: `findUnique` returns the row, `findFirst` answers uniqueness. */
   const makeDelegate = (row: Record<string, unknown>) => ({
     findUnique: async () => row,
@@ -116,7 +116,7 @@ function config() {
 }
 
 async function write(payload: Record<string, unknown>) {
-  const { handleContentWrite } = await import("@/lib/admin-content");
+  const { handleContentWrite } = await import("@/backend/admin-content");
   const req = new Request("https://example.test/api/v1/admin/pages", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -204,7 +204,7 @@ describe("reserved slugs on rename", () => {
     // Only `Page` competes with the hand-written routes. A news article titled
     // "About" lives at /news/about-2 whether we like it or not, because the URL
     // is prefixed — so reserving `about` there would rename content for no reason.
-    const { handleContentWrite } = await import("@/lib/admin-content");
+    const { handleContentWrite } = await import("@/backend/admin-content");
     const newsSchema = z.object({
       id: z.string().optional(),
       title: z.string().min(1).max(200),

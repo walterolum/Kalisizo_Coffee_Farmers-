@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { readSiteSettings } from "@/lib/site-settings";
-import { apiCatch } from "@/lib/api-error";
+import { readSiteSettings } from "@/backend/site-settings";
+import { apiCatch } from "@/shared/api-error";
 
 export async function GET() {
   try {

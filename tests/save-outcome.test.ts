@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { saveOutcome } from "@/lib/save-outcome";
+import { saveOutcome } from "@/shared/save-outcome";
 
 /**
  * The CMS used to report "Published successfully" for every save, whatever the

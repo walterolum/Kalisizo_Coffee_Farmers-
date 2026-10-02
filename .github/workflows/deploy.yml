@@ -65,9 +65,10 @@ jobs:
       - name: Test
         run: npm test
 
-      # JWT_SECRET is genuinely required here, and this is not obvious. src/lib/auth.ts
-      # calls resolveJwtSecret() at module scope, and it throws when NODE_ENV is
-      # production and the secret is unset - which is exactly what `next build` sets.
+      # JWT_SECRET is genuinely required here, and this is not obvious.
+      # src/backend/auth.ts calls resolveJwtSecret() at module scope, and it throws
+      # when NODE_ENV is production and the secret is unset - which is exactly what
+      # `next build` sets.
       # Confirmed by building with .env moved aside: it fails on that check. The
       # value below is a build-time placeholder that never signs a real token; the
       # server's own .env supplies the real secret to the running container.

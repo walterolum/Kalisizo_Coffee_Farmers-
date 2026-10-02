@@ -46,18 +46,18 @@ This is worth stating precisely, because Next.js on Vercel is otherwise the obvi
 default and the migration path looks trivial from the outside. Three things in this
 codebase cannot survive serverless execution:
 
-1. **SSE transport.** `src/lib/realtime-transport/sse.ts` maintains an in-process
+1. **SSE transport.** `src/shared/realtime-transport/sse.ts` maintains an in-process
    `Map` of live clients with a 200-connection cap and a 25-second heartbeat. That
    state exists in one process's memory. Serverless scales by spawning processes,
    so a client connected to instance A is invisible to a publish handled by
    instance B. Live updates would silently stop working — no error, just stale pages.
 
-2. **In-memory rate limiting.** `src/lib/rate-limit.ts` uses a module-scoped `Map`.
+2. **In-memory rate limiting.** `src/backend/rate-limit.ts` uses a module-scoped `Map`.
    Across serverless instances each one gets its own bucket, so the login limiter
    (10 attempts / 15 min) becomes 10 × (number of instances). The rate limit would
    be decorative.
 
-3. **Local disk uploads.** `src/lib/upload-storage.ts` writes to `data/uploads` on
+3. **Local disk uploads.** `src/backend/upload-storage.ts` writes to `data/uploads` on
    the container filesystem. Serverless filesystems are ephemeral — an image
    disappears at the end of the invocation.
 
@@ -101,121 +101,129 @@ simple. §4 gives it to you.
 
 Organized by responsibility, while staying **one application, one build, one
 container**. The folders are a compile-time boundary, not a deployment boundary.
+This section describes the tree as it actually is, not as originally planned.
 
 ```
 kalisizo-coffee/
-│
+|
 ├── src/
-│   │
-│   ├── frontend/                  # code that reaches the browser
-│   │   ├── app/
-│   │   │   ├── (site)/            # 16 public pages
-│   │   │   │   ├── page.tsx               # home
-│   │   │   │   ├── about/                 # static
-│   │   │   │   ├── contact/               # form + validation
-│   │   │   │   ├── gallery/
-│   │   │   │   ├── products/
-│   │   │   │   ├── publications/
-│   │   │   │   ├── search/
-│   │   │   │   ├── news/           # index + [slug]
-│   │   │   │   ├── events/         # index + [slug]
-│   │   │   │   ├── programs/       # index + [slug]
-│   │   │   │   ├── projects/       # index + [slug]
-│   │   │   │   └── p/              # [slug] generic page renderer
-│   │   │   ├── admin/              # CMS shell and client components
-│   │   │   ├── layout.tsx          # root layout: metadata, JSON-LD, skip link
-│   │   │   ├── robots.ts
-│   │   │   ├── sitemap.ts
-│   │   │   └── globals.css
-│   │   ├── components/            # 40 presentational components
-│   │   │   └── admin/
-│   │
-│   ├── backend/                   # server-only. Never imported by the frontend.
-│   │   ├── api/                   # 60 route handlers under v1
-│   │   │   └── v1/
-│   │   │       ├── admin/         # 20 subgroups: login, users, audit, upload,
-│   │   │       │                  #   inquiries, and CRUD per content model
-│   │   │       ├── announcements/ ┐
-│   │   │       ├── categories/    │
-│   │   │       ├── contact/       │
-│   │   │       ├── events/        │  read + write endpoints
-│   │   │       ├── faq/           │  for each public-facing
-│   │   │       ├── gallery/       │  content model
-│   │   │       ├── hero/          │
-│   │   │       ├── leadership/    │
-│   │   │       ├── locations/     │
-│   │   │       ├── news/          │
-│   │   │       ├── products/      │
-│   │   │       ├── projects/      │
-│   │   │       ├── publications/  │
-│   │   │       ├── search/        │
-│   │   │       ├── services/      │
-│   │   │       ├── settings/      │
-│   │   │       ├── stories/       ┘
-│   │   │       ├── realtime/      # SSE stream
-│   │   │       └── health/        # liveness + database reachability
-│   │   ├── uploads/               # GET /uploads/<name> — serves files from the
-│   │   │                          # storage backend, so a new upload resolves
-│   │   │                          # immediately (public/ is a start-time file
-│   │   │                          # list and would 404 it until restart)
-│   │   ├── lib/                   # auth, prisma, permissions, rate-limit,
-│   │   │                          # storage, realtime, email, validators,
-│   │   │                          # security-policy, sanitize, publish, workflow
-│   │   └── server/                # server-only bootstrap and registration
-│   │
-│   └── shared/                    # imported by BOTH sides. The only shared code.
-│       ├── types.ts               # domain types, no behaviour
-│       ├── constants.ts           # enums, limits, site-wide constants
-│       └── validation.ts          # zod schemas, used client and server
-│
+|   |
+|   ├── app/                       # FRONTEND + BACKEND — where Next.js requires it
+|   |   ├── (site)/                # 16 public pages
+|   |   |   ├── page.tsx           #   home
+|   |   |   ├── about/  contact/  gallery/  products/  publications/  search/
+|   |   |   ├── news/              #   index + [slug]
+|   |   |   ├── events/            #   index + [slug]
+|   |   |   ├── programs/          #   index + [slug]
+|   |   |   ├── projects/          #   index + [slug]
+|   |   |   └── p/                 #   [slug] generic page renderer
+|   |   ├── admin/                 # CMS shell and its 31 client components
+|   |   ├── api/v1/                # BACKEND — 60 route handlers
+|   |   |   ├── admin/             #   20 subgroups: login, users, audit, upload,
+|   |   |   |                      #   inquiries, and CRUD per content model
+|   |   |   ├── announcements/  categories/  contact/  events/  faq/
+|   |   |   ├── gallery/  hero/  leadership/  locations/  news/  products/
+|   |   |   ├── projects/  publications/  search/  services/  settings/
+|   |   |   ├── stories/           #   public read + write per content model
+|   |   |   ├── realtime/          #   SSE stream, bump, version
+|   |   |   └── health/            #   liveness + database reachability
+|   |   ├── uploads/[file]/        # GET /uploads/<name> (BACKEND). Reads the
+|   |   |                          # storage backend per request, so a new upload
+|   |   |                          # resolves immediately
+|   |   ├── layout.tsx             # metadata, JSON-LD, skip link
+|   |   ├── robots.ts  sitemap.ts  globals.css
+|   |
+|   ├── frontend/                  # FRONTEND — 40 components
+|   |   └── components/
+|   |       └── admin/             #   CMS panels, one file per screen
+|   |
+|   ├── backend/                   # BACKEND — 19 modules, never client-safe
+|   |   ├── prisma.ts              #   the single database client
+|   |   ├── auth.ts                #   sessions, password hashing, JWT secret
+|   |   ├── admin-guard.ts         #   permission matrix and route guards
+|   |   ├── admin-content.ts       #   shared create/update/delete/restore
+|   |   ├── publish.ts  content.ts  email.ts  rate-limit.ts
+|   |   ├── site-content.ts  site-settings.ts  upload-storage.ts
+|   |   ├── realtime-server.ts     #   the one server entry point for realtime
+|   |   ├── storage/               #   local, cloudinary, supabase + rewrite
+|   |   └── realtime-transport/    #   index + supabase broadcaster
+|   |
+|   └── shared/                    # BOTH sides — 23 modules, no server-only code
+|       ├── workflow.ts            #   status transitions, publish timestamps
+|       ├── permissions.ts         #   the matrix the CMS UI reads
+|       ├── admin-api.ts  admin-fields.ts  api.ts  api-error.ts  http.ts
+|       ├── data.ts  save-outcome.ts  realtime.ts
+|       ├── validators.ts  slug.ts  sanitize.ts  paginate.ts  image-sniff.ts
+|       ├── site.ts  socials.ts  social-design.ts  reserved-slugs.ts
+|       ├── security-policy.ts     #   CSP and allowed origins, read by next.config
+|       ├── realtime-transport/    #   protocol.ts + sse.ts (the contract)
+|       └── storage/types.ts       #   the storage interface
+|
 ├── prisma/                        # DATABASE
-│   ├── schema.prisma              # 23 models, 8 enums
-│   ├── migrations/                # versioned SQL, applied by `migrate deploy`
-│   ├── seed.ts                    # idempotent content seed
-│   └── reset.ts                   # local-only truncation helper
-│
+|   ├── schema.prisma              # 23 models, 8 enums
+|   ├── migrations/                # versioned SQL, applied by `migrate deploy`
+|   ├── seed.ts                    # idempotent content seed
+|   └── reset.ts                   # local-only truncation helper
+|
 ├── deploy/                        # infrastructure
-│   ├── Caddyfile                  # TLS + reverse proxy + security headers
-│   ├── deploy.sh                  # pull, build, migrate, health-check, roll back
-│   └── backup.sh                  # pg_dump + retention
-│
+|   ├── Caddyfile                  # TLS + reverse proxy + security headers
+|   ├── deploy.sh                  # pull, build, migrate, health-check, roll back
+|   └── backup.sh                  # pg_dump + retention
+|
 ├── public/                        # static assets: images, fonts, og.png, favicon
 ├── data/uploads/                  # user-uploaded images (gitignored, backed up)
 ├── scripts/                       # operational tooling
-├── tests/                         # 413 tests / 30 files
+├── tests/                         # 426 tests / 31 files
 ├── docs/
 ├── Dockerfile                     # 4-stage multi-target build
 ├── docker-compose.yml             # app, db, migrate, caddy
 └── next.config.ts
 ```
 
+### Why `src/app/` is not inside `src/frontend/`
+
+Next.js only recognises the App Router at `app/` or `src/app/`. There is no
+configuration to move it, so `src/app/` stays put and holds *both* sides: the
+pages and the route handlers. The split is therefore about the modules, and the
+framework-mandated directory is honestly labelled as mixed rather than forced
+into one side. Everything Next.js let us move did move.
+
 ### The one rule that keeps this honest
 
-> `shared/` must be importable from a React Server Component **and** must contain
-> no server-only code: no Prisma client, no `node:fs`, no secrets, no `process.env`.
+> `shared/` must contain no server-only code: no Prisma client, no `node:fs`, no
+> secrets, no non-public `process.env`. Conversely `backend/` must contain at
+> least one.
 
 If a module needs the database or the filesystem, it belongs in `backend/`. The
 moment Prisma leaks into `shared/`, the boundary stops existing and the split
 becomes cosmetic — which is worse than no split, because it looks correct.
 
-Next.js compiles all three trees into one bundle. The aliases below do not exist
-yet — `tsconfig.json` currently declares only `"@/*": ["./src/*"]`. Extend it so the
-boundary is explicit and the compiler enforces it:
+This is not left to discipline. `tests/module-boundary.test.ts` enforces it, and
+the rule it applies is worth stating precisely:
 
-```jsonc
-// tsconfig.json — replace the existing "paths" block with:
-"paths": {
-  "@/*":         ["./src/*"],
-  "@backend/*":  ["./src/backend/*"],
-  "@frontend/*": ["./src/frontend/*"],
-  "@shared/*":   ["./src/shared/*"]
-}
-```
+> A module is backend-only if it **value-imports** Prisma, a Node builtin, a
+> non-`NEXT_PUBLIC` environment variable, or an auth library — directly or
+> transitively. Type-only imports do not count.
 
-Note the internal prefixing. `src/backend` currently begins with `b`, `src/lib`
-begins with `l` — so no bare-import collision exists today. The `@backend/`
-prefix makes it unambiguous once the tree grows, and gives the move an
-intermediary step that never requires a big-bang rename.
+That last clause is the whole subtlety. `import type { ContentStatus } from
+"@prisma/client"` is erased by TypeScript and creates no runtime edge, so a
+module whose only Prisma contact is a type belongs in `shared/`. Classifying
+those as server-only is how six modules (`admin-api`, `admin-fields`, `realtime`,
+`security-policy`, `site`, `workflow`) were briefly misfiled, with client
+components importing "server-only" code that never touched the server.
+
+The suite also enforces the property that actually matters at runtime: **no
+`"use client"` component may reach `backend/`**, directly or through `shared/`.
+Frontend *server* components reading through `backend/site-content.ts` is normal
+and allowed; client components are the constraint. Getting that check wrong is
+also easy — four CMS panels put a module doc comment above their `"use client"`
+directive, and a naive file-anchored regex silently skipped all four.
+
+Next.js compiles all three trees into one bundle. `tsconfig.json` declares a
+single `"@/*": ["./src/*"]` alias and the code uses `@/backend/...`,
+`@/frontend/...` and `@/shared/...` through it. Extra aliases like `@backend/*`
+were deliberately **not** added: they would give two ways to name the same
+module, and two ways to name something is how a codebase ends up inconsistent.
 
 ### What this structure does not change
 
@@ -516,7 +524,7 @@ time on the content, which is what this site is for.
 `.github/workflows/deploy.yml` deploys on every push to `main`:
 
 ```
-verify  →  typecheck · lint · 413 tests · build      (a failed gate blocks the deploy)
+verify  →  typecheck · lint · 426 tests · build      (a failed gate blocks the deploy)
 deploy  →  SSH in · git reset --hard origin/main · ./deploy/deploy.sh
         →  curl the site over real TLS, retrying
 ```

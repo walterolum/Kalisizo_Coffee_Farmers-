@@ -1,7 +1,7 @@
-import { prisma } from "@/lib/prisma";
-import { serviceUnavailable } from "@/lib/http";
-import { parsePage, parsePageSize, paginate, jsonPage } from "@/lib/paginate";
-import { listProjects } from "@/lib/content";
+import { prisma } from "@/backend/prisma";
+import { serviceUnavailable } from "@/shared/http";
+import { parsePage, parsePageSize, paginate, jsonPage } from "@/shared/paginate";
+import { listProjects } from "@/backend/content";
 
 /** Public project listing. Only PUBLISHED, non-deleted projects are returned. */
 export async function GET(req: Request) {

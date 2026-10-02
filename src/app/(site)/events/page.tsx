@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { EventCard } from "@/components/ContentCards";
-import { EmptyState, PageHero } from "@/components/PageHero";
-import { Reveal } from "@/components/Reveal";
-import { getEventsByTiming } from "@/lib/site-content";
-import { SITE_URL } from "@/lib/site";
+import { EventCard } from "@/frontend/components/ContentCards";
+import { EmptyState, PageHero } from "@/frontend/components/PageHero";
+import { Reveal } from "@/frontend/components/Reveal";
+import { getEventsByTiming } from "@/backend/site-content";
+import { SITE_URL } from "@/shared/site";
 
 export const metadata: Metadata = {
   title: "Events",

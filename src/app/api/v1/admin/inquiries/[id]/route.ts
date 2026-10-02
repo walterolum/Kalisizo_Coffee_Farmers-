@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { requirePermission, adminRateLimit } from "@/lib/admin-guard";
-import { firstZodError, inquiryStatusSchema } from "@/lib/validators";
-import { publish, publishMeta, recordAudit } from "@/lib/publish";
+import { prisma } from "@/backend/prisma";
+import { requirePermission, adminRateLimit } from "@/backend/admin-guard";
+import { firstZodError, inquiryStatusSchema } from "@/shared/validators";
+import { publish, publishMeta, recordAudit } from "@/backend/publish";
 
 type Context = { params: Promise<{ id: string }> };
 

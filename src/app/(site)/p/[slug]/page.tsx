@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { CmsContentPage } from "@/components/CmsContentPage";
-import { getPageBySlug } from "@/lib/site-content";
-import { SITE_URL } from "@/lib/site";
+import { CmsContentPage } from "@/frontend/components/CmsContentPage";
+import { getPageBySlug } from "@/backend/site-content";
+import { SITE_URL } from "@/shared/site";
 
 type PageProps = { params: Promise<{ slug: string }> };
 

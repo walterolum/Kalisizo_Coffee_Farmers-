@@ -1,26 +1,26 @@
-import { Hero, TodayAtCoop } from "@/components/Hero";
-import { Marquee } from "@/components/Marquee";
-import { Announcements } from "@/components/Announcements";
-import { Reveal } from "@/components/Reveal";
+import { Hero, TodayAtCoop } from "@/frontend/components/Hero";
+import { Marquee } from "@/frontend/components/Marquee";
+import { Announcements } from "@/frontend/components/Announcements";
+import { Reveal } from "@/frontend/components/Reveal";
 import {
   ClosingCta,
   ImageStatement,
   Impact,
   Journey,
   StorySplit,
-} from "@/components/Narrative";
-import { MissionVision } from "@/components/MissionVision";
-import { Services } from "@/components/Services";
-import { Products } from "@/components/Products";
-import { Gallery } from "@/components/Gallery";
-import { Leadership } from "@/components/Leadership";
-import { SuccessStories } from "@/components/SuccessStories";
-import { Location } from "@/components/Location";
-import { SocialMedia } from "@/components/SocialMedia";
-import { Faq } from "@/components/Faq";
-import { Contact } from "@/components/Contact";
-import { LatestNews } from "@/components/LatestNews";
-import { getLeadership, getLocations, getProducts } from "@/lib/site-content";
+} from "@/frontend/components/Narrative";
+import { MissionVision } from "@/frontend/components/MissionVision";
+import { Services } from "@/frontend/components/Services";
+import { Products } from "@/frontend/components/Products";
+import { Gallery } from "@/frontend/components/Gallery";
+import { Leadership } from "@/frontend/components/Leadership";
+import { SuccessStories } from "@/frontend/components/SuccessStories";
+import { Location } from "@/frontend/components/Location";
+import { SocialMedia } from "@/frontend/components/SocialMedia";
+import { Faq } from "@/frontend/components/Faq";
+import { Contact } from "@/frontend/components/Contact";
+import { LatestNews } from "@/frontend/components/LatestNews";
+import { getLeadership, getLocations, getProducts } from "@/backend/site-content";
 
 /**
  * Home page.

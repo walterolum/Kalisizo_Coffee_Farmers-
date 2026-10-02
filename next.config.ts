@@ -3,7 +3,7 @@ import {
   buildContentSecurityPolicy,
   buildRemoteImagePatterns,
   resolveAllowedOrigins,
-} from "./src/lib/security-policy";
+} from "@/shared/security-policy";
 
 // Resolved, and the reasoning recorded, in `security-policy.ts` so it can be
 // tested directly — see the note on `resolveAllowedOrigins` about why `*` is
@@ -31,7 +31,7 @@ const isProduction = process.env.NODE_ENV === "production";
 /**
  * Content Security Policy and the `next/image` host allowlist.
  *
- * Both assembled in `src/lib/security-policy.ts` so they can be tested directly.
+ * Both assembled in `src/backend/security-policy.ts` so they can be tested directly.
  * This file reads `process.env` at module scope and only exports a Next-shaped
  * object, so asserting on it here meant scraping a child process's stdout, which
  * tests the scraper at least as much as the policy.

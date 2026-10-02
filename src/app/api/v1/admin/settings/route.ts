@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { adminRateLimit, requirePermission } from "@/lib/admin-guard";
-import { parseBody } from "@/lib/http";
-import { settingsSchema } from "@/lib/validators";
-import { assertFresh, publish, publishMeta, recordAudit } from "@/lib/publish";
-import { ensureCooperativeInfo, readSiteSettings } from "@/lib/site-settings";
-import { matchExistingSocialIds, planSocialWrites } from "@/lib/socials";
+import { prisma } from "@/backend/prisma";
+import { adminRateLimit, requirePermission } from "@/backend/admin-guard";
+import { parseBody } from "@/shared/http";
+import { settingsSchema } from "@/shared/validators";
+import { assertFresh, publish, publishMeta, recordAudit } from "@/backend/publish";
+import { ensureCooperativeInfo, readSiteSettings } from "@/backend/site-settings";
+import { matchExistingSocialIds, planSocialWrites } from "@/shared/socials";
 
 export async function GET(req: Request) {
   const guard = await requirePermission(req, "viewCms");

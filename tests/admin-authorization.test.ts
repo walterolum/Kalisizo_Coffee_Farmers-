@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { isWorkflowModel } from "@/lib/admin-content";
-import { NAV_GROUPS } from "@/components/admin/nav";
+import { isWorkflowModel } from "@/backend/admin-content";
+import { NAV_GROUPS } from "@/frontend/components/admin/nav";
 
 /**
  * Structural checks on the admin navigation and the admin route tree.
@@ -150,9 +150,9 @@ describe("admin client hygiene", () => {
 
   /** Every admin component file, since the panels are being moved out gradually. */
   function adminSources(): string[] {
-    return readdirSync("src/components/admin")
+    return readdirSync("src/frontend/components/admin")
       .filter((f) => f.endsWith(".tsx"))
-      .map((f) => readFileSync(join("src/components/admin", f), "utf8"))
+      .map((f) => readFileSync(join("src/frontend/components/admin", f), "utf8"))
       .concat(source);
   }
 

@@ -133,7 +133,7 @@ is tracked in `docs/CMS-GUIDE.md` §11.
 | **Content Administrator** | All content, publishing, archiving and site settings. No user management |
 | **Editor** | Create and edit drafts, upload media. Cannot publish, archive or change settings |
 
-The permission matrix lives in `src/lib/admin-guard.ts` and is the single source
+The permission matrix lives in `src/backend/admin-guard.ts` and is the single source
 of truth; API routes never re-implement role checks.
 
 ### Editorial workflow
@@ -148,27 +148,53 @@ Administrator action.
 
 ## Architecture notes
 
+The source is organised into four trees, one per runtime concern. `src/app/` keeps
+the paths Next.js requires; everything else is grouped by what it *is* rather than
+by which framework layer it sits in.
+
 ```
-prisma/schema.prisma        Data model
-prisma/migrations/          Ordered SQL migrations
-src/app/(site)/             Public pages (shared header/footer shell)
-src/app/admin/              CMS
-src/app/api/v1/admin/       Authenticated CMS API
-src/app/api/v1/             Public read API
-src/app/uploads/[file]/     Serves locally stored uploads
-src/lib/admin-guard.ts      Permission matrix and route guards
-src/lib/admin-content.ts    Shared create/update/delete/restore handling
-src/lib/workflow.ts         Status transitions and publish timestamps
-src/lib/site-content.ts     Server-side reads for public pages
-src/lib/realtime.ts         Client poll/SSE subscription used by the admin panels
-src/lib/upload-storage.ts   Upload paths, filename allowlist and the production gate
-tests/                      Vitest unit tests
-deploy/                     Dockerfile targets, Caddyfile, deploy and backup scripts
-docs/                       CMS, hosting, deployment and backup guides
+prisma/                      DATABASE — schema, migrations, seed
+  schema.prisma              Data model
+  migrations/                Ordered SQL migrations
+
+src/app/                     FRONTEND + BACKEND, where Next.js requires it
+  (site)/                    Public pages (shared header/footer shell)
+  admin/                     CMS
+  api/v1/admin/              Authenticated CMS API
+  api/v1/                    Public read API
+  uploads/[file]/            Serves locally stored uploads  (backend)
+
+src/frontend/                FRONTEND — React components
+  components/                Public site and CMS panels
+
+src/backend/                 BACKEND — cannot run in a browser
+  admin-guard.ts             Permission matrix and route guards
+  admin-content.ts           Shared create/update/delete/restore handling
+  prisma.ts, auth.ts         Database client and session handling
+  site-content.ts            Server-side reads for public pages
+  upload-storage.ts          Upload paths, filename allowlist, production gate
+  storage/, realtime-transport/   Pluggable storage and realtime backends
+
+src/shared/                  Used from both sides; safe in a client bundle
+  workflow.ts                Status transitions and publish timestamps
+  permissions.ts             The matrix the CMS UI reads to shape its buttons
+  admin-api.ts, realtime.ts  Typed admin fetch layer and the poll/SSE hook
+  validators.ts, slug.ts, sanitize.ts, paginate.ts
+  realtime-transport/        The transport contract shared by both transports
+
+tests/                       Vitest unit tests
+deploy/                      Dockerfile targets, Caddyfile, deploy and backup scripts
+docs/                        CMS, hosting, deployment and backup guides
 ```
 
+The rule is mechanical: `backend/` is whatever value-imports Prisma, a Node
+builtin, a non-`NEXT_PUBLIC` environment variable, or an auth library.
+`shared/` is everything else. It is not a style preference — `tests/module-boundary.test.ts`
+enforces both directions, and fails if a `"use client"` component reaches
+`backend/` or if a browser-safe module is parked there.
+
 Public pages are React Server Components that read the database directly through
-`src/lib/site-content.ts`. Those helpers never throw: if the database is
+`src/backend/site-content.ts`. Those helpers never throw: if the database is
 unavailable a page still renders its chrome with an empty state rather than a
 500.
 
@@ -220,7 +246,7 @@ openssl rand -hex 24   # -> POSTGRES_PASSWORD
 Admin uploads are validated by their actual file contents, not the
 client-declared MIME type, so an HTML or SVG payload cannot be uploaded as
 `image/png` and served from the site's own origin. See
-`src/lib/image-sniff.ts`.
+`src/shared/image-sniff.ts`.
 
 If you add an image host, add it to `images.remotePatterns` in
 `next.config.ts`, otherwise `next/image` will refuse to render it.

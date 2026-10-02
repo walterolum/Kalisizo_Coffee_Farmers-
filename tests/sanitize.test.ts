@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 
-import { isRichTextField, richTextFieldMap, sanitizeRichText } from "@/lib/sanitize";
+import { isRichTextField, richTextFieldMap, sanitizeRichText } from "@/shared/sanitize";
 
 /**
  * Guards for the stored-XSS fix.
@@ -177,7 +177,7 @@ describe("rich-text field map", () => {
  * over unsanitised CMS content fails here rather than in production.
  */
 describe("every dangerouslySetInnerHTML binding is sanitised", () => {
-  const ROOTS = ["src/app/(site)", "src/components"];
+  const ROOTS = ["src/app/(site)", "src/frontend/components"];
 
   function walk(dir: string): string[] {
     return readdirSync(dir).flatMap((entry) => {
@@ -253,7 +253,7 @@ describe("every dangerouslySetInnerHTML binding is sanitised", () => {
       expect(
         name,
         `${resolved} is injected as HTML but "${model}.${field}" is not in the rich-text ` +
-          `field map. Add it to RICH_TEXT_FIELDS in src/lib/sanitize.ts.`
+          `field map. Add it to RICH_TEXT_FIELDS in src/shared/sanitize.ts.`
       ).toBe("");
     }
   });

@@ -77,7 +77,7 @@ class FakeBroadcastChannel {
   close() {}
 }
 
-type RealtimeModule = typeof import("@/lib/realtime");
+type RealtimeModule = typeof import("@/shared/realtime");
 
 /**
  * Callbacks captured from the mocked `setTimeout`.
@@ -110,7 +110,7 @@ async function loadModule(): Promise<RealtimeModule> {
   effects.length = 0;
   cleanups = [];
   vi.resetModules();
-  return await import("@/lib/realtime");
+  return await import("@/shared/realtime");
 }
 
 function unsubscribeAll() {

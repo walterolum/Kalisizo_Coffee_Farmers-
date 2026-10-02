@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { apiCatch } from "@/lib/api-error";
+import { prisma } from "@/backend/prisma";
+import { apiCatch } from "@/shared/api-error";
 
 export async function GET() {
   try {

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getRealtimeVersion } from "@/lib/realtime-server";
+import { getRealtimeVersion } from "@/backend/realtime-server";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

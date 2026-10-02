@@ -19,7 +19,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 const CLIENT = "src/app/admin/AdminClient.tsx";
-const COMPONENT_DIR = "src/components/admin";
+const COMPONENT_DIR = "src/frontend/components/admin";
 
 const client = readFileSync(CLIENT, "utf8");
 const components = readdirSync(COMPONENT_DIR)

@@ -321,7 +321,7 @@ hydration code; removing it requires a per-request nonce threaded through the
 router.
 
 The `migrate` image needs a build-time `JWT_SECRET` because `next build`
-evaluates the module-scope guard in `src/lib/auth.ts`. The `Dockerfile` supplies a
+evaluates the module-scope guard in `src/backend/auth.ts`. The `Dockerfile` supplies a
 fixed placeholder, never the real value: a secret passed as a build argument ends
 up in the image's layer history and in `docker inspect` output. The real secret is
 injected at runtime by Compose.

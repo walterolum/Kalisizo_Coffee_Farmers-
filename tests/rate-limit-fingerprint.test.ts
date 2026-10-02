@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { fingerprint, rateLimit } from "@/lib/rate-limit";
+import { fingerprint, rateLimit } from "@/backend/rate-limit";
 
 /**
  * Guards the login rate limiter's second bucket.

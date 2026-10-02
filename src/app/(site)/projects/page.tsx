@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ProjectCard } from "@/components/ContentCards";
-import { EmptyState, PageHero } from "@/components/PageHero";
-import { Reveal } from "@/components/Reveal";
-import { getPublishedProjects } from "@/lib/site-content";
-import { SITE_URL } from "@/lib/site";
+import { ProjectCard } from "@/frontend/components/ContentCards";
+import { EmptyState, PageHero } from "@/frontend/components/PageHero";
+import { Reveal } from "@/frontend/components/Reveal";
+import { getPublishedProjects } from "@/backend/site-content";
+import { SITE_URL } from "@/shared/site";
 
 export const metadata: Metadata = {
   title: "Projects & Impact",

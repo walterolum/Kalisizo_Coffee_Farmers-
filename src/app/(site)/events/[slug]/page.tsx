@@ -3,10 +3,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ArrowLeft, CalendarDays, MapPin, Ticket, UserRound } from "lucide-react";
-import { PageHero } from "@/components/PageHero";
-import { formatDateTime } from "@/components/ContentCards";
-import { getEventBySlug, isPastEvent } from "@/lib/site-content";
-import { SITE_URL } from "@/lib/site";
+import { PageHero } from "@/frontend/components/PageHero";
+import { formatDateTime } from "@/frontend/components/ContentCards";
+import { getEventBySlug, isPastEvent } from "@/backend/site-content";
+import { SITE_URL } from "@/shared/site";
 
 type PageProps = { params: Promise<{ slug: string }> };
 

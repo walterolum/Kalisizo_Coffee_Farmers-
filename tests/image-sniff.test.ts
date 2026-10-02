@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { sniffImageType } from "@/lib/image-sniff";
+import { sniffImageType } from "@/shared/image-sniff";
 
 /**
  * The upload route trusts these checks to reject a non-image payload that

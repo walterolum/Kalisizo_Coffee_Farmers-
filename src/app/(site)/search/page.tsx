@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { Search as SearchIcon, FileText, CalendarDays, FolderKanban, Newspaper } from "lucide-react";
-import { EmptyState, PageHero } from "@/components/PageHero";
-import { formatDate } from "@/components/ContentCards";
-import { searchAll } from "@/lib/content";
+import { EmptyState, PageHero } from "@/frontend/components/PageHero";
+import { formatDate } from "@/frontend/components/ContentCards";
+import { searchAll } from "@/backend/content";
 
 export const metadata: Metadata = {
   title: "Search",

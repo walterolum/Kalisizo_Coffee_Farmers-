@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { searchAll } from "@/lib/content";
-import { badRequest, serviceUnavailable } from "@/lib/http";
-import { MAX_PAGE_SIZE } from "@/lib/paginate";
+import { searchAll } from "@/backend/content";
+import { badRequest, serviceUnavailable } from "@/shared/http";
+import { MAX_PAGE_SIZE } from "@/shared/paginate";
 import { z } from "zod";
 
 /**

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { passwordPolicyError, USER_ROLES } from "@/lib/auth";
+import { passwordPolicyError, USER_ROLES } from "@/backend/auth";
 
 /**
  * The password policy is the only thing standing between a weak CMS password and

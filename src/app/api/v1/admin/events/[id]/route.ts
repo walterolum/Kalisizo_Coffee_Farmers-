@@ -1,6 +1,6 @@
-import { idParamSchema } from "@/lib/validators";
-import { handleContentDelete, handleContentRestore } from "@/lib/admin-content";
-import { badRequest } from "@/lib/http";
+import { idParamSchema } from "@/shared/validators";
+import { handleContentDelete, handleContentRestore } from "@/backend/admin-content";
+import { badRequest } from "@/shared/http";
 
 type Context = { params: Promise<{ id: string }> };
 

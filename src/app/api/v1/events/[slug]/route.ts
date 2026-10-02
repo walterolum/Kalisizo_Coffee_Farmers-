@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { apiCatch } from "@/lib/api-error";
-import { badRequest } from "@/lib/http";
-import { PUBLIC_WHERE } from "@/lib/workflow";
+import { prisma } from "@/backend/prisma";
+import { apiCatch } from "@/shared/api-error";
+import { badRequest } from "@/shared/http";
+import { PUBLIC_WHERE } from "@/shared/workflow";
 
 /** A single published event. */
 export async function GET(

@@ -22,24 +22,24 @@
 import { readFile, readdir, stat } from "node:fs/promises";
 import { join } from "node:path";
 
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/backend/prisma";
 import {
   contentTypeFor,
   isStoredName,
   uploadsDir,
-} from "@/lib/upload-storage";
+} from "@/backend/upload-storage";
 import {
   getStorageBackend,
   storageStatus,
   type StorageBackend,
-} from "@/lib/storage";
+} from "@/backend/storage";
 import {
   buildUrlMap,
   planUrlRewrite,
   UPLOAD_PREFIX_LIKE,
   URL_COLUMN_SQL,
   type PendingRewrite,
-} from "@/lib/storage/rewrite";
+} from "@/backend/storage/rewrite";
 
 const apply = process.argv.includes("--apply");
 const keepLocalCopies = process.argv.includes("--keep-local");

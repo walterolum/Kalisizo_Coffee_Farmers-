@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { CmsContentPage, ABOUT_FALLBACK } from "@/components/CmsContentPage";
-import { getPageBySlug } from "@/lib/site-content";
-import { SITE_URL } from "@/lib/site";
+import { CmsContentPage, ABOUT_FALLBACK } from "@/frontend/components/CmsContentPage";
+import { getPageBySlug } from "@/backend/site-content";
+import { SITE_URL } from "@/shared/site";
 
 /**
  * The cooperative's about page. Served from its own route so the primary

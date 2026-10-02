@@ -10,7 +10,7 @@ import {
 } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useRealtimePoll } from "@/lib/realtime";
+import { useRealtimePoll } from "@/shared/realtime";
 import {
   AlertCircle,
   Award,
@@ -35,29 +35,29 @@ import {
   Trash2,
   Users,
 } from "lucide-react";
-import { ContentPanel } from "@/components/admin/ContentPanel";
-import { UsersPanel } from "@/components/admin/UsersPanel";
-import { AuditPanel } from "@/components/admin/AuditPanel";
-import { SettingsPanel } from "@/components/admin/SettingsPanel";
-import { ServicesPanel } from "@/components/admin/ProgramsPanel";
-import { LocationPanel } from "@/components/admin/LocationsPanel";
-import { ContactPanel } from "@/components/admin/ContactPanel";
-import { AdminShell } from "@/components/admin/AdminShell";
-import { isPanelId, navItemFor, type PanelId } from "@/components/admin/nav";
+import { ContentPanel } from "@/frontend/components/admin/ContentPanel";
+import { UsersPanel } from "@/frontend/components/admin/UsersPanel";
+import { AuditPanel } from "@/frontend/components/admin/AuditPanel";
+import { SettingsPanel } from "@/frontend/components/admin/SettingsPanel";
+import { ServicesPanel } from "@/frontend/components/admin/ProgramsPanel";
+import { LocationPanel } from "@/frontend/components/admin/LocationsPanel";
+import { ContactPanel } from "@/frontend/components/admin/ContactPanel";
+import { AdminShell } from "@/frontend/components/admin/AdminShell";
+import { isPanelId, navItemFor, type PanelId } from "@/frontend/components/admin/nav";
 import {
   ErrorState,
   LoadingState,
   StatusBadge,
   useConfirm,
-} from "@/components/admin/ui";
-import type { UserRole } from "@/lib/auth";
-import { PERMISSIONS, type Permission } from "@/lib/permissions";
-import type { ContentType, Paginated } from "@/lib/admin-api";
-import { AdminApiError, SESSION_EXPIRED_EVENT } from "@/lib/admin-api";
+} from "@/frontend/components/admin/ui";
+import type { UserRole } from "@/backend/auth";
+import { PERMISSIONS, type Permission } from "@/shared/permissions";
+import type { ContentType, Paginated } from "@/shared/admin-api";
+import { AdminApiError, SESSION_EXPIRED_EVENT } from "@/shared/admin-api";
 import {
   formatSavedAt as fmtShortTime,
   type SaveResult as PublishResult,
-} from "@/lib/save-outcome";
+} from "@/shared/save-outcome";
 import {
   apiFetch,
   Field,
@@ -73,7 +73,7 @@ import {
   TOKEN_KEY,
   UploadButton,
   USER_KEY,
-} from "@/components/admin/panel-kit";
+} from "@/frontend/components/admin/panel-kit";
 
 type User = { id: string; name: string; email: string; role: UserRole };
 
@@ -397,7 +397,7 @@ function Login({
 }
 
 /**
- * Every panel id now lives in `src/components/admin/nav.ts`, registered once
+ * Every panel id now lives in `src/frontend/components/admin/nav.ts`, registered once
  * alongside its group, icon and permission. The sidebar renders from that model,
  * so this module only maps a selected id to a component.
  */

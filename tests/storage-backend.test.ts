@@ -108,7 +108,7 @@ async function withNodeEnv<T>(value: string, run: () => Promise<T>): Promise<T> 
 
 describe("local backend", () => {
   it("round-trips an object and reports its size and type", async () => {
-    const { localBackend } = await import("@/lib/storage/local");
+    const { localBackend } = await import("@/backend/storage/local");
 
     const stored = await localBackend.put({
       key: KEY,
@@ -126,8 +126,8 @@ describe("local backend", () => {
   });
 
   it("refuses a key the naming module could not have generated", async () => {
-    const { localBackend } = await import("@/lib/storage/local");
-    const { StorageError } = await import("@/lib/storage/types");
+    const { localBackend } = await import("@/backend/storage/local");
+    const { StorageError } = await import("@/shared/storage/types");
 
     // The traversal cases the allowlist exists for. A key containing `..` or a
     // separator must never reach the filesystem, whatever the caller intends.
@@ -145,8 +145,8 @@ describe("local backend", () => {
   });
 
   it("rejects a declared type that disagrees with the key's extension", async () => {
-    const { localBackend } = await import("@/lib/storage/local");
-    const { StorageError } = await import("@/lib/storage/types");
+    const { localBackend } = await import("@/backend/storage/local");
+    const { StorageError } = await import("@/shared/storage/types");
 
     // Guards against a caller assembling a name and a type from different
     // tables, which would store a `.jpg` holding a PNG and then serve it as
@@ -157,8 +157,8 @@ describe("local backend", () => {
   });
 
   it("does not overwrite an existing key", async () => {
-    const { localBackend } = await import("@/lib/storage/local");
-    const { StorageError } = await import("@/lib/storage/types");
+    const { localBackend } = await import("@/backend/storage/local");
+    const { StorageError } = await import("@/shared/storage/types");
 
     await localBackend.put({ key: KEY, body: JPEG_BYTES, contentType: "image/jpeg" });
 
@@ -172,14 +172,14 @@ describe("local backend", () => {
   });
 
   it("returns null for a key that is missing or malformed", async () => {
-    const { localBackend } = await import("@/lib/storage/local");
+    const { localBackend } = await import("@/backend/storage/local");
 
     expect(await localBackend.get("1700000000001-cafebabe.png")).toBeNull();
     expect(await localBackend.get("../secrets.jpg")).toBeNull();
   });
 
   it("does not serve a directory as an object", async () => {
-    const { localBackend } = await import("@/lib/storage/local");
+    const { localBackend } = await import("@/backend/storage/local");
 
     // A directory whose name happens to match the allowlist must not be
     // readable, and must not blow up the route either.
@@ -188,7 +188,7 @@ describe("local backend", () => {
   });
 
   it("removes an object, and treats a second removal as success", async () => {
-    const { localBackend } = await import("@/lib/storage/local");
+    const { localBackend } = await import("@/backend/storage/local");
 
     await localBackend.put({ key: KEY, body: JPEG_BYTES, contentType: "image/jpeg" });
     await localBackend.remove(KEY);
@@ -202,8 +202,8 @@ describe("local backend", () => {
   });
 
   it("raises a StorageError, not a raw filesystem error", async () => {
-    const { localBackend } = await import("@/lib/storage/local");
-    const { StorageError } = await import("@/lib/storage/types");
+    const { localBackend } = await import("@/backend/storage/local");
+    const { StorageError } = await import("@/shared/storage/types");
 
     // A directory in place of the file makes `writeFile` fail with EISDIR. The
     // route returns 502 on StorageError, so an escaping raw error would produce
@@ -218,7 +218,7 @@ describe("local backend", () => {
 
 describe("backend selection", () => {
   it("falls back to local disk when nothing else is configured", async () => {
-    const { getStorageBackend, storageStatus } = await import("@/lib/storage");
+    const { getStorageBackend, storageStatus } = await import("@/backend/storage");
     expect(getStorageBackend()?.name).toBe("local");
     expect(storageStatus().available).toBe(true);
   });
@@ -230,7 +230,7 @@ describe("backend selection", () => {
     process.env.CLOUDINARY_API_KEY = "key";
     process.env.CLOUDINARY_API_SECRET = "secret";
 
-    const { getStorageBackend, storageStatus } = await import("@/lib/storage");
+    const { getStorageBackend, storageStatus } = await import("@/backend/storage");
 
     // The migration target must win while the old backend's variables are still
     // present, which is the state a real cutover is always in for a day or two.
@@ -250,14 +250,14 @@ describe("backend selection", () => {
     process.env.CLOUDINARY_API_SECRET = "secret";
     process.env.STORAGE_BACKEND = "cloudinary";
 
-    const { getStorageBackend } = await import("@/lib/storage");
+    const { getStorageBackend } = await import("@/backend/storage");
     expect(getStorageBackend()?.name).toBe("cloudinary");
   });
 
   it("refuses to fall back when a pinned backend is not configured", async () => {
     process.env.STORAGE_BACKEND = "supabase";
 
-    const { getStorageBackend, storageStatus } = await import("@/lib/storage");
+    const { getStorageBackend, storageStatus } = await import("@/backend/storage");
 
     // A typo in a variable name must stop the upload, not quietly send media to
     // somewhere the operator did not intend.
@@ -271,7 +271,7 @@ describe("backend selection", () => {
     process.env.STORAGE_BACKEND = "local";
 
     await withNodeEnv("production", async () => {
-      const { storageStatus } = await import("@/lib/storage");
+      const { storageStatus } = await import("@/backend/storage");
       const status = storageStatus();
       expect(status.available).toBe(false);
       // Names the specific reason rather than the generic "not configured".
@@ -282,7 +282,7 @@ describe("backend selection", () => {
   it("treats an unrecognised STORAGE_BACKEND as auto rather than failing", async () => {
     process.env.STORAGE_BACKEND = "s3";
 
-    const { getStorageBackend, preferredBackend } = await import("@/lib/storage");
+    const { getStorageBackend, preferredBackend } = await import("@/backend/storage");
     // Better to fall back to a working backend than to have every upload fail
     // over a misspelled variable; `storageStatus` still shows what was resolved.
     expect(preferredBackend()).toBe("auto");
@@ -293,7 +293,7 @@ describe("backend selection", () => {
     delete process.env.ALLOW_LOCAL_UPLOADS;
 
     await withNodeEnv("production", async () => {
-      const { availableBackends } = await import("@/lib/storage");
+      const { availableBackends } = await import("@/backend/storage");
       // An ephemeral filesystem would silently lose every uploaded image, so
       // local is not a candidate at all by default.
       expect(availableBackends().map((b) => b.name)).not.toContain("local");
@@ -303,7 +303,7 @@ describe("backend selection", () => {
     vi.resetModules();
 
     await withNodeEnv("production", async () => {
-      const { availableBackends } = await import("@/lib/storage");
+      const { availableBackends } = await import("@/backend/storage");
       expect(availableBackends().map((b) => b.name)).toContain("local");
     });
   });
@@ -314,7 +314,7 @@ describe("backend selection", () => {
     process.env.ALLOW_LOCAL_UPLOADS = "false";
 
     await withNodeEnv("production", async () => {
-      const { availableBackends } = await import("@/lib/storage");
+      const { availableBackends } = await import("@/backend/storage");
       expect(availableBackends().map((b) => b.name)).not.toContain("local");
     });
   });
@@ -339,7 +339,7 @@ describe("supabase backend", () => {
 
   it("reports itself unconfigured until both variables are set", async () => {
     const { readSupabaseStorageConfig, supabaseStorageConfigured } = await import(
-      "@/lib/storage/supabase"
+      "@/backend/storage/supabase"
     );
 
     expect(supabaseStorageConfigured()).toBe(false);
@@ -356,7 +356,7 @@ describe("supabase backend", () => {
     process.env.SUPABASE_URL = "https://project.supabase.co///";
     process.env.SUPABASE_SERVICE_ROLE_KEY = "k";
 
-    const { supabasePublicUrl } = await import("@/lib/storage/supabase");
+    const { supabasePublicUrl } = await import("@/backend/storage/supabase");
     // A double slash in a stored URL would 404 forever, and these values are
     // persisted as durable data.
     expect(supabasePublicUrl(KEY)).toBe(
@@ -368,7 +368,7 @@ describe("supabase backend", () => {
     process.env.SUPABASE_URL = "https://project.supabase.co";
     process.env.SUPABASE_SERVICE_ROLE_KEY = "k";
 
-    const { supabasePublicUrl } = await import("@/lib/storage/supabase");
+    const { supabasePublicUrl } = await import("@/backend/storage/supabase");
 
     // `encodeURIComponent` on the whole key would escape `/` and turn a nested
     // key into one long segment that Supabase cannot find.
@@ -382,7 +382,7 @@ describe("supabase backend", () => {
     process.env.SUPABASE_SERVICE_ROLE_KEY = "service-role-key";
 
     const sdk = mockSdk();
-    const { supabaseStorageBackend } = await import("@/lib/storage/supabase");
+    const { supabaseStorageBackend } = await import("@/backend/storage/supabase");
 
     const stored = await supabaseStorageBackend.put({
       key: KEY,
@@ -409,7 +409,7 @@ describe("supabase backend", () => {
     process.env.SUPABASE_URL = "https://project.supabase.co";
     process.env.SUPABASE_SERVICE_ROLE_KEY = "service-role-key";
 
-    const { StorageError } = await import("@/lib/storage/types");
+    const { StorageError } = await import("@/shared/storage/types");
     mockSdk();
     const sdkModule = await import("@supabase/supabase-js");
     vi.mocked(sdkModule.createClient).mockReturnValue({
@@ -423,7 +423,7 @@ describe("supabase backend", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
-    const { supabaseStorageBackend } = await import("@/lib/storage/supabase");
+    const { supabaseStorageBackend } = await import("@/backend/storage/supabase");
     await expect(
       supabaseStorageBackend.put({ key: KEY, body: JPEG_BYTES, contentType: "image/jpeg" })
     ).rejects.toBeInstanceOf(StorageError);
@@ -454,7 +454,7 @@ describe("supabase backend", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
-    const { supabaseStorageBackend } = await import("@/lib/storage/supabase");
+    const { supabaseStorageBackend } = await import("@/backend/storage/supabase");
     const object = await supabaseStorageBackend.get(KEY);
 
     expect(object?.contentType).toBe("image/jpeg");
@@ -478,7 +478,7 @@ describe("supabase backend", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
-    const { supabaseStorageBackend } = await import("@/lib/storage/supabase");
+    const { supabaseStorageBackend } = await import("@/backend/storage/supabase");
     expect(await supabaseStorageBackend.get("1700000000000-deadbeef.png")).toBeNull();
   });
 
@@ -501,13 +501,13 @@ describe("supabase backend", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
-    const { supabaseStorageBackend } = await import("@/lib/storage/supabase");
+    const { supabaseStorageBackend } = await import("@/backend/storage/supabase");
     await expect(supabaseStorageBackend.remove(KEY)).resolves.toBeUndefined();
   });
 
   it("raises a StorageError naming the configuration when nothing is set", async () => {
-    const { StorageError } = await import("@/lib/storage/types");
-    const { supabaseStorageBackend } = await import("@/lib/storage/supabase");
+    const { StorageError } = await import("@/shared/storage/types");
+    const { supabaseStorageBackend } = await import("@/backend/storage/supabase");
 
     await expect(
       supabaseStorageBackend.put({ key: KEY, body: JPEG_BYTES, contentType: "image/jpeg" })
@@ -518,7 +518,7 @@ describe("supabase backend", () => {
 describe("cloudinary backend", () => {
   it("is unconfigured until all three variables are set", async () => {
     const { readCloudinaryConfig, cloudinaryConfigured } = await import(
-      "@/lib/storage/cloudinary"
+      "@/backend/storage/cloudinary"
     );
 
     expect(cloudinaryConfigured()).toBe(false);
@@ -540,8 +540,8 @@ describe("cloudinary backend", () => {
   });
 
   it("refuses to read objects back rather than inventing a content type", async () => {
-    const { StorageError } = await import("@/lib/storage/types");
-    const { cloudinaryBackend } = await import("@/lib/storage/cloudinary");
+    const { StorageError } = await import("@/shared/storage/types");
+    const { cloudinaryBackend } = await import("@/backend/storage/cloudinary");
 
     // Returning a type we did not verify is worse than not offering the method.
     await expect(cloudinaryBackend.get(KEY)).rejects.toBeInstanceOf(StorageError);

@@ -4,8 +4,8 @@ import {
   realtimeClientCount,
   removeRealtimeClient,
   streamBackendActive,
-} from "@/lib/realtime-server";
-import { clientIp, rateLimit } from "@/lib/rate-limit";
+} from "@/backend/realtime-server";
+import { clientIp, rateLimit } from "@/backend/rate-limit";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;

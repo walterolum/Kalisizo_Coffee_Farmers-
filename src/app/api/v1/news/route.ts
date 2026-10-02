@@ -1,7 +1,7 @@
-import { prisma } from "@/lib/prisma";
-import { serviceUnavailable } from "@/lib/http";
-import { parsePage, parsePageSize, paginate, jsonPage } from "@/lib/paginate";
-import { listNews } from "@/lib/content";
+import { prisma } from "@/backend/prisma";
+import { serviceUnavailable } from "@/shared/http";
+import { parsePage, parsePageSize, paginate, jsonPage } from "@/shared/paginate";
+import { listNews } from "@/backend/content";
 
 /**
  * Public news listing. Only PUBLISHED, non-deleted articles are ever returned.

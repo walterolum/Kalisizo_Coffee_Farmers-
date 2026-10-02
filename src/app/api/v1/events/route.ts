@@ -1,7 +1,7 @@
-import { prisma } from "@/lib/prisma";
-import { serviceUnavailable } from "@/lib/http";
-import { parsePage, parsePageSize, paginate, jsonPage } from "@/lib/paginate";
-import { listEvents, isUpcoming } from "@/lib/content";
+import { prisma } from "@/backend/prisma";
+import { serviceUnavailable } from "@/shared/http";
+import { parsePage, parsePageSize, paginate, jsonPage } from "@/shared/paginate";
+import { listEvents, isUpcoming } from "@/backend/content";
 
 /** Public event listing. `upcoming=true` returns only events that have not ended. */
 export async function GET(req: Request) {

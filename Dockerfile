@@ -42,7 +42,7 @@ ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # `next build` imports route modules to collect page data, and
-# `src/lib/auth.ts` evaluates its secret guard at module scope, throwing when
+# `src/backend/auth.ts` evaluates its secret guard at module scope, throwing when
 # NODE_ENV=production and JWT_SECRET is absent. So the build needs *a* value
 # present.
 #

@@ -15,7 +15,7 @@
  * Read-only. Exits non-zero when no transport is usable, so it can gate a deploy.
  */
 
-import { realtimeStatus, preferredBackend } from "@/lib/realtime-transport";
+import { realtimeStatus, preferredBackend } from "@/backend/realtime-transport";
 
 function main() {
   const status = realtimeStatus();

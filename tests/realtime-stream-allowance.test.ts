@@ -27,7 +27,7 @@ type StreamModule = typeof import("@/app/api/v1/realtime/stream/route");
 
 /** Stands in for the broadcaster so the route runs its full admission path. */
 function mockBroadcaster() {
-  vi.doMock("@/lib/realtime-server", () => ({
+  vi.doMock("@/backend/realtime-server", () => ({
     addRealtimeClient: vi.fn(() => ({ id: 1, controller: {} })),
     removeRealtimeClient: vi.fn(),
     getRealtimeVersion: vi.fn(() => 1_700_000_000_000),
@@ -75,7 +75,7 @@ async function refusalRate(GET: StreamModule["GET"], count: number, ip = "203.0.
 beforeEach(resetBuckets);
 afterEach(() => {
   vi.resetModules();
-  vi.doUnmock("@/lib/realtime-server");
+  vi.doUnmock("@/backend/realtime-server");
   vi.restoreAllMocks();
 });
 

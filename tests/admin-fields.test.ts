@@ -4,7 +4,7 @@ import {
   toFormValues,
   toPayload,
   TYPE_CONFIGS,
-} from "@/lib/admin-fields";
+} from "@/shared/admin-fields";
 import {
   announcementSchema,
   eventSchema,
@@ -14,14 +14,14 @@ import {
   pageSchema,
   projectSchema,
   publicationSchema,
-} from "@/lib/validators";
+} from "@/shared/validators";
 import {
   CONTENT_STATUSES,
   CONTENT_TYPES,
   STATUS_TRANSITIONS,
   type ContentType,
-} from "@/lib/admin-api";
-import { canTransition } from "@/lib/workflow";
+} from "@/shared/admin-api";
+import { canTransition } from "@/shared/workflow";
 import type { z } from "zod";
 
 /**

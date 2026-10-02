@@ -33,7 +33,7 @@ describe("public heading structure", () => {
   });
 
   it("SectionHeading defaults to h2 and can be promoted", () => {
-    const source = read("src/components/SectionHeading.tsx");
+    const source = read("src/frontend/components/SectionHeading.tsx");
 
     // Default is h2, because the component is almost always a section inside a
     // page whose hero already has the h1.

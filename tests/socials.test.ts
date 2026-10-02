@@ -14,7 +14,7 @@ import {
   socialsToEntries,
   type SocialEntry,
   type SocialProfile,
-} from "@/lib/socials";
+} from "@/shared/socials";
 
 /**
  * Social links are CMS-managed rows keyed by platform, and the CMS may now hold

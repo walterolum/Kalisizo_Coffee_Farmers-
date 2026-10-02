@@ -1,6 +1,6 @@
-import { prisma } from "@/lib/prisma";
-import { serviceUnavailable } from "@/lib/http";
-import { parsePage, parsePageSize, paginate, jsonPage } from "@/lib/paginate";
+import { prisma } from "@/backend/prisma";
+import { serviceUnavailable } from "@/shared/http";
+import { parsePage, parsePageSize, paginate, jsonPage } from "@/shared/paginate";
 
 /**
  * Public gallery listing. Optionally filtered by album slug.

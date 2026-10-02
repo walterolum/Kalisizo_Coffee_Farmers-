@@ -3,10 +3,10 @@ import Link from "next/link";
 import type { ProductCategory } from "@prisma/client";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { EmptyState, PageHero } from "@/components/PageHero";
-import { Reveal } from "@/components/Reveal";
-import { getProducts } from "@/lib/site-content";
-import { SITE_URL } from "@/lib/site";
+import { EmptyState, PageHero } from "@/frontend/components/PageHero";
+import { Reveal } from "@/frontend/components/Reveal";
+import { getProducts } from "@/backend/site-content";
+import { SITE_URL } from "@/shared/site";
 
 export const metadata: Metadata = {
   title: "Products & Catalog",

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { settingsSchema } from "@/lib/validators";
+import { settingsSchema } from "@/shared/validators";
 
 /**
  * Three CMS screens write to the single `CooperativeInfo` row:
@@ -21,7 +21,7 @@ import { settingsSchema } from "@/lib/validators";
  * it: each screen submits only its own fields.
  */
 
-const ADMIN_DIR = "src/components/admin";
+const ADMIN_DIR = "src/frontend/components/admin";
 const CLIENT = "src/app/admin/AdminClient.tsx";
 
 /**

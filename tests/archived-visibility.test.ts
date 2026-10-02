@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { CONTENT_STATUSES, STATUS_TRANSITIONS } from "@/lib/admin-api";
-import { TYPE_CONFIGS } from "@/lib/admin-fields";
-import { includesSoftDeleted } from "@/lib/admin-content";
+import { CONTENT_STATUSES, STATUS_TRANSITIONS } from "@/shared/admin-api";
+import { TYPE_CONFIGS } from "@/shared/admin-fields";
+import { includesSoftDeleted } from "@/backend/admin-content";
 
 /**
  * Archiving sets `deletedAt`, and every admin list route starts from

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MAX_PAGE_SIZE, PAGE_SIZE, parsePage, parsePageSize, likePattern } from "@/lib/paginate";
+import { MAX_PAGE_SIZE, PAGE_SIZE, parsePage, parsePageSize, likePattern } from "@/shared/paginate";
 
 describe("parsePage", () => {
   it("defaults to the first page", () => {

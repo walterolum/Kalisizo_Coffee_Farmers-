@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { signToken, verifyPassword } from "@/lib/auth";
-import { clientIp, fingerprint, rateLimit } from "@/lib/rate-limit";
-import { firstZodError, loginSchema } from "@/lib/validators";
-import { recordAudit } from "@/lib/publish";
+import { prisma } from "@/backend/prisma";
+import { signToken, verifyPassword } from "@/backend/auth";
+import { clientIp, fingerprint, rateLimit } from "@/backend/rate-limit";
+import { firstZodError, loginSchema } from "@/shared/validators";
+import { recordAudit } from "@/backend/publish";
 
 /**
  * A valid bcrypt hash of a value nobody can supply. Comparing against it when

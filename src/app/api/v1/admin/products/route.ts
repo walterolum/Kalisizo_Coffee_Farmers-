@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { adminRateLimit, requirePermission } from "@/lib/admin-guard";
-import { firstZodError, productSchema } from "@/lib/validators";
-import { assertFresh, publish, publishMeta, recordAudit } from "@/lib/publish";
+import { prisma } from "@/backend/prisma";
+import { adminRateLimit, requirePermission } from "@/backend/admin-guard";
+import { firstZodError, productSchema } from "@/shared/validators";
+import { assertFresh, publish, publishMeta, recordAudit } from "@/backend/publish";
 
 export async function POST(req: Request) {
   const guard = await requirePermission(req, "editContent");

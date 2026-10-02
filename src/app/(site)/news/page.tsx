@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { NewsCard } from "@/components/ContentCards";
-import { EmptyState, PageHero } from "@/components/PageHero";
-import { Reveal } from "@/components/Reveal";
-import { getPublishedNews } from "@/lib/site-content";
-import { SITE_URL } from "@/lib/site";
+import { NewsCard } from "@/frontend/components/ContentCards";
+import { EmptyState, PageHero } from "@/frontend/components/PageHero";
+import { Reveal } from "@/frontend/components/Reveal";
+import { getPublishedNews } from "@/backend/site-content";
+import { SITE_URL } from "@/shared/site";
 
 export const metadata: Metadata = {
   title: "News & Stories",

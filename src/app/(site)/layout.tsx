@@ -1,6 +1,6 @@
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { BackToTop } from "@/components/BackToTop";
+import { Header } from "@/frontend/components/Header";
+import { Footer } from "@/frontend/components/Footer";
+import { BackToTop } from "@/frontend/components/BackToTop";
 
 /**
  * Shell for every public page.

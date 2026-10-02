@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
-import { prisma } from "@/lib/prisma";
-import { SITE_URL } from "@/lib/site";
+import { prisma } from "@/backend/prisma";
+import { SITE_URL } from "@/shared/site";
 
 /**
  * Static routes plus every published record that has its own detail page.
