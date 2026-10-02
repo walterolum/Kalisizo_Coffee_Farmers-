@@ -130,7 +130,7 @@ export function Gallery() {
                   src={item.src}
                   alt={item.alt}
                   fill
-                  sizes="(min-width: 1024px) 50vw, (min-width: 640px) 50vw, 100vw"
+                  sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
                   quality={65}
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 />

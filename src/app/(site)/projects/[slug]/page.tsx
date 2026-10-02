@@ -52,7 +52,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
             <div className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl ring-1 ring-charcoal/8">
               <Image
                 src={project.imageUrl}
-                alt={project.imageAlt || ""}
+                alt={project.imageAlt || project.title}
                 fill
                 priority
                 sizes="(min-width: 768px) 48rem, 100vw"

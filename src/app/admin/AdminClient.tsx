@@ -356,7 +356,15 @@ function Login({
             </Field>
 
             {error && (
-              <p className="rounded-xl bg-red-500/10 px-3.5 py-2.5 text-sm font-semibold text-red-300 ring-1 ring-red-400/20">
+              // `role="alert"` so the failure is announced the moment it appears.
+              // Submitting moves focus nowhere and this text is not adjacent in
+              // the accessibility tree, so without a live region a screen reader
+              // user pressing Enter on the form hears nothing at all and has no
+              // way to tell a wrong password from a server that never answered.
+              <p
+                role="alert"
+                className="rounded-xl bg-red-500/10 px-3.5 py-2.5 text-sm font-semibold text-red-300 ring-1 ring-red-400/20"
+              >
                 {error}
               </p>
             )}

@@ -49,7 +49,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
             <div className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl ring-1 ring-charcoal/8">
               <Image
                 src={program.imageUrl}
-                alt={program.imageAlt || ""}
+                alt={program.imageAlt || program.title}
                 fill
                 priority
                 sizes="(min-width: 768px) 48rem, 100vw"

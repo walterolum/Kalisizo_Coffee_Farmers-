@@ -46,7 +46,7 @@ export default async function EventDetailPage({ params }: PageProps) {
             <div className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl ring-1 ring-charcoal/8">
               <Image
                 src={event.imageUrl}
-                alt={event.imageAlt || ""}
+                alt={event.imageAlt || event.title}
                 fill
                 priority
                 sizes="(min-width: 768px) 48rem, 100vw"

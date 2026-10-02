@@ -131,17 +131,32 @@ export function Products() {
         </Reveal>
 
         <Reveal delay={80}>
+          {/*
+            Toggle buttons, not a tablist.
+
+            These were marked up as `role="tablist"` / `role="tab"`, which
+            promises a structure the markup did not deliver: no `tabpanel`, no
+            `aria-controls`, no roving `tabindex`, and no arrow-key handling. A
+            tablist also tells assistive tech that arrow keys move between
+            children, and here the children wrap onto two lines and reorder as
+            the viewport changes — so the announced interaction was wrong as well
+            as incomplete.
+
+            The behaviour is not tabs. There is one list below that is filtered in
+            place; nothing is swapped out and no panel is hidden. `aria-pressed`
+            describes that exactly: independent buttons, each reporting whether it
+            is currently active, all of them reachable by Tab as they are now.
+          */}
           <div
             className="mx-auto flex w-fit max-w-full flex-wrap justify-center gap-2.5 rounded-2xl bg-sand p-2 shadow-soft ring-1 ring-forest/5"
-            role="tablist"
+            role="group"
             aria-label="Filter products by category"
           >
             {availableCategories.map((cat) => (
               <button
                 key={cat}
                 type="button"
-                role="tab"
-                aria-selected={filter === cat}
+                aria-pressed={filter === cat}
                 onClick={() => setFilter(cat)}
                 className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-300 sm:px-5 ${
                   filter === cat
@@ -204,8 +219,8 @@ export function Products() {
         <Reveal delay={100}>
           <p className="mt-10 flex flex-wrap items-center justify-center gap-2 text-center text-sm text-charcoal/60">
             <LayoutGrid className="size-4 text-gold-deep" aria-hidden="true" />
-            Catalog not exhaustive. Reach out for current stock and input prices.
-            and wholesale coffee prices.
+            Catalog not exhaustive. Reach out for current stock, input prices and
+            wholesale coffee prices.
           </p>
         </Reveal>
       </div>

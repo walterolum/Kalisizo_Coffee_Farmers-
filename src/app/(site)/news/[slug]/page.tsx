@@ -88,7 +88,7 @@ export default async function NewsArticlePage({ params }: PageProps) {
             <div className="relative mt-8 aspect-[16/9] w-full overflow-hidden rounded-3xl ring-1 ring-charcoal/8">
               <Image
                 src={article.featuredImageUrl}
-                alt={article.imageAlt || ""}
+                alt={article.imageAlt || article.title}
                 fill
                 priority
                 sizes="(min-width: 768px) 48rem, 100vw"

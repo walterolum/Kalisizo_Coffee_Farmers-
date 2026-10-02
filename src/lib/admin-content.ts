@@ -157,8 +157,8 @@ export async function handleContentWrite<S extends z.ZodTypeAny>(
       // A slug sent on update is a *rename*, and it has to go through the same
       // derivation as a create. Without this the reserved-slug protection only
       // covers creation: an editor could create a page as `careers`, then edit it
-      // and set the slug to `about`. The validator accepts that � `about` matches
-      // its pattern perfectly � and the write is applied verbatim, so the static
+      // and set the slug to `about`. The validator accepts that — `about` matches
+      // its pattern perfectly — and the write is applied verbatim, so the static
       // /about route starts shadowing the row and /p/about becomes a second URL
       // for the same content.
       //
@@ -278,7 +278,7 @@ export async function handleContentWrite<S extends z.ZodTypeAny>(
 
 /**
  * Models that take part in the DRAFT/IN_REVIEW/PUBLISHED workflow. The
- * home-page modules below do not � they are live-or-archived by `deletedAt`
+ * home-page modules below do not — they are live-or-archived by `deletedAt`
  * alone, so writing `status`/`publishedAt` on them would be rejected by Prisma.
  */
 const WORKFLOW_MODELS: ReadonlySet<ContentModel> = new Set([

@@ -271,9 +271,12 @@ export function Contact({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
                     onChange={(e) => setField("name", e.target.value)}
                     placeholder="e.g. Namuli Sarah"
                     className={inputClass(!!errors.name)}
+                    aria-invalid={errors.name ? true : undefined}
+                    aria-describedby={errors.name ? "name-error" : undefined}
                   />
                   {errors.name && (
                     <span
+                      id="name-error"
                       role="alert"
                       className="flex items-center gap-1.5 text-xs font-semibold text-red-600"
                     >
@@ -299,9 +302,12 @@ export function Contact({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
                     onChange={(e) => setField("email", e.target.value)}
                     placeholder="you@example.com"
                     className={inputClass(!!errors.email)}
+                    aria-invalid={errors.email ? true : undefined}
+                    aria-describedby={errors.email ? "email-error" : undefined}
                   />
                   {errors.email && (
                     <span
+                      id="email-error"
                       role="alert"
                       className="flex items-center gap-1.5 text-xs font-semibold text-red-600"
                     >
@@ -367,9 +373,12 @@ export function Contact({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
                     onChange={(e) => setField("message", e.target.value)}
                     placeholder="Tell us what you need: membership, inputs, coffee supply, SACCO support…"
                     className={`${inputClass(!!errors.message)} resize-none`}
+                    aria-invalid={errors.message ? true : undefined}
+                    aria-describedby={errors.message ? "message-error" : undefined}
                   />
                   {errors.message && (
                     <span
+                      id="message-error"
                       role="alert"
                       className="flex items-center gap-1.5 text-xs font-semibold text-red-600"
                     >

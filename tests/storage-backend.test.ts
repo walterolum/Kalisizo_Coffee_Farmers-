@@ -1,23 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-/**
- * Timeout for this file.
- *
- * Unusually generous, and deliberately so. Unlike the rest of the suite, these
- * tests do real work: `mkdtemp` per test, real writes, real reads, and a
- * recursive `rmSync` in `afterEach`. Measured in isolation the file runs in well
- * under half a second, so the default 5s budget is roughly 300x the baseline and
- * should never be reached — but on a loaded Windows machine (or a CI runner
- * sharing a disk) one of these disk operations can spike far enough to trip it,
- * and the file then failed intermittently for reasons that had nothing to do with
- * the storage adapter.
- *
- * This raises the budget; it does not remove any assertion. The contract being
- * tested is unchanged, and the file has been mutation-tested: deleting the
- * filename allowlist, the containment re-check or the idempotent-delete branch
- * each still fails it.
- */
-const FILE_TIMEOUT = 30_000;
+// This file does real work — `mkdtemp` per test, real writes, recursive
+// `rmSync` — so it is the most exposed to the machine-bound timing described in
+// `vitest.config.mts`. The budget now lives in the config rather than here, so
+// that every test gets it and there is one place to reason about.
 import { mkdtempSync, readFileSync, rmSync, mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -120,7 +106,7 @@ async function withNodeEnv<T>(value: string, run: () => Promise<T>): Promise<T> 
   }
 }
 
-describe("local backend", { timeout: FILE_TIMEOUT }, () => {
+describe("local backend", () => {
   it("round-trips an object and reports its size and type", async () => {
     const { localBackend } = await import("@/lib/storage/local");
 
@@ -230,7 +216,7 @@ describe("local backend", { timeout: FILE_TIMEOUT }, () => {
   });
 });
 
-describe("backend selection", { timeout: FILE_TIMEOUT }, () => {
+describe("backend selection", () => {
   it("falls back to local disk when nothing else is configured", async () => {
     const { getStorageBackend, storageStatus } = await import("@/lib/storage");
     expect(getStorageBackend()?.name).toBe("local");
@@ -334,7 +320,7 @@ describe("backend selection", { timeout: FILE_TIMEOUT }, () => {
   });
 });
 
-describe("supabase backend", { timeout: FILE_TIMEOUT }, () => {
+describe("supabase backend", () => {
   /**
    * Mocks the SDK so the request shape can be asserted without a project, a
    * network, or credentials. The behaviour worth guarding is the parameters, not
@@ -529,7 +515,7 @@ describe("supabase backend", { timeout: FILE_TIMEOUT }, () => {
   });
 });
 
-describe("cloudinary backend", { timeout: FILE_TIMEOUT }, () => {
+describe("cloudinary backend", () => {
   it("is unconfigured until all three variables are set", async () => {
     const { readCloudinaryConfig, cloudinaryConfigured } = await import(
       "@/lib/storage/cloudinary"
@@ -562,7 +548,7 @@ describe("cloudinary backend", { timeout: FILE_TIMEOUT }, () => {
   });
 });
 
-describe("wiring", { timeout: FILE_TIMEOUT }, () => {
+describe("wiring", () => {
   const read = (path: string) => readFileSync(path, "utf8");
 
   it("validates the upload in the route, before choosing a backend", () => {

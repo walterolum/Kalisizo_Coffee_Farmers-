@@ -74,7 +74,7 @@ export async function CmsContentPage({ slug, eyebrow, fallback }: Props) {
             <div className="relative mb-12 aspect-[21/9] w-full overflow-hidden rounded-3xl ring-1 ring-charcoal/8">
               <Image
                 src={imageUrl}
-                alt={imageAlt || ""}
+                alt={imageAlt || title}
                 fill
                 sizes="(min-width: 768px) 48rem, 100vw"
                 quality={65}

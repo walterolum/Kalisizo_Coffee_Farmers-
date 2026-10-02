@@ -244,6 +244,28 @@ export function AdminShell({
   useEffect(() => {
     if (!drawerOpen && !notifOpen && !profileOpen) return;
     const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Tab" && drawerOpen) {
+        /* The drawer is aria-modal, so Tab has to stay inside it. Without this
+        cycle, focus walks out through the overlay into the page behind — which
+        `aria-modal` tells assistive tech is inert, leaving a keyboard user
+        operating controls they have been told are unavailable. */
+        const focusable = drawerRef.current?.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (!focusable || focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        const active = document.activeElement;
+
+        if (event.shiftKey && (active === first || !drawerRef.current?.contains(active))) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && active === last) {
+          event.preventDefault();
+          first.focus();
+        }
+        return;
+      }
       if (event.key !== "Escape") return;
       if (drawerOpen) {
         setDrawerOpen(false);
