@@ -57,7 +57,7 @@ export async function POST(req: Request) {
         before: existing,
         after: updated,
       });
-      publish(user, ["products"]);
+      await publish(user, ["products"]);
       return NextResponse.json({ ...updated, ...publishMeta(user) });
     }
 
@@ -70,7 +70,7 @@ export async function POST(req: Request) {
       summary: `Published product "${created.title}"`,
       after: created,
     });
-    publish(user, ["products"]);
+    await publish(user, ["products"]);
       return NextResponse.json({ ...created, ...publishMeta(user) }, { status: 201 });
   } catch (error) {
     console.error("[api] POST /api/v1/admin/products failed:", error);

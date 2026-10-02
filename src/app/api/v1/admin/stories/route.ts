@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { adminRateLimit, requirePermission } from "@/lib/admin-guard";
 import { firstZodError, successStorySchema } from "@/lib/validators";
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
         before: existing,
         after: updated,
       });
-      publish(user, ["stories"]);
+      await publish(user, ["stories"]);
       return NextResponse.json({ ...updated, ...publishMeta(user) });
     }
 
@@ -70,7 +70,7 @@ export async function POST(req: Request) {
       summary: `Published success story "${created.title}"`,
       after: created,
     });
-    publish(user, ["stories"]);
+    await publish(user, ["stories"]);
       return NextResponse.json({ ...created, ...publishMeta(user) }, { status: 201 });
   } catch (error) {
     console.error("[api] POST /api/v1/admin/stories failed:", error);

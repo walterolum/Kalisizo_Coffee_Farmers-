@@ -278,18 +278,30 @@ export function UploadButton({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="inline-flex cursor-pointer items-center gap-2 self-start rounded-xl bg-white/5 px-3 py-2 text-xs font-semibold text-cream/80 ring-1 ring-white/10 transition-colors hover:bg-white/10">
+      <label className="inline-flex cursor-pointer items-center gap-2 self-start rounded-xl bg-white/5 px-3 py-2 text-xs font-semibold text-cream/80 ring-1 ring-white/10 transition-colors hover:bg-white/10 focus-within:ring-2 focus-within:ring-gold">
         {busy ? (
           <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />
         ) : (
           <UploadCloud className="size-3.5" aria-hidden="true" />
         )}
         {busy ? "Uploading…" : label}
+        {/* `sr-only`, never `hidden`.
+
+            `hidden` is `display:none`, which removes the input from the tab order
+            and the accessibility tree entirely, and a `<label>` is not focusable
+            and has no keyboard activation of its own. That combination looked
+            fine to a mouse user and made uploading an image impossible for anyone
+            driving the CMS from the keyboard — the file picker could not be
+            opened at all.
+
+            Visually hidden keeps the input focusable and keeps this label as its
+            accessible name. `focus-within` on the label then paints the focus ring
+            on the visible control, because the focused element itself is invisible. */}
         <input
           type="file"
           accept="image/jpeg,image/png,image/webp,image/gif"
           onChange={pick}
-          className="hidden"
+          className="sr-only"
         />
       </label>
       {error && (

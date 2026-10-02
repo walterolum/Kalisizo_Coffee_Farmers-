@@ -122,7 +122,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    broadcastRealtimeUpdate();
+    await broadcastRealtimeUpdate();
   } catch {
     /* realtime is best-effort and must not fail the upload */
   }

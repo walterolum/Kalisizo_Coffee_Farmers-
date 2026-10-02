@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const description = program.summary || program.tagline;
   return {
-    title: `${program.title} | Kalisizo Coffee Cooperative`,
+    title: program.title,
     description,
     alternates: {
       canonical: SITE_URL ? `${SITE_URL}/programs/${program.slug}` : undefined,

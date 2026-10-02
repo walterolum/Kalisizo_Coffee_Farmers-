@@ -15,7 +15,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const article = await getNewsBySlug(slug);
   if (!article) return { title: "Article not found" };
 
-  const title = article.seoTitle || `${article.title} | Kalisizo Coffee Cooperative`;
+  // Bare: the root layout's title template appends the society name. The brand
+  // still reaches social cards via `siteName` on the root openGraph config.
+  const title = article.seoTitle || article.title;
   const description = article.seoDescription || article.excerpt;
   const url = SITE_URL ? `${SITE_URL}/news/${article.slug}` : undefined;
   const image = article.featuredImageUrl

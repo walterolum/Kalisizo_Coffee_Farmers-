@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const description = event.summary;
   return {
-    title: `${event.title} | Kalisizo Coffee Cooperative`,
+    title: event.title,
     description,
     alternates: {
       canonical: SITE_URL ? `${SITE_URL}/events/${event.slug}` : undefined,

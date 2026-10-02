@@ -148,7 +148,7 @@ export async function POST(req: Request) {
       before: { ...existing, socials: existingSocials },
       after: { ...info, socials: fresh?.socials ?? [] },
     });
-    publish(user, ["settings"]);
+    await publish(user, ["settings"]);
 
     return NextResponse.json({ ...fresh, ...publishMeta(user) });
   } catch (error) {

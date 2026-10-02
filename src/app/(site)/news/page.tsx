@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     "Harvest updates, cooperative announcements and farmer stories from Kalisizo Sub County, Kyotera District.",
   alternates: { canonical: SITE_URL ? `${SITE_URL}/news` : undefined },
   openGraph: {
-    title: "News & Stories | Kalisizo Coffee Cooperative",
+    title: "News & Stories",
     description:
       "Harvest updates, cooperative announcements and farmer stories from Kalisizo.",
     url: SITE_URL ? `${SITE_URL}/news` : undefined,

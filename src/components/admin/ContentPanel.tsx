@@ -274,7 +274,7 @@ export function ContentPanel({
           No {config.label.toLowerCase()} yet. Create the first one.
         </p>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-white/10">
+        <div className="overflow-x-auto rounded-lg border border-white/10">
           <table className="w-full text-left text-sm">
             <thead className="bg-white/[0.04] text-xs uppercase tracking-wide text-cream/50">
               <tr>

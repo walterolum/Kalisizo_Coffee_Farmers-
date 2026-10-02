@@ -62,7 +62,7 @@ export async function POST(req: Request) {
       before: existing,
       after: hero,
     });
-    publish(user, ["hero"]);
+    await publish(user, ["hero"]);
 
     return NextResponse.json({ ...hero, ...publishMeta(user) });
   } catch (error) {

@@ -20,9 +20,14 @@ export default function ContactPage() {
     <>
       {/* `headingLevel` is 1 here but 2 on the home page: this page has no hero,
           so the contact section is its main heading. Rendered as `h2` everywhere
-          the component is used, this page shipped with no `h1` at all. */}
+          the component is used, this page shipped with no `h1` at all.
+
+          This component must appear exactly once. It emits fixed DOM ids
+          (`name`, `email`, `phone`, `type`, `message`, `inquiry`, ...), so a
+          second copy makes every `label[for]` resolve to the first copy's field,
+          duplicates the enquiry form and the Google Maps iframe, and leaves
+          keyboard focus jumping between two identical forms. */}
       <Contact headingLevel={1} />
-      <Contact />
       <Location />
       <Faq />
     </>

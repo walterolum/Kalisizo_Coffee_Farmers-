@@ -62,6 +62,8 @@ export function formatBytes(bytes: number): string {
 
 type CardShellProps = {
   href: string;
+  /** Used for the stretched link's accessible name. See CardShell. */
+  title: string;
   children: React.ReactNode;
   className?: string;
 };
@@ -69,15 +71,23 @@ type CardShellProps = {
 /**
  * Wraps a card in a single stretched link so the whole card is clickable while
  * the accessible name stays the card's own heading.
+ *
+ * The name is built from the card's `title` rather than a literal "Read more".
+ * The stretched link covers the card and has no text content of its own, so
+ * without `aria-label` a screen reader announcing it has nothing to fall back
+ * on; with a constant label, every card on the site was announced identically and
+ * a user tabbing through /news heard "Read more, link, Read more, link" with no
+ * way to tell them apart. WCAG 2.4.4, and 2.5.3 for the visible-name mismatch.
  */
-function CardShell({ href, children, className = "" }: CardShellProps) {
+function CardShell({ href, title, children, className = "" }: CardShellProps) {
+  const label = `Read more about ${title}`;
   return (
     <article
       className={`group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-charcoal/8 transition-colors duration-300 hover:ring-gold/40 ${className}`}
     >
       {children}
-      <Link href={href} className="absolute inset-0 z-10" aria-label="Read more">
-        <span className="sr-only">Read more</span>
+      <Link href={href} className="absolute inset-0 z-10" aria-label={label}>
+        <span className="sr-only">{label}</span>
       </Link>
     </article>
   );
@@ -101,7 +111,7 @@ export function NewsCard({
   category: string | null;
 }) {
   return (
-    <CardShell href={href}>
+    <CardShell href={href} title={title}>
       {imageUrl && (
         <div className="relative aspect-[16/10] overflow-hidden bg-charcoal/5">
           <Image
@@ -159,7 +169,7 @@ export function ProjectCard({
   stage: string;
 }) {
   return (
-    <CardShell href={href}>
+    <CardShell href={href} title={title}>
       {imageUrl && (
         <div className="relative aspect-[16/10] overflow-hidden bg-charcoal/5">
           <Image
@@ -211,7 +221,7 @@ export function EventCard({
 }) {
   const upcoming = !isPast;
   return (
-    <CardShell href={href}>
+    <CardShell href={href} title={title}>
       <div className="flex items-stretch gap-0">
         <div className="flex w-24 shrink-0 flex-col items-center justify-center bg-forest px-3 py-6 text-center">
           <span className="font-display text-3xl font-semibold leading-none text-gold-light">

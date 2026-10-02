@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const description = project.seoDescription || project.summary;
   const url = SITE_URL ? `${SITE_URL}/projects/${project.slug}` : undefined;
   return {
-    title: `${project.seoTitle || project.title} | Kalisizo Coffee Cooperative`,
+    title: project.seoTitle || project.title,
     description,
     alternates: { canonical: url },
     openGraph: { title: project.title, description, url, type: "article" },

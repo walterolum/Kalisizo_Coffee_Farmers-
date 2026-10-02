@@ -11,7 +11,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const page = await getPageBySlug(slug);
   if (!page) return { title: "Page not found" };
 
-  const title = page.seoTitle || `${page.title} | Kalisizo Coffee Cooperative`;
+  // Bare: the root layout's title template appends the society name.
+  const title = page.seoTitle || page.title;
   const description = page.seoDescription || page.excerpt || undefined;
   const url = SITE_URL ? `${SITE_URL}/p/${page.slug}` : undefined;
 

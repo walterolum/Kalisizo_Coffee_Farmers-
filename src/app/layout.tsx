@@ -21,10 +21,22 @@ const siteBase = SITE_URL ? new URL(SITE_URL) : undefined;
 const ogImage = SITE_URL ? `${SITE_URL}/og.png` : undefined;
 
 export const metadata: Metadata = {
-  title,
+  // A template, so every page that declares a bare `title` gets the brand
+  // appended automatically.
+  //
+  // Without it a child string title *replaces* the parent outright, which left
+  // seven of thirteen public pages shipping an unbranded <title> — "Gallery",
+  // "Events", "Contact Us" — while the five dynamic routes hand-wrote
+  // `" | Kalisizo Coffee Cooperative"`, a name that is not even this society's
+  // registered one. Both problems are fixed by the single template below, and
+  // adding a route can no longer regress it.
+  title: { default: title, template: `%s | ${title}` },
   description,
   applicationName: title,
   metadataBase: siteBase,
+  // Deliberately only on the home route. Declared here it is inherited by every
+  // descendant that does not set its own, which would tell search engines that
+  // each of those pages is a duplicate of `/`.
   alternates: {
     canonical: SITE_URL ? "/" : undefined,
   },

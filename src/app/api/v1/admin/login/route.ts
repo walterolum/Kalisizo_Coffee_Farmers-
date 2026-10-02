@@ -58,7 +58,12 @@ export async function POST(req: Request) {
     user = await prisma.user.findFirst({
       where: { OR: [{ username: identifier }, { email: identifier }] },
     });
-  } catch {
+  } catch (error) {
+    // Logged, never returned. A 503 here is the one signal that the database is
+    // down, and with this silent a total outage was indistinguishable from a
+    // burst of bad passwords: the response was right, the diagnosis was
+    // unavailable. The client still only ever sees the generic message below.
+    console.error("[login] user lookup failed:", error);
     return NextResponse.json(
       {
         error: "database_unavailable",

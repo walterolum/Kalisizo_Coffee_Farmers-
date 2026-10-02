@@ -238,7 +238,15 @@ export function AdminClient() {
       // every 401 from the other one. `ApiError` now extends it, so the base
       // class matches both. This is the fallback path — `apiFetch` also raises
       // `SESSION_EXPIRED_EVENT` directly.
-      if (error instanceof AdminApiError && error.status === 401) logout();
+      if (error instanceof AdminApiError && error.status === 401) {
+        logout();
+        return;
+      }
+      // Not a session problem, so logging out would be wrong — the panels own
+      // their own error UI. Recorded here so a failure that the admin never
+      // looked at is still visible in the browser console; without this a
+      // database outage looked identical to an empty database.
+      console.warn("[admin] request failed outside the session flow:", error);
     },
     [logout],
   );
@@ -1155,6 +1163,7 @@ function InquiriesPanel({
   onSessionError: (error: unknown) => void;
 }) {
   const [inquiries, setInquiries] = useState<Inquiry[] | null>(null);
+  const [loadError, setLoadError] = useState(false);
   const [filter, setFilter] = useState<string>("ALL");
   const [openId, setOpenId] = useState<string | null>(null);
   const [updating, setUpdating] = useState<string | null>(null);
@@ -1164,8 +1173,14 @@ function InquiriesPanel({
     try {
       const data = await apiFetch<Inquiry[]>(`/api/v1/admin/inquiries${query}`);
       setInquiries(data);
+      setLoadError(false);
     } catch (error) {
       onSessionError(error);
+      // Distinct from "no inquiries". Without this the panel holds `null` and
+      // spins forever, which reads as a hung request rather than a failed one —
+      // and an admin whose database is briefly unreachable cannot tell that from
+      // every inquiry having been deleted.
+      setLoadError(true);
     }
   }, [filter, onSessionError]);
 
@@ -1217,7 +1232,13 @@ function InquiriesPanel({
         ))}
       </div>
 
-      {!inquiries ? (
+      {loadError ? (
+        <ErrorState
+          title="Could not load inquiries"
+          message="The server did not respond. Nothing has been deleted — this is a connection problem. Try again."
+          onRetry={() => void load()}
+        />
+      ) : !inquiries ? (
         <div className="mt-6 grid place-items-center py-14 text-cream/50">
           <Loader2 className="size-6 animate-spin" />
         </div>
@@ -1327,6 +1348,7 @@ function LeadershipPanel({
   onSessionError: (error: unknown) => void;
 }) {
   const [leaders, setLeaders] = useState<Leader[] | null>(null);
+  const [loadError, setLoadError] = useState(false);
   const [editingId, setEditingId] = useState<string | undefined>(undefined);
   const [form, setForm] = useState({
     name: "",
@@ -1343,8 +1365,10 @@ function LeadershipPanel({
     try {
       const data = await apiFetch<Leader[]>("/api/v1/leadership");
       setLeaders(data.sort((a, b) => a.displayOrder - b.displayOrder));
+      setLoadError(false);
     } catch (error) {
       onSessionError(error);
+      setLoadError(true);
     }
   }, [onSessionError]);
 
@@ -1525,7 +1549,15 @@ function LeadershipPanel({
         </div>
 
         <ul className="space-y-3">
-          {!leaders ? (
+          {loadError ? (
+            <li className="list-none">
+              <ErrorState
+                title="Could not load leadership"
+                message="The server did not respond. Nothing has been deleted — try again."
+                onRetry={() => void load()}
+              />
+            </li>
+          ) : !leaders ? (
             <li className="grid place-items-center py-12 text-cream/50">
               <Loader2 className="size-6 animate-spin" />
             </li>
@@ -1581,6 +1613,7 @@ function LogoPanel({
   onSessionError: (error: unknown) => void;
 }) {
   const [info, setInfo] = useState<LogoSettings | null>(null);
+  const [loadError, setLoadError] = useState(false);
   const [logoUrl, setLogoUrl] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -1602,8 +1635,10 @@ function LogoPanel({
       // current even while a local edit is in progress. Only the editable field
       // is protected.
       if (!edited.current) setLogoUrl(settings.logoUrl ?? "");
+      setLoadError(false);
     } catch (error) {
       onSessionError(error);
+      setLoadError(true);
     }
   }, [onSessionError]);
 
@@ -1722,11 +1757,17 @@ function LogoPanel({
           </div>
         </div>
       </form>
-      {!info && (
+      {loadError ? (
+        <ErrorState
+          title="Could not load cooperative settings"
+          message="The server did not respond, so this panel cannot tell whether settings exist. Nothing has been deleted — try again."
+          onRetry={() => void load()}
+        />
+      ) : !info ? (
         <p className="mt-4 text-sm text-cream/45">
           No cooperative settings found. Save the About section first.
         </p>
-      )}
+      ) : null}
     </Panel>
   );
 }
@@ -1740,6 +1781,7 @@ function SuccessStoriesPanel({
 }) {
   const { confirm, dialog: confirmDialog } = useConfirm();
   const [stories, setStories] = useState<StoryItem[] | null>(null);
+  const [loadError, setLoadError] = useState(false);
   const [editingId, setEditingId] = useState<string | undefined>(undefined);
   const [form, setForm] = useState({
     title: "",
@@ -1755,8 +1797,10 @@ function SuccessStoriesPanel({
     try {
       const data = await apiFetch<StoryItem[]>("/api/v1/stories");
       setStories(data.sort((a, b) => a.displayOrder - b.displayOrder));
+      setLoadError(false);
     } catch (error) {
       onSessionError(error);
+      setLoadError(true);
     }
   }, [onSessionError]);
 
@@ -1939,7 +1983,15 @@ function SuccessStoriesPanel({
           </div>
 
           <ul className="space-y-3">
-            {!stories ? (
+            {loadError ? (
+              <li className="list-none">
+                <ErrorState
+                  title="Could not load success stories"
+                  message="The server did not respond. Nothing has been deleted — try again."
+                  onRetry={() => void load()}
+                />
+              </li>
+            ) : !stories ? (
               <li className="grid place-items-center py-12 text-cream/50">
                 <Loader2 className="size-6 animate-spin" />
               </li>
@@ -2011,6 +2063,7 @@ function ProductsPanel({
   onSessionError: (error: unknown) => void;
 }) {
   const [products, setProducts] = useState<Product[] | null>(null);
+  const [loadError, setLoadError] = useState(false);
   const [editingId, setEditingId] = useState<string | undefined>(undefined);
   const [form, setForm] = useState<{
     title: string;
@@ -2043,8 +2096,10 @@ function ProductsPanel({
     try {
       const data = await apiFetch<Product[]>("/api/v1/products");
       setProducts(data);
+      setLoadError(false);
     } catch (error) {
       onSessionError(error);
+      setLoadError(true);
     }
   }, [onSessionError]);
 
@@ -2260,7 +2315,15 @@ function ProductsPanel({
         </div>
 
         <ul className="space-y-3">
-          {!products ? (
+          {loadError ? (
+            <li className="list-none">
+              <ErrorState
+                title="Could not load products"
+                message="The server did not respond. Nothing has been deleted — try again."
+                onRetry={() => void load()}
+              />
+            </li>
+          ) : !products ? (
             <li className="grid place-items-center py-12 text-cream/50">
               <Loader2 className="size-6 animate-spin" />
             </li>
@@ -2326,6 +2389,7 @@ function HomePanel({
   onSessionError: (error: unknown) => void;
 }) {
   const [hero, setHero] = useState<HeroContentItem | null>(null);
+  const [loadError, setLoadError] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     headlinePrefix: "",
@@ -2351,6 +2415,7 @@ function HomePanel({
     try {
       const data = await apiFetch<HeroContentItem>("/api/v1/hero");
       setHero(data);
+      setLoadError(false);
       if (!edited.current) {
         setForm({
           headlinePrefix: data.headlinePrefix,
@@ -2367,6 +2432,7 @@ function HomePanel({
       }
     } catch (error) {
       onSessionError(error);
+      setLoadError(true);
     }
   }, [onSessionError]);
 
@@ -2568,11 +2634,17 @@ function HomePanel({
           </button>
         </div>
       </form>
-      {!hero && (
+      {loadError ? (
+        <ErrorState
+          title="Could not load hero content"
+          message="The server did not respond, so this panel cannot tell whether hero content exists. Nothing has been deleted — try again."
+          onRetry={() => void load()}
+        />
+      ) : !hero ? (
         <p className="mt-4 text-sm text-cream/45">
           No hero content found in the database yet. Submit to create it.
         </p>
-      )}
+      ) : null}
     </Panel>
   );
 }
@@ -2585,6 +2657,7 @@ function AboutPanel({
   onSessionError: (error: unknown) => void;
 }) {
   const [info, setInfo] = useState<AboutSettings | null>(null);
+  const [loadError, setLoadError] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     mission: "",
@@ -2616,8 +2689,10 @@ function AboutPanel({
           taglines: settings.taglines.join(", "),
         });
       }
+      setLoadError(false);
     } catch (error) {
       onSessionError(error);
+      setLoadError(true);
     }
   }, [onSessionError]);
 
@@ -2703,11 +2778,17 @@ function AboutPanel({
             </button>
           </div>
         </form>
-        {!info && (
+        {loadError ? (
+          <ErrorState
+            title="Could not load cooperative settings"
+            message="The server did not respond, so this panel cannot tell whether settings exist. Nothing has been deleted — try again."
+            onRetry={() => void load()}
+          />
+        ) : !info ? (
           <p className="mt-4 text-sm text-cream/45">
             No cooperative settings found. Submit to create the initial record.
           </p>
-        )}
+        ) : null}
       </Panel>
 
       <LogoPanel notify={notify} onSessionError={onSessionError} />

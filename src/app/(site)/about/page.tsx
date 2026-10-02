@@ -12,10 +12,12 @@ import { SITE_URL } from "@/lib/site";
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPageBySlug("about");
 
+  // Bare, because the root layout's title template appends the society name.
+  // Leaving the suffix in the fallback would render the name twice.
   const title =
     page?.seoTitle ||
     page?.title ||
-    "About Us | Kalisizo Coffee Farmers Cooperative Society Ltd";
+    "About Us";
   const description =
     page?.seoDescription ||
     page?.excerpt ||

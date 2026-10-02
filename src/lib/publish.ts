@@ -111,7 +111,19 @@ export async function publish(
 ): Promise<void> {
   try {
     await broadcastRealtimeUpdate({ collections, publishedBy: actor.name, ...meta });
-  } catch {
-    /* ignore */
+  } catch (error) {
+    // Swallowed, but no longer silent. Letting this propagate would report the
+    // save as failed and tell an admin their content was lost when the row is
+    // already committed and visible on the next page load — worse than dropping
+    // the broadcast. But silence means "connected clients stopped receiving
+    // updates" is undiagnosable after the fact, which is how a realtime backend
+    // silently dies while every test and every manual click still passes.
+    //
+    // `collections` is the useful part of the diagnosis: it says which change
+    // failed to propagate.
+    console.warn(
+      `[realtime] could not broadcast an update for: ${collections.join(", ")}`,
+      error
+    );
   }
 }

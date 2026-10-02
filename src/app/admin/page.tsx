@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 import { AdminClient } from "./AdminClient";
 
 export const metadata: Metadata = {
-  title: "Admin | Kalisizo Coffee Farmers Cooperative",
+  title: "Admin",
   robots: { index: false, follow: false },
 };
 

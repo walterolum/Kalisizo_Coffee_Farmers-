@@ -58,7 +58,7 @@ export async function POST(req: Request) {
         before: existing,
         after: updated,
       });
-      publish(user, ["locations"]);
+      await publish(user, ["locations"]);
       return NextResponse.json({ ...updated, ...publishMeta(user) });
     }
 
@@ -73,7 +73,7 @@ export async function POST(req: Request) {
       summary: `Published store location "${created.name}"`,
       after: created,
     });
-    publish(user, ["locations"]);
+    await publish(user, ["locations"]);
       return NextResponse.json({ ...created, ...publishMeta(user) }, { status: 201 });
   } catch (error) {
     console.error("[api] POST /api/v1/admin/locations failed:", error);

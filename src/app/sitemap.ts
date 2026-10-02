@@ -27,7 +27,14 @@ async function collect() {
         orderBy: { updatedAt: "desc" },
         take: 500,
       })
-      .catch(() => []),
+      .catch((error) => {
+        // Per-query isolation is deliberate: one unreachable table must not empty
+        // the whole sitemap. But silence is not. An empty sitemap is
+        // indistinguishable from a site with no content, so a database outage
+        // would quietly de-index the site with nothing at all in the logs.
+        console.warn("[sitemap] could not read newsArticle, omitting its URLs:", error);
+        return [] as { slug: string; updatedAt: Date }[];
+      }),
     prisma.project
       .findMany({
         where: { status: "PUBLISHED", deletedAt: null },
@@ -35,7 +42,14 @@ async function collect() {
         orderBy: { updatedAt: "desc" },
         take: 500,
       })
-      .catch(() => []),
+      .catch((error) => {
+        // Per-query isolation is deliberate: one unreachable table must not empty
+        // the whole sitemap. But silence is not. An empty sitemap is
+        // indistinguishable from a site with no content, so a database outage
+        // would quietly de-index the site with nothing at all in the logs.
+        console.warn("[sitemap] could not read project, omitting its URLs:", error);
+        return [] as { slug: string; updatedAt: Date }[];
+      }),
     prisma.event
       .findMany({
         where: { status: "PUBLISHED", deletedAt: null },
@@ -43,7 +57,14 @@ async function collect() {
         orderBy: { updatedAt: "desc" },
         take: 500,
       })
-      .catch(() => []),
+      .catch((error) => {
+        // Per-query isolation is deliberate: one unreachable table must not empty
+        // the whole sitemap. But silence is not. An empty sitemap is
+        // indistinguishable from a site with no content, so a database outage
+        // would quietly de-index the site with nothing at all in the logs.
+        console.warn("[sitemap] could not read event, omitting its URLs:", error);
+        return [] as { slug: string; updatedAt: Date }[];
+      }),
     prisma.service
       .findMany({
         where: { status: "PUBLISHED", deletedAt: null },
@@ -51,7 +72,14 @@ async function collect() {
         orderBy: { updatedAt: "desc" },
         take: 200,
       })
-      .catch(() => []),
+      .catch((error) => {
+        // Per-query isolation is deliberate: one unreachable table must not empty
+        // the whole sitemap. But silence is not. An empty sitemap is
+        // indistinguishable from a site with no content, so a database outage
+        // would quietly de-index the site with nothing at all in the logs.
+        console.warn("[sitemap] could not read service, omitting its URLs:", error);
+        return [] as { slug: string; updatedAt: Date }[];
+      }),
     // The about page has a dedicated route; the rest live under /p/<slug>.
     prisma.page
       .findMany({
@@ -60,7 +88,14 @@ async function collect() {
         orderBy: { updatedAt: "desc" },
         take: 200,
       })
-      .catch(() => []),
+      .catch((error) => {
+        // Per-query isolation is deliberate: one unreachable table must not empty
+        // the whole sitemap. But silence is not. An empty sitemap is
+        // indistinguishable from a site with no content, so a database outage
+        // would quietly de-index the site with nothing at all in the logs.
+        console.warn("[sitemap] could not read page, omitting its URLs:", error);
+        return [] as { slug: string; updatedAt: Date }[];
+      }),
   ]);
 
   return { news, projects, events, programs, pages };

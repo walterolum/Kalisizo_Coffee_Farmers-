@@ -51,7 +51,7 @@ export async function POST(req: Request) {
         before: existing,
         after: updated,
       });
-      publish(user, ["faq"]);
+      await publish(user, ["faq"]);
       return NextResponse.json({ ...updated, ...publishMeta(user) });
     }
 
@@ -64,7 +64,7 @@ export async function POST(req: Request) {
       summary: `Published FAQ "${created.question}"`,
       after: created,
     });
-    publish(user, ["faq"]);
+    await publish(user, ["faq"]);
       return NextResponse.json({ ...created, ...publishMeta(user) }, { status: 201 });
   } catch (error) {
     console.error("[api] POST /api/v1/admin/faq failed:", error);

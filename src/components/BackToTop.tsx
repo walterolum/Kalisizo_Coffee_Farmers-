@@ -25,6 +25,13 @@ export function BackToTop() {
         })
       }
       aria-label="Back to top"
+      // `opacity-0` alone would leave this focusable: a keyboard user tabbing
+      // through the footer would land on an invisible control with no way to see
+      // where focus was or what it did. Dropping it out of the tab order while
+      // hidden is the whole fix — the moment it becomes visible it is reachable
+      // again, which is when it is actually useful.
+      tabIndex={visible ? 0 : -1}
+      aria-hidden={visible ? undefined : true}
       className={`fixed bottom-6 left-6 z-40 grid size-12 place-items-center rounded-full bg-forest text-cream shadow-card ring-1 ring-white/15 transition-all duration-300 hover:-translate-y-1 hover:bg-emerald-brand ${
         visible
           ? "translate-y-0 opacity-100"
