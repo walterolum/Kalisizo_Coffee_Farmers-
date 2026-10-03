@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/backend/prisma";
 import { requirePermission, adminRateLimit } from "@/backend/admin-guard";
-import { firstZodError, inquiryStatusSchema } from "@/shared/validators";
+import { firstZodError, idParamSchema, inquiryStatusSchema } from "@/shared/validators";
 import { publish, publishMeta, recordAudit } from "@/backend/publish";
+import { badRequest, notFound, serviceUnavailable } from "@/shared/http";
 
 type Context = { params: Promise<{ id: string }> };
 
@@ -15,6 +16,7 @@ export async function PATCH(req: Request, context: Context) {
   if (limited) return limited;
 
   const { id } = await context.params;
+  if (!idParamSchema.safeParse(id).success) return badRequest("Invalid inquiry id.", "id");
 
   let payload: unknown;
   try {
@@ -38,10 +40,7 @@ export async function PATCH(req: Request, context: Context) {
   try {
     const existing = await prisma.contactInquiry.findUnique({ where: { id } });
     if (!existing) {
-      return NextResponse.json(
-        { error: "not_found", message: "Inquiry not found." },
-        { status: 404 }
-      );
+      return notFound("Inquiry not found.");
     }
     const updated = await prisma.contactInquiry.update({
       where: { id },
@@ -57,13 +56,49 @@ export async function PATCH(req: Request, context: Context) {
       after: updated,
     });
     publish(user, ["inquiries"]);
-      return NextResponse.json({ ...updated, ...publishMeta(user) });
+    return NextResponse.json({ ...updated, ...publishMeta(user) });
   } catch (error) {
     console.error(`[api] PATCH /api/v1/admin/inquiries/${id} failed:`, error);
-    return NextResponse.json(
-      { error: "service_unavailable", message: "Could not update inquiry." },
-      { status: 503 }
-    );
+    return serviceUnavailable("Could not update inquiry.");
+  }
+}
+
+/** Permanently deletes a contact inquiry/message. */
+export async function DELETE(req: Request, context: Context) {
+  const guard = await requirePermission(req, "deleteMessages");
+  if ("response" in guard) return guard.response;
+  const user = guard.user;
+  const limited = adminRateLimit(req, "inquiries:delete", 20, 60 * 60_000);
+  if (limited) return limited;
+
+  const { id } = await context.params;
+  if (!idParamSchema.safeParse(id).success) return badRequest("Invalid inquiry id.", "id");
+
+  try {
+    const existing = await prisma.contactInquiry.findUnique({
+      where: { id },
+      select: { id: true, fullName: true, email: true, subject: true },
+    });
+    if (!existing) {
+      return notFound("Inquiry not found.");
+    }
+
+    await prisma.contactInquiry.delete({ where: { id } });
+
+    await recordAudit({
+      actor: user,
+      action: "DELETE",
+      targetType: "inquiry",
+      targetId: id,
+      summary: `Deleted inquiry from ${existing.fullName} (${existing.email})${existing.subject ? ` — ${existing.subject}` : ""}`,
+      before: existing,
+    });
+    publish(user, ["inquiries"]);
+
+    return NextResponse.json({ ok: true, deletedId: id });
+  } catch (error) {
+    console.error(`[api] DELETE /api/v1/admin/inquiries/${id} failed:`, error);
+    return serviceUnavailable("Could not delete the inquiry.");
   }
 }
 

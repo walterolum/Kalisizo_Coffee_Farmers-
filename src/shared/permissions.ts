@@ -23,6 +23,19 @@ export const PERMISSIONS = {
   publishContent: ["SUPER_ADMIN", "CONTENT_ADMIN"],
   /** Archive, soft-delete or permanently remove content. */
   deleteContent: ["SUPER_ADMIN", "CONTENT_ADMIN"],
+  /**
+   * Permanently delete a contact-form submission.
+   *
+   * Deliberately not folded into `deleteContent`, which a Content Administrator
+   * holds. Archiving a news article is editorial housekeeping on content the
+   * cooperative published; removing a message from a member of the public is
+   * disposing of correspondence, and that should be narrower.
+   *
+   * Its own key rather than a reuse of `manageSystem` because that
+   * permission's refusal message reads "cannot access system settings", which
+   * would be a baffling thing to be told after trying to delete a message.
+   */
+  deleteMessages: ["SUPER_ADMIN"],
   /** Edit site-wide configuration (contact details, social links, settings). */
   manageSettings: ["SUPER_ADMIN", "CONTENT_ADMIN"],
   /** Upload media. */

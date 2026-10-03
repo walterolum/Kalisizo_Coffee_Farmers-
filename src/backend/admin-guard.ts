@@ -145,6 +145,11 @@ function permissionVerb(permission: Permission): string {
       return "publish or unpublish content";
     case "deleteContent":
       return "delete or archive content";
+    case "deleteMessages":
+      // Named precisely, because the action is: a refusal that says "cannot
+      // access system settings" when the button was labelled "Delete message"
+      // tells the user nothing about what to do next.
+      return "delete contact messages";
     case "manageSettings":
       return "change site settings";
     case "manageMedia":

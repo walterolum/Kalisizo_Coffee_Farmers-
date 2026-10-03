@@ -53,7 +53,11 @@ import {
 import type { UserRole } from "@/backend/auth";
 import { PERMISSIONS, type Permission } from "@/shared/permissions";
 import type { ContentType, Paginated } from "@/shared/admin-api";
-import { AdminApiError, SESSION_EXPIRED_EVENT } from "@/shared/admin-api";
+import {
+  AdminApiError,
+  deleteInquiry,
+  SESSION_EXPIRED_EVENT,
+} from "@/shared/admin-api";
 import {
   formatSavedAt as fmtShortTime,
   type SaveResult as PublishResult,
@@ -570,7 +574,11 @@ function Dashboard({
           />
         )}
         {effectiveTab === "inquiries" && (
-          <InquiriesPanel notify={notify} onSessionError={onSessionError} />
+          <InquiriesPanel
+            notify={notify}
+            onSessionError={onSessionError}
+            canDelete={can(user, "deleteMessages")}
+          />
         )}
         {effectiveTab === "home" && (
           <HomePanel notify={notify} onSessionError={onSessionError} />
@@ -1166,9 +1174,19 @@ function Overview({
 function InquiriesPanel({
   notify,
   onSessionError,
+  canDelete,
 }: {
   notify: (message: string, kind?: "success" | "error") => void;
   onSessionError: (error: unknown) => void;
+  /**
+   * Whether to offer the destructive Delete action. Deleting a message is
+   * irreversible — there is no trash — and the API restricts it to
+   * `deleteMessages`, so the button is shown only to roles that hold it.
+   * Hiding it, rather than letting the server return 403, is the point: an
+   * action that can only fail teaches an administrator to distrust the
+   * interface.
+   */
+  canDelete: boolean;
 }) {
   const [inquiries, setInquiries] = useState<Inquiry[] | null>(null);
   const [loadError, setLoadError] = useState(false);
@@ -1216,13 +1234,53 @@ function InquiriesPanel({
     }
   };
 
+
+  const { confirm, dialog: confirmDialog } = useConfirm();
+
+  /**
+   * Deletes one message after an explicit confirmation.
+   *
+   * The prompt names the sender, because a list can hold several messages from
+   * the same person and "delete this?" alone would not say which one is about to
+   * be destroyed. `onSessionError` is still called first on failure: a stale
+   * token must drop the shell back to the login form rather than leave a live
+   * button that always fails.
+   */
+  const deleteMessage = async (inquiry: Inquiry) => {
+    const ok = await confirm({
+      title: "Delete this message?",
+      body: `The message from ${inquiry.fullName} will be removed permanently. There is no trash and no way to restore it.`,
+      confirmLabel: "Delete message",
+      destructive: true,
+    });
+    if (!ok) return;
+
+    setUpdating(inquiry.id);
+    try {
+      await deleteInquiry(inquiry.id);
+      // Collapse the row before refetching. The refetch is what removes it from
+      // the list, and leaving `openId` pointing at a message that no longer
+      // exists would silently leave `open` true against nothing.
+      if (openId === inquiry.id) setOpenId(null);
+      notify("Message deleted.");
+      await load();
+    } catch (error) {
+      onSessionError(error);
+      notify("Could not delete the message.", "error");
+    } finally {
+      setUpdating(null);
+    }
+  };
+
   const filters = ["ALL", "PENDING", "REVIEWED", "RESOLVED"] as const;
 
   return (
-    <Panel
-      title="Customer & Farmer Inquiries"
-      icon={<Inbox className="size-5" />}
-    >
+    <>
+      {confirmDialog}
+      <Panel
+        title="Customer & Farmer Inquiries"
+        icon={<Inbox className="size-5" />}
+      >
       <div className="flex flex-wrap items-center gap-2">
         {filters.map((f) => (
           <button
@@ -1336,6 +1394,17 @@ function InquiriesPanel({
                           <option value="RESOLVED">RESOLVED</option>
                         </select>
                       </label>
+                      {canDelete && (
+                        <button
+                          type="button"
+                          onClick={() => deleteMessage(inquiry)}
+                          className="btn btn-ghost-soft btn-sm border-red-400/30 text-red-300 hover:bg-red-500/15"
+                          disabled={updating === inquiry.id}
+                        >
+                          <Trash2 className="size-3.5" aria-hidden="true" />
+                          Delete message
+                        </button>
+                      )}
                     </div>
                   </div>
                 )}
@@ -1344,7 +1413,8 @@ function InquiriesPanel({
           })}
         </ul>
       )}
-    </Panel>
+      </Panel>
+    </>
   );
 }
 

@@ -433,3 +433,33 @@ export type AdminInquiry = {
 export async function listPendingInquiries(): Promise<AdminInquiry[]> {
   return request<AdminInquiry[]>("/api/v1/admin/inquiries?status=PENDING");
 }
+
+/**
+ * Permanently removes a CMS account.
+ *
+ * Not the same thing as deactivating: `PATCH` flips `isActive` so the account
+ * stops signing in but keeps its authored content attributed to a real person.
+ * This is the destructive path, which is why the server refuses it for your own
+ * account and refuses it when it would leave no active Super Administrator. The
+ * audit row written before the row disappears is what keeps the deletion
+ * explainable afterwards.
+ */
+export async function deleteUser(id: string): Promise<void> {
+  await request<void>(`/api/v1/admin/users/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+}
+
+/**
+ * Permanently deletes a contact-form submission.
+ *
+ * Inquiries have no draft state and no restore path, so there is nothing to
+ * archive: the message is removed outright and the fact is recorded in the
+ * audit log. Restricted to `manageSystem` on the server, because a message is
+ * correspondence with a member of the public rather than editorial content.
+ */
+export async function deleteInquiry(id: string): Promise<void> {
+  await request<void>(`/api/v1/admin/inquiries/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+}

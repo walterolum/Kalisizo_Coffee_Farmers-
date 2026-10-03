@@ -8,6 +8,7 @@ import { useCallback, useEffect, useState } from "react";
 import {
   AdminApiError,
   createUser,
+  deleteUser,
   listUsers,
   resetUserPassword,
   updateUser,
@@ -120,6 +121,46 @@ export function UsersPanel({ currentUserId }: { currentUserId?: string }) {
     }
   }
 
+  /**
+   * Removes an account outright, as distinct from deactivating it.
+   *
+   * Both are offered, and they are not near-substitutes. Deactivation keeps the
+   * account and its authored content: the person can sign in again, and history
+   * stays attributed to a real account. Deletion destroys the row, so anything
+   * the user wrote becomes unattributable. The prompt says so, because
+   * "Delete" next to "Deactivate" on the same row is otherwise a coin toss.
+   */
+  async function deleteAccount(user: AdminUser) {
+    const authored = user._count?.articles ?? 0;
+    const ok = await confirm({
+      title: `Delete ${user.name}?`,
+      body:
+        `This permanently removes the CMS account. The user will lose access immediately and ` +
+        `this cannot be undone.` +
+        (authored
+          ? ` Their ${authored} article${authored === 1 ? "" : "s"} will stay online but no longer be attributed to a user account.`
+          : ` To keep the person's history attributed to a real account, deactivate them instead.`),
+      confirmLabel: "Delete account",
+      destructive: true,
+    });
+    if (!ok) return;
+
+    setPendingId(user.id);
+    try {
+      await deleteUser(user.id);
+      flash(`${user.name}'s account has been deleted.`);
+      await load();
+    } catch (caught) {
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : "Could not delete the account.",
+      );
+    } finally {
+      setPendingId(null);
+    }
+  }
+
   return (
     <div className="space-y-6">
       {confirmDialog}
@@ -127,9 +168,11 @@ export function UsersPanel({ currentUserId }: { currentUserId?: string }) {
         <div>
           <h2 className="text-2xl font-semibold text-cream">User accounts</h2>
           <p className="mt-1 max-w-2xl text-sm text-cream/65">
-            Create CMS accounts and control what each role can do. Deactivating
-            an account signs it out immediately without waiting for its token to
-            expire.
+            Create CMS accounts and control what each role can do. Deactivating an
+            account signs it out immediately without waiting for its token to
+            expire, and keeps their authored content attributed to them. Deleting
+            removes the account permanently. Your own account cannot be deleted —
+            another Super Administrator must do it.
           </p>
         </div>
         <button
@@ -261,13 +304,24 @@ export function UsersPanel({ currentUserId }: { currentUserId?: string }) {
                     <button
                       type="button"
                       onClick={() => toggleActive(user)}
-                      className={`rounded-md border px-2 py-1 text-xs ${
+                      disabled={pendingId === user.id}
+                      className={`rounded-md border px-2 py-1 text-xs disabled:opacity-50 ${
                         user.isActive
                           ? "border-red-400/30 text-red-300 hover:bg-red-500/15"
                           : "border-emerald-400/30 text-emerald-300 hover:bg-emerald-500/15"
                       }`}
                     >
                       {user.isActive ? "Deactivate" : "Reactivate"}
+                    </button>
+                  )}
+                  {!isSelf && (
+                    <button
+                      type="button"
+                      onClick={() => deleteAccount(user)}
+                      disabled={pendingId === user.id}
+                      className="rounded-md border border-red-400/30 px-2 py-1 text-xs text-red-300 transition-colors hover:bg-red-500/15 disabled:opacity-50"
+                    >
+                      Delete
                     </button>
                   )}
                 </div>

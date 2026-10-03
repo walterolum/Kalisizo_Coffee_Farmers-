@@ -59,6 +59,23 @@ describe("permission matrix", () => {
     expect(PERMISSIONS.manageSystem).toEqual(["SUPER_ADMIN"]);
   });
 
+  it("reserves destroying a public message for SUPER_ADMIN alone", () => {
+    /**
+     * Worth separating from the assertions above rather than folding into them.
+     *
+     * `deleteContent` is held by a Content Administrator, and archiving a news
+     * article is a reasonable thing for that role to do. Deleting somebody's
+     * contact-form message is not the same act and must not inherit the grant —
+     * it destroys correspondence with a member of the public, with no archive and
+     * no restore. The two permissions are deliberately distinct keys, so widening
+     * one cannot silently widen the other.
+     */
+    expect(PERMISSIONS.deleteMessages).toEqual(["SUPER_ADMIN"]);
+    expect(can(asUser("SUPER_ADMIN"), "deleteMessages")).toBe(true);
+    expect(can(asUser("CONTENT_ADMIN"), "deleteMessages")).toBe(false);
+    expect(can(asUser("EDITOR"), "deleteMessages")).toBe(false);
+  });
+
   it("lets every signed-in role read the CMS", () => {
     expect(PERMISSIONS.viewCms).toEqual(ALL_ROLES);
   });
