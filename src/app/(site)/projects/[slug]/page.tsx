@@ -49,7 +49,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
       <section className="bg-cream py-16 sm:py-20">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           {project.imageUrl && (
-            <div className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl ring-1 ring-charcoal/8">
+            <div className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl bg-leaf ring-1 ring-coffee/8">
               <Image
                 src={project.imageUrl}
                 alt={project.imageAlt || project.title}
@@ -64,34 +64,34 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
           <dl className="mt-10 grid gap-4 sm:grid-cols-2">
             {project.location && (
-              <div className="rounded-2xl bg-white px-5 py-4 ring-1 ring-charcoal/8">
-                <dt className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-gold-deep">
+              <div className="rounded-2xl bg-white px-5 py-4 ring-1 ring-coffee/8">
+                <dt className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-clay">
                   <MapPin className="size-3.5" aria-hidden="true" />
                   Location
                 </dt>
-                <dd className="mt-2 text-charcoal/80">{project.location}</dd>
+                <dd className="mt-2 text-muted">{project.location}</dd>
               </div>
             )}
             {dateRange && (
-              <div className="rounded-2xl bg-white px-5 py-4 ring-1 ring-charcoal/8">
-                <dt className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-gold-deep">
+              <div className="rounded-2xl bg-white px-5 py-4 ring-1 ring-coffee/8">
+                <dt className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-clay">
                   <CalendarRange className="size-3.5" aria-hidden="true" />
                   Timeline
                 </dt>
-                <dd className="mt-2 text-charcoal/80">{dateRange}</dd>
+                <dd className="mt-2 text-muted">{dateRange}</dd>
               </div>
             )}
           </dl>
 
           {project.description && (
             <div
-              className="prose-article mt-12 text-[1.05rem] leading-[1.75] text-charcoal/80"
+              className="prose-article mt-12 text-[1.05rem] leading-[1.75] text-muted"
               dangerouslySetInnerHTML={{ __html: project.description }}
             />
           )}
 
           {project.impact && (
-            <div className="mt-12 rounded-3xl bg-forest-deep p-7 text-cream sm:p-9">
+            <div className="surface-dark mt-12 rounded-3xl bg-forest-deep p-7 text-cream sm:p-9">
               <h2 className="font-display text-xl font-semibold text-gold-light">
                 Our impact
               </h2>
@@ -102,14 +102,14 @@ export default async function ProjectDetailPage({ params }: PageProps) {
           {project.partners.length > 0 && (
             <div className="mt-12">
               <h2 className="flex items-center gap-2 font-display text-xl font-semibold text-forest">
-                <Users className="size-5 text-gold-deep" aria-hidden="true" />
+                <Users className="size-5 text-clay" aria-hidden="true" />
                 Partners
               </h2>
               <ul className="mt-4 flex flex-wrap gap-2">
                 {project.partners.map((partner) => (
                   <li
                     key={partner}
-                    className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-charcoal/70 ring-1 ring-charcoal/8"
+                    className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-muted ring-1 ring-coffee/8"
                   >
                     {partner}
                   </li>
@@ -124,7 +124,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
               <ul className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3">
                 {project.images.map((image) => (
                   <li key={image.id}>
-                    <div className="relative aspect-square w-full overflow-hidden rounded-2xl ring-1 ring-charcoal/8">
+                    <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-leaf ring-1 ring-coffee/8">
                       <Image
                         src={image.thumbnailUrl || image.url}
                         alt={image.alt}
@@ -135,7 +135,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                       />
                     </div>
                     {image.caption && (
-                      <p className="mt-2 text-[13px] text-charcoal/55">{image.caption}</p>
+                      <p className="mt-2 text-[13px] text-muted">{image.caption}</p>
                     )}
                   </li>
                 ))}
@@ -143,7 +143,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
             </div>
           )}
 
-          <div className="mt-12 border-t border-charcoal/10 pt-8">
+          <div className="mt-12 border-t border-coffee/10 pt-8">
             <Link
               href="/projects"
               className="inline-flex items-center gap-2 text-sm font-bold text-forest underline-offset-4 hover:underline"

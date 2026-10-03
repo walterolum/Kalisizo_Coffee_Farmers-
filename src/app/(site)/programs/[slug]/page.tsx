@@ -46,7 +46,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
       <section className="bg-cream py-16 sm:py-20">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           {program.imageUrl && (
-            <div className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl ring-1 ring-charcoal/8">
+            <div className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl bg-leaf ring-1 ring-coffee/8">
               <Image
                 src={program.imageUrl}
                 alt={program.imageAlt || program.title}
@@ -61,7 +61,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
 
           {program.content && (
             <div
-              className="prose-article mt-10 text-[1.05rem] leading-[1.75] text-charcoal/80"
+              className="prose-article mt-10 text-[1.05rem] leading-[1.75] text-muted"
               dangerouslySetInnerHTML={{ __html: program.content }}
             />
           )}
@@ -73,9 +73,9 @@ export default async function ProgramDetailPage({ params }: PageProps) {
               </h2>
               <ul className="mt-5 space-y-3">
                 {program.points.map((point) => (
-                  <li key={point} className="flex gap-3 text-charcoal/75">
+                  <li key={point} className="flex gap-3 text-muted">
                     <Check
-                      className="mt-0.5 size-5 shrink-0 text-emerald-brand"
+                      className="mt-0.5 size-5 shrink-0 text-forest"
                       aria-hidden="true"
                     />
                     <span>{point}</span>
@@ -92,7 +92,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
                 {program.details.map((detail) => (
                   <li
                     key={detail}
-                    className="rounded-2xl bg-white px-5 py-4 text-charcoal/75 ring-1 ring-charcoal/8"
+                    className="rounded-2xl bg-white px-5 py-4 text-muted ring-1 ring-coffee/8"
                   >
                     {detail}
                   </li>
@@ -101,7 +101,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
             </div>
           )}
 
-          <div className="mt-12 border-t border-charcoal/10 pt-8">
+          <div className="mt-12 border-t border-coffee/10 pt-8">
             <Link
               href="/programs"
               className="inline-flex items-center gap-2 text-sm font-bold text-forest underline-offset-4 hover:underline"

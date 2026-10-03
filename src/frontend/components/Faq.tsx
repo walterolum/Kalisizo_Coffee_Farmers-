@@ -27,11 +27,11 @@ export function Faq() {
   return (
     <section
       id="faq"
-      className="relative overflow-hidden bg-sand py-28 lg:py-36"
+      className="relative overflow-hidden bg-leaf py-28 lg:py-36"
       aria-labelledby="faq-heading"
     >
       <div
-        className="absolute -right-32 top-24 h-80 w-80 rounded-full bg-emerald-brand/10 blur-3xl"
+        className="absolute -right-32 top-24 h-80 w-80 rounded-full bg-brand/10 blur-3xl"
         aria-hidden="true"
       />
       <div className="relative mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
@@ -71,7 +71,7 @@ export function Faq() {
                         className={`grid size-9 shrink-0 place-items-center rounded-full transition-all duration-300 ${
                           isOpen
                             ? "rotate-180 bg-gold text-forest"
-                            : "bg-sand text-emerald-brand"
+                            : "bg-leaf text-forest"
                         }`}
                       >
                         <ChevronDown className="size-5" aria-hidden="true" />
@@ -88,7 +88,7 @@ export function Faq() {
                     }`}
                   >
                     <div className="overflow-hidden">
-                      <p className="px-6 pb-6 text-[15px] leading-relaxed text-charcoal/75">
+                      <p className="px-6 pb-6 text-[15px] leading-relaxed text-muted">
                         {faq.answer}
                       </p>
                     </div>
@@ -100,8 +100,8 @@ export function Faq() {
         </div>
 
         <Reveal delay={120}>
-          <p className="mt-10 flex flex-wrap items-center justify-center gap-2 text-center text-sm text-charcoal/60">
-            <Headset className="size-4 text-gold-deep" aria-hidden="true" />
+          <p className="mt-10 flex flex-wrap items-center justify-center gap-2 text-center text-sm text-muted">
+            <Headset className="size-4 text-clay" aria-hidden="true" />
             Still have a question? Reach our team below. We reply promptly.
           </p>
         </Reveal>

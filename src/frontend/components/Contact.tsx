@@ -144,9 +144,9 @@ export function Contact({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
   };
 
   const inputClass = (hasError: boolean) =>
-    `w-full rounded-2xl border bg-sand/70 px-4 py-3 text-base font-medium text-charcoal placeholder:text-charcoal/60 outline-none transition-all duration-200 focus:bg-white sm:text-[15px] ${
+    `w-full rounded-2xl border bg-leaf/70 px-4 py-3 text-base font-medium text-coffee placeholder:text-muted outline-none transition-all duration-200 focus:bg-white sm:text-[15px] ${
       hasError
-        ? "border-red-400/70 focus:border-red-400 focus:ring-4 focus:ring-red-400/10"
+        ? "border-cherry/70 focus:border-cherry focus:ring-4 focus:ring-cherry/10"
         : "border-forest/10 focus:border-gold focus:ring-4 focus:ring-gold/15"
     }`;
 
@@ -178,11 +178,11 @@ export function Contact({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
                 href={`mailto:${displayEmail}`}
                 className="group flex items-center gap-4 rounded-3xl bg-white p-6 shadow-soft ring-1 ring-forest/5 transition-all duration-300 hover:-translate-y-0.5 hover:ring-gold/30"
               >
-                <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-emerald-brand to-forest text-cream shadow-card transition-transform duration-300 group-hover:scale-110">
+                <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-action to-forest text-cream shadow-card transition-transform duration-300 group-hover:scale-110">
                   <Mail className="size-5" aria-hidden="true" />
                 </span>
                 <span>
-                  <span className="block text-xs font-bold uppercase tracking-wider text-charcoal/50">
+                  <span className="block text-xs font-bold uppercase tracking-wider text-muted">
                     Email Us
                   </span>
                   <span className="block break-all text-[15px] font-semibold text-forest">
@@ -192,8 +192,8 @@ export function Contact({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
               </a>
 
               <div className="rounded-3xl bg-white p-6 shadow-soft ring-1 ring-forest/5">
-                <span className="flex items-center gap-3 text-xs font-bold uppercase tracking-wider text-charcoal/50">
-                  <Phone className="size-4 text-gold-deep" aria-hidden="true" />
+                <span className="flex items-center gap-3 text-xs font-bold uppercase tracking-wider text-muted">
+                  <Phone className="size-4 text-clay" aria-hidden="true" />
                   Call the Office
                 </span>
                 <div className="mt-3 flex flex-col gap-2">
@@ -201,7 +201,7 @@ export function Contact({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
                     <a
                       key={phone}
                       href={`tel:${phone.replace(/\s/g, "")}`}
-                      className="text-[15px] font-semibold text-forest transition-colors hover:text-gold-deep"
+                      className="text-[15px] font-semibold text-forest transition-colors hover:text-clay"
                     >
                       {phone}
                     </a>
@@ -210,24 +210,24 @@ export function Contact({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
               </div>
 
               <div className="rounded-3xl bg-white p-6 shadow-soft ring-1 ring-forest/5">
-                <span className="flex items-center gap-3 text-xs font-bold uppercase tracking-wider text-charcoal/50">
-                  <MapPin className="size-4 text-gold-deep" aria-hidden="true" />
+                <span className="flex items-center gap-3 text-xs font-bold uppercase tracking-wider text-muted">
+                  <MapPin className="size-4 text-clay" aria-hidden="true" />
                   Visit Us
                 </span>
                 <a
                   href={CONTACT.mapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-3 block text-[15px] font-semibold leading-relaxed text-forest transition-colors hover:text-gold-deep"
+                  className="mt-3 block text-[15px] font-semibold leading-relaxed text-forest transition-colors hover:text-clay"
                 >
                   {displayAddress}
-                  <span className="mt-1 block text-xs font-normal text-charcoal/50">
+                  <span className="mt-1 block text-xs font-normal text-muted">
                     {CONTACT.latitude}, {CONTACT.longitude} · Open in Google Maps
                   </span>
                 </a>
               </div>
 
-              <div className="flex h-full flex-col justify-center rounded-3xl bg-forest p-6 shadow-card">
+              <div className="surface-dark flex h-full flex-col justify-center rounded-3xl bg-forest p-6 shadow-card">
                 <p className="font-display text-lg font-semibold leading-snug text-cream">
                   One cooperative, thousands of livelihoods.
                 </p>
@@ -250,7 +250,7 @@ export function Contact({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
               <h3 className="font-display text-2xl font-semibold text-forest">
                 Send an Inquiry
               </h3>
-              <p className="mt-2 text-sm text-charcoal/60">
+              <p className="mt-2 text-sm text-muted">
                 Fields marked * are required. We respond within one working day.
               </p>
 
@@ -278,7 +278,7 @@ export function Contact({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
                     <span
                       id="name-error"
                       role="alert"
-                      className="flex items-center gap-1.5 text-xs font-semibold text-red-600"
+                      className="flex items-center gap-1.5 text-xs font-semibold text-cherry"
                     >
                       <CircleAlert className="size-3.5" aria-hidden="true" />
                       {errors.name}
@@ -309,7 +309,7 @@ export function Contact({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
                     <span
                       id="email-error"
                       role="alert"
-                      className="flex items-center gap-1.5 text-xs font-semibold text-red-600"
+                      className="flex items-center gap-1.5 text-xs font-semibold text-cherry"
                     >
                       <CircleAlert className="size-3.5" aria-hidden="true" />
                       {errors.email}
@@ -380,7 +380,7 @@ export function Contact({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
                     <span
                       id="message-error"
                       role="alert"
-                      className="flex items-center gap-1.5 text-xs font-semibold text-red-600"
+                      className="flex items-center gap-1.5 text-xs font-semibold text-cherry"
                     >
                       <CircleAlert className="size-3.5" aria-hidden="true" />
                       {errors.message}
@@ -413,7 +413,7 @@ export function Contact({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
               {status === "sent" && (
                 <p
                   role="status"
-                  className="mt-4 flex items-center justify-center gap-2 rounded-2xl bg-emerald-brand/10 px-4 py-3 text-sm font-semibold text-emerald-brand"
+                  className="mt-4 flex items-center justify-center gap-2 rounded-2xl bg-action px-4 py-3 text-sm font-semibold text-cream"
                 >
                   <CircleCheck className="size-4" aria-hidden="true" />
                   Thank you! Your message has been recorded.
@@ -423,7 +423,7 @@ export function Contact({ headingLevel = 2 }: { headingLevel?: 1 | 2 }) {
               {submitError && (
                 <p
                   role="alert"
-                  className="mt-4 flex items-center justify-center gap-2 rounded-2xl bg-red-600/10 px-4 py-3 text-sm font-semibold text-red-600 ring-1 ring-red-500/20"
+                  className="mt-4 flex items-center justify-center gap-2 rounded-2xl bg-cherry/10 px-4 py-3 text-sm font-semibold text-cherry ring-1 ring-cherry/20"
                 >
                   <CircleAlert className="size-4 shrink-0" aria-hidden="true" />
                   {submitError}

@@ -5,7 +5,7 @@ import { getActiveAnnouncements } from "@/backend/site-content";
 const SEVERITY_STYLES: Record<string, { wrap: string; icon: typeof Info }> = {
   INFO: { wrap: "bg-white/8 text-cream ring-white/15", icon: Info },
   WARNING: { wrap: "bg-gold/15 text-gold-light ring-gold/30", icon: AlertTriangle },
-  CRITICAL: { wrap: "bg-red-500/15 text-red-200 ring-red-400/30", icon: AlertTriangle },
+  CRITICAL: { wrap: "bg-cherry/15 text-cherry-light ring-cherry/30", icon: AlertTriangle },
 };
 
 /**
@@ -18,7 +18,7 @@ export async function Announcements() {
   if (notices.length === 0) return null;
 
   return (
-    <section aria-labelledby="announcements-heading" className="bg-forest-deep py-8">
+    <section aria-labelledby="announcements-heading" className="surface-dark bg-forest-deep py-8">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <h2 id="announcements-heading" className="sr-only">
           Announcements

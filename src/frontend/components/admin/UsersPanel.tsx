@@ -1,4 +1,4 @@
-﻿/**
+/**
  * User management screen. Super Administrators only — the API enforces this as
  * well, and a 403 is surfaced as a message rather than a broken screen.
  */
@@ -167,7 +167,7 @@ export function UsersPanel({ currentUserId }: { currentUserId?: string }) {
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h2 className="text-2xl font-semibold text-cream">User accounts</h2>
-          <p className="mt-1 max-w-2xl text-sm text-cream/65">
+          <p className="mt-1 max-w-2xl text-sm text-mist">
             Create CMS accounts and control what each role can do. Deactivating an
             account signs it out immediately without waiting for its token to
             expire, and keeps their authored content attributed to them. Deleting
@@ -178,7 +178,7 @@ export function UsersPanel({ currentUserId }: { currentUserId?: string }) {
         <button
           type="button"
           onClick={() => setCreating(true)}
-          className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-forest-deep transition-colors hover:bg-gold-light"
+          className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-coffee transition-colors hover:bg-gold-light"
         >
           New user
         </button>
@@ -186,19 +186,19 @@ export function UsersPanel({ currentUserId }: { currentUserId?: string }) {
 
       {notice && (
         // Same contrast bug as `ContentPanel`: `bg-emerald-50` is a near-white
-        // background and `text-emerald-300` is a light green, so the saved
+        // background and `text-action-light` is a light green, so the saved
         // confirmation was invisible against the dark panel. `role="status"`
         // announces it politely.
         <p
           role="status"
-          className="rounded-lg bg-emerald-500/15 px-4 py-2 text-sm text-emerald-300 ring-1 ring-emerald-400/25"
+          className="rounded-lg bg-action/15 px-4 py-2 text-sm text-action-light ring-1 ring-brand/25"
         >
           {notice}
         </p>
       )}
       {error && (
         <p
-          className="rounded-lg bg-red-500/10 px-4 py-2 text-sm text-red-300 ring-1 ring-red-400/20"
+          className="rounded-lg bg-cherry/10 px-4 py-2 text-sm text-cherry-light ring-1 ring-cherry/20"
           role="alert"
         >
           {error}
@@ -228,7 +228,7 @@ export function UsersPanel({ currentUserId }: { currentUserId?: string }) {
       )}
 
       {loading ? (
-        <p className="text-sm text-cream/50">Loading…</p>
+        <p className="text-sm text-mist">Loading…</p>
       ) : (
         <ul className="space-y-3">
           {users.map((user) => {
@@ -242,16 +242,16 @@ export function UsersPanel({ currentUserId }: { currentUserId?: string }) {
                   <p className="font-medium text-cream">
                     {user.name}
                     {isSelf && (
-                      <span className="ml-2 text-xs text-cream/50">(you)</span>
+                      <span className="ml-2 text-xs text-mist">(you)</span>
                     )}
                     {!user.isActive && (
-                      <span className="ml-2 rounded bg-white/[0.08] px-1.5 py-0.5 text-xs text-cream/65">
+                      <span className="ml-2 rounded bg-white/[0.08] px-1.5 py-0.5 text-xs text-mist">
                         Deactivated
                       </span>
                     )}
                   </p>
-                  <p className="truncate text-sm text-cream/65">{user.email}</p>
-                  <p className="text-xs text-cream/50">
+                  <p className="truncate text-sm text-mist">{user.email}</p>
+                  <p className="text-xs text-mist">
                     {user.lastLoginAt
                       ? `Last signed in ${new Date(user.lastLoginAt).toLocaleDateString("en-GB")}`
                       : "Never signed in"}
@@ -274,7 +274,7 @@ export function UsersPanel({ currentUserId }: { currentUserId?: string }) {
                     onChange={(event) =>
                       changeRole(user, event.target.value as AdminUser["role"])
                     }
-                    className="rounded-lg border border-white/20 px-2 py-1 text-sm bg-white/[0.05] text-cream placeholder:text-cream/35 transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 disabled:cursor-not-allowed disabled:opacity-50 [&_option]:bg-forest [&_option]:text-cream"
+                    className="rounded-lg border border-white/20 px-2 py-1 text-sm bg-white/[0.05] text-cream placeholder:text-mist transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 disabled:cursor-not-allowed disabled:opacity-50 [&_option]:bg-forest [&_option]:text-cream"
                   >
                     {ROLES.map((role) => (
                       <option key={role.value} value={role.value}>
@@ -289,14 +289,14 @@ export function UsersPanel({ currentUserId }: { currentUserId?: string }) {
                     // only ever produce a guaranteed error, and a `title` tooltip
                     // is not discoverable on touch — so the reason is stated in
                     // text next to the control.
-                    <span className="text-xs text-cream/50">
+                    <span className="text-xs text-mist">
                       Another Super Administrator must change your role
                     </span>
                   )}
                   <button
                     type="button"
                     onClick={() => setResetting(user)}
-                    className="rounded-md border border-white/20 px-2 py-1 text-xs text-cream bg-white/[0.05] text-cream placeholder:text-cream/35 transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 hover:bg-white/[0.08]"
+                    className="rounded-md border border-white/20 px-2 py-1 text-xs text-cream bg-white/[0.05] text-cream placeholder:text-mist transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 hover:bg-white/[0.08]"
                   >
                     Reset password
                   </button>
@@ -307,8 +307,8 @@ export function UsersPanel({ currentUserId }: { currentUserId?: string }) {
                       disabled={pendingId === user.id}
                       className={`rounded-md border px-2 py-1 text-xs disabled:opacity-50 ${
                         user.isActive
-                          ? "border-red-400/30 text-red-300 hover:bg-red-500/15"
-                          : "border-emerald-400/30 text-emerald-300 hover:bg-emerald-500/15"
+                          ? "border-cherry/50/30 text-cherry-light hover:bg-cherry/15"
+                          : "border-brand/30 text-action-light hover:bg-action/15"
                       }`}
                     >
                       {user.isActive ? "Deactivate" : "Reactivate"}
@@ -319,7 +319,7 @@ export function UsersPanel({ currentUserId }: { currentUserId?: string }) {
                       type="button"
                       onClick={() => deleteAccount(user)}
                       disabled={pendingId === user.id}
-                      className="rounded-md border border-red-400/30 px-2 py-1 text-xs text-red-300 transition-colors hover:bg-red-500/15 disabled:opacity-50"
+                      className="rounded-md border border-cherry/50/30 px-2 py-1 text-xs text-cherry-light transition-colors hover:bg-cherry/15 disabled:opacity-50"
                     >
                       Delete
                     </button>
@@ -374,7 +374,7 @@ function UserForm({
       <h3 className="text-lg font-semibold text-cream">New user</h3>
       {error && (
         <p
-          className="rounded-lg bg-red-500/10 px-4 py-2 text-sm text-red-300 ring-1 ring-red-400/20"
+          className="rounded-lg bg-cherry/10 px-4 py-2 text-sm text-cherry-light ring-1 ring-cherry/20"
           role="alert"
         >
           {error}
@@ -389,7 +389,7 @@ function UserForm({
             value={name}
             onChange={(event) => setName(event.target.value)}
             required
-            className="w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-cream/35 transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
+            className="w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-mist transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
           />
         </label>
         <label className="text-sm">
@@ -399,7 +399,7 @@ function UserForm({
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             required
-            className="w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-cream/35 transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
+            className="w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-mist transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
           />
         </label>
         <label className="text-sm">
@@ -413,9 +413,9 @@ function UserForm({
             required
             minLength={12}
             autoComplete="new-password"
-            className="w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-cream/35 transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
+            className="w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-mist transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
           />
-          <span className="mt-1 block text-xs text-cream/50">
+          <span className="mt-1 block text-xs text-mist">
             At least 12 characters, including upper case, lower case and a
             number.
           </span>
@@ -427,7 +427,7 @@ function UserForm({
             onChange={(event) =>
               setRole(event.target.value as AdminUser["role"])
             }
-            className="w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-cream/35 transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
+            className="w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-mist transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
           >
             {ROLES.map((option) => (
               <option key={option.value} value={option.value}>
@@ -435,7 +435,7 @@ function UserForm({
               </option>
             ))}
           </select>
-          <span className="mt-1 block text-xs text-cream/50">
+          <span className="mt-1 block text-xs text-mist">
             {ROLE_NOTES[role]}
           </span>
         </label>
@@ -444,7 +444,7 @@ function UserForm({
         <button
           type="submit"
           disabled={saving}
-          className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-forest-deep transition-colors hover:bg-gold-light disabled:opacity-50"
+          className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-coffee transition-colors hover:bg-gold-light disabled:opacity-50"
         >
           {saving ? "Creating…" : "Create user"}
         </button>
@@ -507,7 +507,7 @@ function PasswordForm({
       </h3>
       {error && (
         <p
-          className="rounded-lg bg-red-500/10 px-4 py-2 text-sm text-red-300 ring-1 ring-red-400/20"
+          className="rounded-lg bg-cherry/10 px-4 py-2 text-sm text-cherry-light ring-1 ring-cherry/20"
           role="alert"
         >
           {error}
@@ -525,7 +525,7 @@ function PasswordForm({
             required
             minLength={12}
             autoComplete="new-password"
-            className="w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-cream/35 transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
+            className="w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-mist transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
           />
         </label>
         <label className="text-sm">
@@ -539,18 +539,18 @@ function PasswordForm({
             required
             minLength={12}
             autoComplete="new-password"
-            className="inline-flex aria-invalid:border-red-400 w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-cream/35 transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
+            className="inline-flex aria-invalid:border-cherry/50 w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-mist transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
           />
         </label>
       </div>
       {mismatch && (
-        <p className="text-sm text-red-300">The two passwords do not match.</p>
+        <p className="text-sm text-cherry-light">The two passwords do not match.</p>
       )}
       <div className="flex gap-3">
         <button
           type="submit"
           disabled={saving || mismatch}
-          className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-forest-deep transition-colors hover:bg-gold-light disabled:opacity-50"
+          className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-coffee transition-colors hover:bg-gold-light disabled:opacity-50"
         >
           {saving ? "Saving…" : "Reset password"}
         </button>

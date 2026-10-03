@@ -83,7 +83,7 @@ export function Products() {
             CATEGORY_ICONS[api.category] ??
             LayoutGrid,
           cta: api.cta || "Enquire about availability",
-          tone: api.tone || "bg-gradient-to-br from-[#0e3d28] to-[#1f7345]",
+          tone: api.tone || "bg-gradient-to-br from-forest to-action",
         }))
       );
     } catch {
@@ -148,7 +148,7 @@ export function Products() {
             is currently active, all of them reachable by Tab as they are now.
           */}
           <div
-            className="mx-auto flex w-fit max-w-full flex-wrap justify-center gap-2.5 rounded-2xl bg-sand p-2 shadow-soft ring-1 ring-forest/5"
+            className="mx-auto flex w-fit max-w-full flex-wrap justify-center gap-2.5 rounded-2xl bg-leaf p-2 shadow-soft ring-1 ring-forest/5"
             role="group"
             aria-label="Filter products by category"
           >
@@ -161,7 +161,7 @@ export function Products() {
                 className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-300 sm:px-5 ${
                   filter === cat
                     ? "bg-forest text-cream shadow-card"
-                    : "text-charcoal/70 hover:bg-white hover:text-forest"
+                    : "text-muted hover:bg-white hover:text-forest"
                 }`}
               >
                 {(() => {
@@ -177,32 +177,42 @@ export function Products() {
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((product, i) => (
             <Reveal key={`${filter}-${product.name}`} delay={i * 60} as="div">
-              <article className="group flex h-full flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-forest/8 transition-colors duration-300 hover:ring-gold/40">
+              <article className="group flex h-full flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-forest/8 transition-all duration-300 hover:-translate-y-1 hover:shadow-card hover:ring-action/35">
+                {/* Coloured card header. `product.tone` is the CMS-chosen
+                    gradient for this product, so the header is repainted by the
+                    same value rather than a second, competing palette. */}
                 <div className={`relative h-36 overflow-hidden ${product.tone}`}>
+                  {/* Two overlays so the CMS gradient never reads flat: a wide
+                      cream bloom across the top-left for sheen, and a
+                      forest-deep foot that grounds the block and holds the
+                      icon and category chip in the dark. */}
+                  <div className="absolute inset-0 bg-[radial-gradient(85%_120%_at_18%_10%,rgb(255_255_255/0.4),transparent_65%)]" />
+                  <div className="absolute inset-0 bg-[radial-gradient(70%_90%_at_92%_100%,color-mix(in_srgb,var(--color-forest-deep)_45%,transparent),transparent_70%)]" />
+                  <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-forest-deep/70 to-transparent" />
                   <div className="relative flex h-full items-center justify-between p-5">
-                    <span className="grid size-12 place-items-center rounded-full bg-white/15 text-cream transition-transform duration-500 group-hover:scale-105">
+                    <span className="grid size-12 place-items-center rounded-full bg-white/15 text-cream ring-1 ring-white/25 transition-transform duration-500 group-hover:scale-105">
                       <product.icon className="size-5" aria-hidden="true" />
                     </span>
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-cream/80">
+                    <span className="inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-cream backdrop-blur-sm">
                       {product.category}
                     </span>
                   </div>
                 </div>
                 <div className="flex flex-1 flex-col p-6">
-                  <h3 className="font-display text-xl font-semibold text-forest">
+                  <h3 className="font-display text-xl font-semibold text-coffee">
                     {product.name}
                   </h3>
                   {product.badge && (
-                    <span className="mt-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-gold-deep">
+                    <span className="mt-2 inline-flex w-fit items-center rounded-full bg-gold/20 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-coffee">
                       {product.badge}
                     </span>
                   )}
-                  <p className="mt-3 flex-1 text-sm leading-relaxed text-charcoal/70">
+                  <p className="mt-3 flex-1 text-sm leading-relaxed text-muted">
                     {product.description}
                   </p>
                   <a
                     href="#contact"
-                    className="mt-5 inline-flex items-center gap-1.5 text-sm font-bold text-emerald-brand transition-colors hover:text-gold-deep"
+                    className="mt-5 inline-flex items-center gap-1.5 border-t border-coffee/10 pt-4 text-sm font-bold text-forest transition-colors hover:text-action"
                   >
                     {product.cta}
                     <ArrowUpRight
@@ -217,8 +227,8 @@ export function Products() {
         </div>
 
         <Reveal delay={100}>
-          <p className="mt-10 flex flex-wrap items-center justify-center gap-2 text-center text-sm text-charcoal/60">
-            <LayoutGrid className="size-4 text-gold-deep" aria-hidden="true" />
+          <p className="mt-10 flex flex-wrap items-center justify-center gap-2 text-center text-sm text-muted">
+            <LayoutGrid className="size-4 text-forest" aria-hidden="true" />
             Catalog not exhaustive. Reach out for current stock, input prices and
             wholesale coffee prices.
           </p>

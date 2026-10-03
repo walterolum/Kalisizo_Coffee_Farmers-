@@ -61,7 +61,7 @@ export function Leadership() {
           photo: api.photoUrl || "",
           initials: initialsOf(api.name),
           icon: api.icon || "users",
-          gradient: api.gradient || "from-[#1f7345] to-[#0e3d28]",
+          gradient: api.gradient || "from-action to-forest-deep",
         }))
       );
     } catch {
@@ -78,7 +78,7 @@ export function Leadership() {
   return (
     <section
       id="leadership"
-      className="relative overflow-hidden bg-sand py-28 lg:py-36"
+      className="relative overflow-hidden bg-leaf py-28 lg:py-36"
       aria-labelledby="leadership-heading"
     >
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -133,7 +133,7 @@ export function Leadership() {
                   <h3 className="font-display text-xl font-semibold leading-tight text-forest">
                     {leader.name}
                   </h3>
-                  <p className="mt-3 flex-1 text-sm leading-relaxed text-charcoal/70">
+                  <p className="mt-3 flex-1 text-sm leading-relaxed text-muted">
                     {leader.description}
                   </p>
                 </div>

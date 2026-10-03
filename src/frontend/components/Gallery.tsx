@@ -109,6 +109,13 @@ export function Gallery() {
         aria-hidden="true"
       />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Offset colour block behind the grid. It sits outside the tiles, so
+            the green shows through the gaps and along one edge instead of the
+            grid reading as a flat rectangle on the dark section. */}
+        <div
+          className="pointer-events-none absolute -left-3 top-10 hidden h-[85%] w-full rounded-[2rem] bg-leaf/12 lg:block"
+          aria-hidden="true"
+        />
         <Reveal>
           <SectionHeading
             id="gallery-heading"
@@ -120,11 +127,11 @@ export function Gallery() {
         </Reveal>
 
         <Reveal delay={100}>
-          <div className="grid auto-rows-[42vw] grid-cols-2 gap-3 sm:auto-rows-[210px] sm:gap-4 lg:grid-cols-4">
+          <div className="relative grid auto-rows-[42vw] grid-cols-2 gap-3 sm:auto-rows-[210px] sm:gap-4 lg:grid-cols-4">
             {GALLERY.map((item) => (
               <figure
                 key={item.src}
-                className={`group relative overflow-hidden rounded-2xl shadow-card ${item.className}`}
+                className={`group relative overflow-hidden rounded-2xl bg-leaf shadow-card ring-1 ring-white/10 transition-all duration-300 hover:ring-gold/45 ${item.className}`}
               >
                 <Image
                   src={item.src}
@@ -134,15 +141,14 @@ export function Gallery() {
                   quality={65}
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 />
-                <div
-                  className="absolute inset-0 bg-gradient-to-t from-forest/75 via-transparent to-transparent opacity-80 transition-opacity duration-300 group-hover:opacity-95"
-                  aria-hidden="true"
-                />
+                {/* No tint and no caption bar: the label sits directly on the
+                    photograph, carried by the type shadow rather than by a panel
+                    behind it. */}
                 <figcaption className="absolute inset-x-0 bottom-0 flex items-center gap-2 p-4">
-                  <span className="grid size-8 shrink-0 place-items-center rounded-full bg-gold/20 text-gold-light backdrop-blur-sm">
+                  <span className="grid size-8 shrink-0 place-items-center rounded-full bg-gold text-coffee ring-1 ring-gold-light/50 transition-transform duration-300 group-hover:scale-110">
                     <Leaf className="size-3.5" aria-hidden="true" />
                   </span>
-                  <span className="text-sm font-bold text-cream">
+                  <span className="on-photo-sm text-sm font-bold text-cream">
                     {item.label}
                   </span>
                 </figcaption>

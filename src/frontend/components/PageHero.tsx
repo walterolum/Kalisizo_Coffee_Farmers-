@@ -17,7 +17,7 @@ type PageHeroProps = {
  */
 export function PageHero({ eyebrow, title, description, trail }: PageHeroProps) {
   return (
-    <section className="relative overflow-hidden bg-forest-deep pb-16 pt-36 sm:pb-20 sm:pt-44">
+    <section className="surface-dark relative overflow-hidden bg-forest-deep pb-16 pt-36 sm:pb-20 sm:pt-44">
       <div
         className="absolute -top-24 right-0 h-80 w-80 rounded-full bg-gold/10 blur-3xl"
         aria-hidden="true"
@@ -25,7 +25,7 @@ export function PageHero({ eyebrow, title, description, trail }: PageHeroProps) 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <Reveal>
           <nav aria-label="Breadcrumb" className="mb-6">
-            <ol className="flex flex-wrap items-center gap-1.5 text-[13px] text-cream/55">
+            <ol className="flex flex-wrap items-center gap-1.5 text-[13px] text-mist">
               <li>
                 <Link href="/" className="transition-colors hover:text-gold-light">
                   Home
@@ -78,9 +78,9 @@ type EmptyStateProps = {
 /** Shown when a filtered list legitimately has no results. */
 export function EmptyState({ title, description, children }: EmptyStateProps) {
   return (
-    <div className="rounded-3xl border border-dashed border-charcoal/15 bg-white/60 px-6 py-16 text-center">
+    <div className="rounded-3xl border border-dashed border-coffee/15 bg-white/60 px-6 py-16 text-center">
       <h2 className="font-display text-xl font-semibold text-forest">{title}</h2>
-      <p className="mx-auto mt-3 max-w-md text-charcoal/60">{description}</p>
+      <p className="mx-auto mt-3 max-w-md text-muted">{description}</p>
       {children && <div className="mt-6 flex justify-center">{children}</div>}
     </div>
   );

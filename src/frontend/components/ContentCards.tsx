@@ -69,6 +69,39 @@ type CardShellProps = {
 };
 
 /**
+ * Image well shared by the news and project cards.
+ *
+ * The photograph is shown as-is: no gradient, scrim or tint is placed over it.
+ * That is a site-wide rule, so a card image reads as a photograph rather than as
+ * a coloured panel.
+ *
+ * The leaf fill behind it is the placeholder while a CMS image is missing, and
+ * shows as a hairline of colour once the photo loads.
+ */
+function CardImage({
+  src,
+  alt,
+  sizes,
+}: {
+  src: string;
+  alt: string;
+  sizes: string;
+}) {
+  return (
+    <div className="relative aspect-[16/10] overflow-hidden bg-leaf">
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        sizes={sizes}
+        quality={65}
+        className="object-cover transition-transform duration-500 group-hover:scale-105"
+      />
+    </div>
+  );
+}
+
+/**
  * Wraps a card in a single stretched link so the whole card is clickable while
  * the accessible name stays the card's own heading.
  *
@@ -83,7 +116,7 @@ function CardShell({ href, title, children, className = "" }: CardShellProps) {
   const label = `Read more about ${title}`;
   return (
     <article
-      className={`group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-charcoal/8 transition-colors duration-300 hover:ring-gold/40 ${className}`}
+      className={`group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-coffee/8 transition-colors duration-300 hover:ring-gold/40 ${className}`}
     >
       {children}
       <Link href={href} className="absolute inset-0 z-10" aria-label={label}>
@@ -113,30 +146,31 @@ export function NewsCard({
   return (
     <CardShell href={href} title={title}>
       {imageUrl && (
-        <div className="relative aspect-[16/10] overflow-hidden bg-charcoal/5">
-          <Image
-            src={imageUrl}
-            alt={imageAlt || ""}
-            fill
-            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-            quality={65}
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-        </div>
+        <CardImage
+          src={imageUrl}
+          alt={imageAlt || ""}
+          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+        />
       )}
       <div className="flex flex-1 flex-col p-6">
-        <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold uppercase tracking-[0.16em] text-gold-deep">
-          {category && <span>{category}</span>}
+        <div className="flex flex-wrap items-center gap-3 text-[11px] font-bold uppercase tracking-[0.16em]">
+          {/* Gold chip, coffee label. Gold is a fill in this palette and never
+              text; coffee on gold/20 measures 10.8:1 here. */}
+          {category && (
+            <span className="rounded-full bg-gold/20 px-2.5 py-1 text-coffee">
+              {category}
+            </span>
+          )}
           {publishedAt && (
-            <time dateTime={publishedAt.toISOString()} className="text-charcoal/45">
+            <time dateTime={publishedAt.toISOString()} className="text-muted">
               {formatDate(publishedAt)}
             </time>
           )}
         </div>
-        <h3 className="mt-3 font-display text-lg font-semibold leading-snug text-forest">
+        <h3 className="mt-3 font-display text-lg font-semibold leading-snug text-coffee">
           {title}
         </h3>
-        <p className="mt-3 line-clamp-3 flex-1 text-sm leading-relaxed text-charcoal/65">
+        <p className="mt-3 line-clamp-3 flex-1 text-sm leading-relaxed text-muted">
           {excerpt}
         </p>
         <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-bold text-forest">
@@ -171,30 +205,27 @@ export function ProjectCard({
   return (
     <CardShell href={href} title={title}>
       {imageUrl && (
-        <div className="relative aspect-[16/10] overflow-hidden bg-charcoal/5">
-          <Image
-            src={imageUrl}
-            alt={imageAlt || ""}
-            fill
-            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-            quality={65}
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-        </div>
+        <CardImage
+          src={imageUrl}
+          alt={imageAlt || ""}
+          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+        />
       )}
       <div className="flex flex-1 flex-col p-6">
-        <span className="inline-flex w-fit items-center rounded-full bg-emerald-brand/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-emerald-brand">
+        {/* Forest label on a leaf chip: 8.65:1. The previous green text measured
+            4.39:1 on leaf and failed 4.5:1. */}
+        <span className="inline-flex w-fit items-center rounded-full bg-leaf px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-forest">
           {formatStage(stage)}
         </span>
-        <h3 className="mt-3 font-display text-lg font-semibold leading-snug text-forest">
+        <h3 className="mt-3 font-display text-lg font-semibold leading-snug text-coffee">
           {title}
         </h3>
-        <p className="mt-3 line-clamp-3 flex-1 text-sm leading-relaxed text-charcoal/65">
+        <p className="mt-3 line-clamp-3 flex-1 text-sm leading-relaxed text-muted">
           {summary}
         </p>
         {location && (
-          <p className="mt-4 flex items-center gap-1.5 text-[13px] text-charcoal/50">
-            <MapPin className="size-3.5 shrink-0 text-gold-deep" aria-hidden="true" />
+          <p className="mt-4 flex items-center gap-1.5 text-[13px] text-muted">
+            <MapPin className="size-3.5 shrink-0 text-clay" aria-hidden="true" />
             {location}
           </p>
         )}
@@ -223,41 +254,48 @@ export function EventCard({
   return (
     <CardShell href={href} title={title}>
       <div className="flex items-stretch gap-0">
-        <div className="flex w-24 shrink-0 flex-col items-center justify-center bg-forest px-3 py-6 text-center">
+        {/* Gradient date block. Gold-light on forest 5.76:1 and on forest-deep
+            7.24:1; the month and year are cream/70 (5.44:1 on forest), which is
+            the lowest surviving alpha step - cream/50 was 3.4:1 and failed. */}
+        <div className="relative flex w-24 shrink-0 flex-col items-center justify-center bg-gradient-to-br from-forest to-forest-deep px-3 py-6 text-center">
+          <span
+            aria-hidden="true"
+            className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-gold to-brand"
+          />
           <span className="font-display text-3xl font-semibold leading-none text-gold-light">
             {startAt.getDate()}
           </span>
           <span className="mt-1 text-[11px] font-bold uppercase tracking-[0.16em] text-cream/70">
             {new Intl.DateTimeFormat("en-UG", { month: "short" }).format(startAt)}
           </span>
-          <span className="mt-0.5 text-[11px] text-cream/50">
+          <span className="mt-0.5 text-[11px] text-cream/70">
             {startAt.getFullYear()}
           </span>
         </div>
-        <div className="flex flex-1 flex-col p-5">
+        {/* Leaf-tinted body panel against the white card, so the two halves of
+            the row read as one designed block rather than a white box. */}
+        <div className="flex flex-1 flex-col bg-leaf/45 p-5">
           <span
             className={`inline-flex w-fit items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] ${
-              upcoming
-                ? "bg-emerald-brand/12 text-emerald-brand"
-                : "bg-charcoal/8 text-charcoal/60"
+              upcoming ? "bg-brand/20 text-forest" : "bg-coffee/8 text-muted"
             }`}
           >
             {upcoming ? "Upcoming" : "Past"}
           </span>
-          <h3 className="mt-2.5 font-display text-base font-semibold leading-snug text-forest">
+          <h3 className="mt-2.5 font-display text-base font-semibold leading-snug text-coffee">
             {title}
           </h3>
-          <p className="mt-2 line-clamp-2 flex-1 text-sm leading-relaxed text-charcoal/60">
+          <p className="mt-2 line-clamp-2 flex-1 text-sm leading-relaxed text-muted">
             {summary}
           </p>
-          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12.5px] text-charcoal/50">
+          <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12.5px] text-muted">
             <span className="flex items-center gap-1.5">
-              <CalendarDays className="size-3.5 shrink-0 text-gold-deep" aria-hidden="true" />
+              <CalendarDays className="size-3.5 shrink-0 text-clay" aria-hidden="true" />
               {formatDateTime(startAt)}
             </span>
             {location && (
               <span className="flex min-w-0 items-center gap-1.5">
-                <MapPin className="size-3.5 shrink-0 text-gold-deep" aria-hidden="true" />
+                <MapPin className="size-3.5 shrink-0 text-clay" aria-hidden="true" />
                 <span className="truncate">{location}</span>
               </span>
             )}

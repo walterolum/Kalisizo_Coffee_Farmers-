@@ -37,7 +37,7 @@ export function Footer() {
   const socialLinks = resolveSocials(settings?.socials);
 
   return (
-    <footer className="relative overflow-hidden bg-forest-deep text-cream">
+    <footer className="surface-dark relative overflow-hidden bg-forest-deep text-cream">
       <div
         className="absolute -top-32 right-0 h-72 w-72 rounded-full bg-gold/10 blur-3xl"
         aria-hidden="true"
@@ -57,7 +57,7 @@ export function Footer() {
           </div>
 
           <nav aria-label="Footer quick links">
-            <h3 className="text-xs font-bold uppercase tracking-[0.22em] text-gold">
+            <h3 className="text-xs font-bold uppercase tracking-[0.22em] text-gold-light">
               Quick Links
             </h3>
             <ul className="mt-5 space-y-2.5">
@@ -70,7 +70,7 @@ export function Footer() {
                     className="group inline-flex items-center gap-1.5 text-sm text-cream/75 transition-colors hover:text-gold-light"
                   >
                     <ChevronRight
-                      className="size-3.5 text-gold/70 transition-transform duration-200 group-hover:translate-x-0.5"
+                      className="size-3.5 text-gold-light/90 transition-transform duration-200 group-hover:translate-x-0.5"
                       aria-hidden="true"
                     />
                     {link.label}
@@ -81,7 +81,7 @@ export function Footer() {
           </nav>
 
           <nav aria-label="Footer services">
-            <h3 className="text-xs font-bold uppercase tracking-[0.22em] text-gold">
+            <h3 className="text-xs font-bold uppercase tracking-[0.22em] text-gold-light">
               Our Services
             </h3>
             <ul className="mt-5 space-y-2.5">
@@ -96,7 +96,7 @@ export function Footer() {
                     className="group inline-flex items-center gap-1.5 text-sm text-cream/75 transition-colors hover:text-gold-light"
                   >
                     <ChevronRight
-                      className="size-3.5 text-gold/70 transition-transform duration-200 group-hover:translate-x-0.5"
+                      className="size-3.5 text-gold-light/90 transition-transform duration-200 group-hover:translate-x-0.5"
                       aria-hidden="true"
                     />
                     {service.title}
@@ -107,12 +107,12 @@ export function Footer() {
           </nav>
 
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-[0.22em] text-gold">
+            <h3 className="text-xs font-bold uppercase tracking-[0.22em] text-gold-light">
               Reach Us
             </h3>
             <ul className="mt-5 space-y-3 text-sm text-cream/75">
               <li className="flex items-start gap-3">
-                <MapPin className="mt-0.5 size-4 shrink-0 text-gold" aria-hidden="true" />
+                <MapPin className="mt-0.5 size-4 shrink-0 text-gold-light" aria-hidden="true" />
                 <a
                   href={CONTACT.mapsUrl}
                   target="_blank"
@@ -129,7 +129,7 @@ export function Footer() {
                     href={`tel:${phone.replace(/\s/g, "")}`}
                     className="flex items-center gap-3 transition-colors hover:text-gold-light"
                   >
-                    <Phone className="size-4 shrink-0 text-gold" aria-hidden="true" />
+                    <Phone className="size-4 shrink-0 text-gold-light" aria-hidden="true" />
                     {phone}
                   </a>
                 ))}
@@ -139,7 +139,7 @@ export function Footer() {
                   href={`mailto:${email}`}
                   className="flex items-center gap-3 transition-colors hover:text-gold-light"
                 >
-                  <Mail className="size-4 shrink-0 text-gold" aria-hidden="true" />
+                  <Mail className="size-4 shrink-0 text-gold-light" aria-hidden="true" />
                   {email}
                 </a>
               </li>
@@ -161,13 +161,13 @@ export function Footer() {
         </div>
 
         <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-7 text-center sm:flex-row sm:text-left">
-          <p className="text-[13px] text-cream/55">
+          <p className="text-[13px] text-mist">
             © {year} {BRAND.name}.
           </p>
           <div className="flex flex-col items-center gap-2 sm:flex-row sm:gap-6">
-            <p className="text-[13px] text-cream/55">
+            <p className="text-[13px] text-mist">
               Kalisizo Sub County, Kyotera District ·{" "}
-              <span className="text-gold/80">Together for Prosperity</span>
+              <span className="text-gold-light/90">Together for Prosperity</span>
             </p>
             <a
               href="/admin"

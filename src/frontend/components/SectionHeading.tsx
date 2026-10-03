@@ -45,7 +45,7 @@ export function SectionHeading({
     >
       <p
         className={`text-[11px] font-semibold uppercase tracking-[0.3em] ${
-          light ? "text-gold-light" : "text-gold-deep"
+          light ? "text-gold-light" : "text-clay"
         }`}
       >
         {eyebrow}
@@ -63,7 +63,7 @@ export function SectionHeading({
       {description && (
         <p
           className={`mt-7 text-pretty text-[clamp(1rem,0.4vw+0.92rem,1.125rem)] leading-[1.75] ${
-            light ? "text-cream/70" : "text-charcoal/65"
+            light ? "text-cream/70" : "text-muted"
           } ${centered ? "mx-auto max-w-2xl" : ""}`}
         >
           {description}

@@ -52,7 +52,7 @@ export function Panel({
               </h2>
             )}
             {description && (
-              <p className="mt-1 text-[13px] leading-relaxed text-cream/60">
+              <p className="mt-1 text-[13px] leading-relaxed text-mist">
                 {description}
               </p>
             )}
@@ -75,11 +75,11 @@ const BUTTON_BASE =
   "transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50";
 
 const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
-  primary: "bg-gold text-forest-deep hover:bg-gold-light",
+  primary: "bg-gold text-coffee hover:bg-gold-light",
   secondary:
     "bg-white/[0.06] text-cream ring-1 ring-white/15 hover:bg-white/[0.11]",
   ghost: "text-cream/75 hover:bg-white/[0.07] hover:text-cream",
-  danger: "bg-red-600/90 text-white hover:bg-red-500",
+  danger: "bg-cherry/90 text-white hover:bg-cherry",
 };
 
 const BUTTON_SIZES: Record<ButtonSize, string> = {
@@ -123,7 +123,7 @@ export function Button({
 
 const CONTROL =
   "w-full rounded-lg bg-white/[0.05] px-3 py-2.5 text-sm text-cream " +
-  "ring-1 ring-white/15 transition-colors placeholder:text-cream/35 " +
+  "ring-1 ring-white/15 transition-colors placeholder:text-mist " +
   "hover:ring-white/25 focus:ring-2 focus:ring-gold focus:outline-none " +
   "disabled:opacity-50";
 
@@ -146,15 +146,15 @@ export function Field({
     <div className={`flex flex-col gap-1.5 ${className}`}>
       <label
         htmlFor={htmlFor}
-        className="text-[12px] font-semibold uppercase tracking-[0.08em] text-cream/60"
+        className="text-[12px] font-semibold uppercase tracking-[0.08em] text-mist"
       >
         {label}
       </label>
       {children}
       {error ? (
-        <p className="text-[12px] font-medium text-red-300">{error}</p>
+        <p className="text-[12px] font-medium text-cherry-light">{error}</p>
       ) : hint ? (
-        <p className="text-[12px] leading-relaxed text-cream/45">{hint}</p>
+        <p className="text-[12px] leading-relaxed text-mist">{hint}</p>
       ) : null}
     </div>
   );
@@ -187,9 +187,9 @@ export function Select({
 
 const BADGE_TONES = {
   neutral: "bg-white/[0.08] text-cream/70 ring-white/15",
-  success: "bg-emerald-500/15 text-emerald-300 ring-emerald-400/25",
-  warning: "bg-amber-500/15 text-amber-300 ring-amber-400/25",
-  danger: "bg-red-500/15 text-red-300 ring-red-400/25",
+  success: "bg-action/15 text-action-light ring-brand/25",
+  warning: "bg-gold/15 text-gold-light ring-gold/25",
+  danger: "bg-cherry/15 text-cherry-light ring-cherry/25",
   info: "bg-sky-500/15 text-sky-300 ring-sky-400/25",
 } as const;
 
@@ -249,7 +249,7 @@ export function StatusBadge({ status }: { status: string }) {
 export function LoadingState({ label = "Loading…" }: { label?: string }) {
   return (
     <div
-      className="flex items-center justify-center gap-3 px-5 py-12 text-sm text-cream/60"
+      className="flex items-center justify-center gap-3 px-5 py-12 text-sm text-mist"
       role="status"
     >
       <Loader2 className="size-4 animate-spin" aria-hidden="true" />
@@ -270,7 +270,7 @@ export function EmptyState({
   return (
     <div className="flex flex-col items-center gap-3 px-5 py-12 text-center">
       <span
-        className="grid size-10 place-items-center rounded-full bg-white/[0.06] text-cream/50"
+        className="grid size-10 place-items-center rounded-full bg-white/[0.06] text-mist"
         aria-hidden="true"
       >
         <Inbox className="size-5" />
@@ -278,7 +278,7 @@ export function EmptyState({
       <div>
         <p className="text-sm font-semibold text-cream">{title}</p>
         {description && (
-          <p className="mx-auto mt-1 max-w-sm text-[13px] leading-relaxed text-cream/55">
+          <p className="mx-auto mt-1 max-w-sm text-[13px] leading-relaxed text-mist">
             {description}
           </p>
         )}
@@ -304,16 +304,16 @@ export function ErrorState({
 }) {
   return (
     <div
-      className="flex flex-col items-center gap-3 rounded-xl bg-red-500/10 px-5 py-10 text-center ring-1 ring-red-400/25"
+      className="flex flex-col items-center gap-3 rounded-xl bg-cherry/10 px-5 py-10 text-center ring-1 ring-cherry/25"
       role="alert"
     >
-      <span className="text-red-300" aria-hidden="true">
+      <span className="text-cherry-light" aria-hidden="true">
         <AlertTriangle className="size-6" />
       </span>
       <div>
-        <p className="text-sm font-semibold text-red-200">{title}</p>
+        <p className="text-sm font-semibold text-cherry-light">{title}</p>
         {message && (
-          <p className="mx-auto mt-1 max-w-md text-[13px] leading-relaxed text-red-200/80">
+          <p className="mx-auto mt-1 max-w-md text-[13px] leading-relaxed text-cherry-light/90">
             {message}
           </p>
         )}
@@ -409,7 +409,7 @@ export function ConfirmDialog({
         aria-modal="true"
         aria-labelledby="confirm-title"
         aria-describedby={body ? "confirm-body" : undefined}
-        className="relative w-full max-w-md rounded-2xl bg-forest p-6 shadow-glass ring-1 ring-white/15"
+        className="surface-dark relative w-full max-w-md rounded-2xl bg-forest p-6 shadow-glass ring-1 ring-white/15"
       >
         <h2
           id="confirm-title"
@@ -420,7 +420,7 @@ export function ConfirmDialog({
         {body && (
           <p
             id="confirm-body"
-            className="mt-2 text-sm leading-relaxed text-cream/65"
+            className="mt-2 text-sm leading-relaxed text-mist"
           >
             {body}
           </p>
@@ -497,7 +497,7 @@ export function Toolbar({ children }: { children: ReactNode }) {
 export function Meta({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="min-w-0">
-      <dt className="text-[11px] font-semibold uppercase tracking-[0.08em] text-cream/45">
+      <dt className="text-[11px] font-semibold uppercase tracking-[0.08em] text-mist">
         {label}
       </dt>
       <dd className="mt-0.5 truncate text-sm text-cream/85">{value}</dd>

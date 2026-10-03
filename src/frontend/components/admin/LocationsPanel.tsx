@@ -193,7 +193,7 @@ export function LocationPanel({
       <Panel title="Store Locations" icon={<Building2 className="size-5" />}>
         <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-cream/50">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-mist">
               {locEditingId ? "Edit location" : "Add a location"}
             </h3>
             <form onSubmit={submitLocation} className="mt-4 space-y-4">
@@ -290,7 +290,7 @@ export function LocationPanel({
                   onChange={(e) =>
                     setLocForm({ ...locForm, isMainBranch: e.target.checked })
                   }
-                  className="size-4 accent-[#d5a83d]"
+                  className="size-4 accent-gold"
                 />
                 Main branch (displayed on the website)
               </label>
@@ -335,7 +335,7 @@ export function LocationPanel({
           {loadError && locations && (
             <p
               role="alert"
-              className="rounded-lg bg-red-500/10 px-4 py-2 text-sm text-red-300 ring-1 ring-red-400/20"
+              className="rounded-lg bg-cherry/10 px-4 py-2 text-sm text-cherry-light ring-1 ring-cherry/20"
             >
               Showing the last successful load. Could not refresh: {loadError}
             </p>
@@ -344,11 +344,11 @@ export function LocationPanel({
           {(!loadError || locations) && (
             <ul className="space-y-3">
               {!locations ? (
-                <li className="grid place-items-center py-12 text-cream/50">
+                <li className="grid place-items-center py-12 text-mist">
                   <Loader2 className="size-6 animate-spin" />
                 </li>
               ) : locations.length === 0 ? (
-                <li className="rounded-2xl bg-white/5 px-4 py-10 text-center text-sm text-cream/50">
+                <li className="rounded-2xl bg-white/5 px-4 py-10 text-center text-sm text-mist">
                   No store locations yet.
                 </li>
               ) : (
@@ -370,7 +370,7 @@ export function LocationPanel({
                             </span>
                           )}
                         </p>
-                        <p className="text-[12px] text-cream/55">
+                        <p className="text-[12px] text-mist">
                           {[location.subCounty, location.district]
                             .filter(Boolean)
                             .join(", ") || "—"}
@@ -392,7 +392,7 @@ export function LocationPanel({
                         type="button"
                         onClick={() => removeLocation(location)}
                         aria-label={`Delete ${location.name}`}
-                        className="grid size-8 place-items-center rounded-lg bg-red-500/10 text-red-300 ring-1 ring-red-400/20 transition-colors hover:bg-red-500/20"
+                        className="grid size-8 place-items-center rounded-lg bg-cherry/10 text-cherry-light ring-1 ring-cherry/20 transition-colors hover:bg-cherry/20"
                       >
                         <Trash2 className="size-3.5" aria-hidden="true" />
                       </button>

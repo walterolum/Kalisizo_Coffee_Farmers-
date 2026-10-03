@@ -257,7 +257,7 @@ export function AdminClient() {
 
   if (!authReady) {
     return (
-      <div className="grid min-h-screen place-items-center bg-forest-deep text-cream">
+      <div className="surface-dark grid min-h-screen place-items-center bg-forest-deep text-cream">
         <Loader2 className="size-8 animate-spin text-gold-light" />
       </div>
     );
@@ -308,7 +308,7 @@ function Login({
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-forest-deep text-cream">
+    <div className="surface-dark relative min-h-screen overflow-hidden bg-forest-deep text-cream">
       <div
         className="absolute -top-24 right-0 h-72 w-72 rounded-full bg-gold/10 blur-3xl"
         aria-hidden="true"
@@ -323,13 +323,13 @@ function Login({
         </Link>
 
         <div className="rounded-3xl bg-white/[0.05] p-7 shadow-card ring-1 ring-white/10 sm:p-9">
-          <span className="grid size-14 place-items-center rounded-2xl bg-gradient-to-br from-gold to-gold-deep text-forest shadow-card">
+          <span className="grid size-14 place-items-center rounded-2xl bg-gradient-to-br from-gold to-gold/70 text-coffee shadow-card">
             <ShieldCheck className="size-7" aria-hidden="true" />
           </span>
           <h1 className="mt-5 font-display text-2xl font-semibold">
             Admin Login
           </h1>
-          <p className="mt-2 text-sm text-cream/60">
+          <p className="mt-2 text-sm text-mist">
             Authorized staff only. Secure access to inquiries, leadership and
             the product catalog.
           </p>
@@ -367,7 +367,7 @@ function Login({
               // way to tell a wrong password from a server that never answered.
               <p
                 role="alert"
-                className="rounded-xl bg-red-500/10 px-3.5 py-2.5 text-sm font-semibold text-red-300 ring-1 ring-red-400/20"
+                className="rounded-xl bg-cherry/10 px-3.5 py-2.5 text-sm font-semibold text-cherry-light ring-1 ring-cherry/20"
               >
                 {error}
               </p>
@@ -540,7 +540,7 @@ function Dashboard({
           <h1 className="font-display text-xl font-semibold text-cream sm:text-2xl">
             {currentItem?.label ?? "Dashboard"}
           </h1>
-          <p className="mt-1 text-sm text-cream/55">
+          <p className="mt-1 text-sm text-mist">
             {currentItem?.description ??
               "Overview of published content and recent activity"}
           </p>
@@ -553,8 +553,8 @@ function Dashboard({
             aria-atomic="true"
             className={`flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold ring-1 ${
               notice.kind === "error"
-                ? "bg-red-500/10 text-red-300 ring-red-400/20"
-                : "bg-emerald-brand/15 text-emerald-200 ring-emerald-400/20"
+                ? "bg-cherry/10 text-cherry-light ring-cherry/20"
+                : "bg-action/15 text-action-light ring-brand/25"
             }`}
           >
             {notice.kind === "error" ? (
@@ -906,7 +906,7 @@ function Overview({
                       potentially alarming claim. */}
                   {card.value ?? "\u2014"}
                 </p>
-                <p className="mt-0.5 text-[13px] text-cream/60">{card.label}</p>
+                <p className="mt-0.5 text-[13px] text-mist">{card.label}</p>
               </div>
             ))}
           </div>
@@ -927,21 +927,21 @@ function Overview({
                 <button
                   type="button"
                   onClick={() => onNavigate(item.panel)}
-                  className="flex w-full items-center gap-3 rounded-xl bg-amber-500/10 px-4 py-3 text-left ring-1 ring-amber-400/20 transition-colors hover:bg-amber-500/15"
+                  className="flex w-full items-center gap-3 rounded-xl bg-gold/10 px-4 py-3 text-left ring-1 ring-gold/20 transition-colors hover:bg-gold/15"
                 >
                   <AlertCircle
-                    className="size-5 shrink-0 text-amber-300"
+                    className="size-5 shrink-0 text-gold-light"
                     aria-hidden="true"
                   />
                   <span className="min-w-0 flex-1">
                     <span className="block text-sm font-semibold text-cream">
                       {item.title}
                     </span>
-                    <span className="block text-[13px] text-cream/60">
+                    <span className="block text-[13px] text-mist">
                       {item.detail}
                     </span>
                   </span>
-                  <span className="shrink-0 text-[13px] font-semibold text-amber-200">
+                  <span className="shrink-0 text-[13px] font-semibold text-gold-light">
                     Review
                   </span>
                 </button>
@@ -969,15 +969,15 @@ function Overview({
             <button
               type="button"
               onClick={() => onNavigate("news")}
-              className="text-[13px] font-semibold text-gold transition-colors hover:text-gold-light"
+              className="text-[13px] font-semibold text-gold-light transition-colors hover:text-gold-light"
             >
               Manage
             </button>
           </div>
           {!latest ? (
-            <p className="mt-4 text-sm text-cream/45">Loading…</p>
+            <p className="mt-4 text-sm text-mist">Loading…</p>
           ) : latest.news.length === 0 ? (
-            <p className="mt-4 text-sm text-cream/45">No news articles yet.</p>
+            <p className="mt-4 text-sm text-mist">No news articles yet.</p>
           ) : (
             <ul className="mt-4 divide-y divide-white/[0.06]">
               {latest.news.map((item) => (
@@ -1012,15 +1012,15 @@ function Overview({
             <button
               type="button"
               onClick={() => onNavigate("events")}
-              className="text-[13px] font-semibold text-gold transition-colors hover:text-gold-light"
+              className="text-[13px] font-semibold text-gold-light transition-colors hover:text-gold-light"
             >
               Manage
             </button>
           </div>
           {!latest ? (
-            <p className="mt-4 text-sm text-cream/45">Loading…</p>
+            <p className="mt-4 text-sm text-mist">Loading…</p>
           ) : latest.events.length === 0 ? (
-            <p className="mt-4 text-sm text-cream/45">No events scheduled.</p>
+            <p className="mt-4 text-sm text-mist">No events scheduled.</p>
           ) : (
             <ul className="mt-4 divide-y divide-white/[0.06]">
               {latest.events.map((item) => (
@@ -1035,7 +1035,7 @@ function Overview({
                     {item.startAt && (
                       <time
                         dateTime={item.startAt}
-                        className="block text-[12px] text-cream/45"
+                        className="block text-[12px] text-mist"
                       >
                         {new Date(item.startAt).toLocaleDateString("en-GB", {
                           day: "numeric",
@@ -1071,7 +1071,7 @@ function Overview({
             <button
               type="button"
               onClick={() => onNavigate("inquiries")}
-              className="text-[13px] font-semibold text-gold transition-colors hover:text-gold-light"
+              className="text-[13px] font-semibold text-gold-light transition-colors hover:text-gold-light"
             >
               View all
             </button>
@@ -1082,7 +1082,7 @@ function Overview({
                 <p className="truncate text-sm text-cream">
                   {inquiry.subject || "No subject"}
                 </p>
-                <p className="mt-0.5 text-xs text-cream/45">
+                <p className="mt-0.5 text-xs text-mist">
                   {inquiry.fullName} · {fmtShortTime(inquiry.createdAt)}
                 </p>
               </li>
@@ -1109,21 +1109,21 @@ function Overview({
             <button
               type="button"
               onClick={() => onNavigate("activity")}
-              className="text-[13px] font-semibold text-gold transition-colors hover:text-gold-light"
+              className="text-[13px] font-semibold text-gold-light transition-colors hover:text-gold-light"
             >
               Full log
             </button>
           )}
         </div>
         {!canAudit ? (
-          <p className="mt-4 text-sm text-cream/45">
+          <p className="mt-4 text-sm text-mist">
             The activity log records every change to the CMS and is restricted
             to Super Administrators.
           </p>
         ) : !activity ? (
           <LoadingState label="Loading activity…" />
         ) : activity.length === 0 ? (
-          <p className="mt-4 text-sm text-cream/45">
+          <p className="mt-4 text-sm text-mist">
             No changes have been made yet. Publish your first content update to
             see it here.
           </p>
@@ -1141,7 +1141,7 @@ function Overview({
                     </span>{" "}
                     {entry.summary}
                   </p>
-                  <p className="mt-0.5 text-xs text-cream/45">
+                  <p className="mt-0.5 text-xs text-mist">
                     {entry.action} · {entry.targetType}
                   </p>
                 </div>
@@ -1149,14 +1149,14 @@ function Overview({
                   <span
                     className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
                       entry.status === "ERROR"
-                        ? "bg-red-500/15 text-red-300"
-                        : "bg-emerald-brand/15 text-emerald-200"
+                        ? "bg-cherry/15 text-cherry-light"
+                        : "bg-action/15 text-action-light"
                     }`}
                   >
                     {entry.status}
                   </span>
                   <time
-                    className="text-[11px] text-cream/40"
+                    className="text-[11px] text-mist"
                     dateTime={entry.createdAt}
                   >
                     {fmtShortTime(entry.createdAt)}
@@ -1234,7 +1234,6 @@ function InquiriesPanel({
     }
   };
 
-
   const { confirm, dialog: confirmDialog } = useConfirm();
 
   /**
@@ -1305,11 +1304,11 @@ function InquiriesPanel({
           onRetry={() => void load()}
         />
       ) : !inquiries ? (
-        <div className="mt-6 grid place-items-center py-14 text-cream/50">
+        <div className="mt-6 grid place-items-center py-14 text-mist">
           <Loader2 className="size-6 animate-spin" />
         </div>
       ) : inquiries.length === 0 ? (
-        <p className="mt-6 rounded-xl bg-white/5 px-4 py-10 text-center text-sm text-cream/50">
+        <p className="mt-6 rounded-xl bg-white/5 px-4 py-10 text-center text-sm text-mist">
           No inquiries match this filter.
         </p>
       ) : (
@@ -1330,7 +1329,7 @@ function InquiriesPanel({
                     <span className="font-semibold text-cream">
                       {inquiry.fullName}
                     </span>
-                    <span className="text-[12px] text-cream/55">
+                    <span className="text-[12px] text-mist">
                       {inquiry.email}
                       {inquiry.phone ? ` · ${inquiry.phone}` : ""}
                     </span>
@@ -1342,10 +1341,10 @@ function InquiriesPanel({
                     <span
                       className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${
                         inquiry.status === "RESOLVED"
-                          ? "bg-emerald-500/15 text-emerald-300"
+                          ? "bg-action/15 text-action-light"
                           : inquiry.status === "REVIEWED"
                             ? "bg-gold/15 text-gold-light"
-                            : "bg-amber-500/15 text-amber-300"
+                            : "bg-gold/15 text-gold-light"
                       }`}
                     >
                       {inquiry.status}
@@ -1363,7 +1362,7 @@ function InquiriesPanel({
                     <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-cream/80">
                       {inquiry.message}
                     </p>
-                    <p className="mt-3 text-[12px] text-cream/45">
+                    <p className="mt-3 text-[12px] text-mist">
                       Received {new Date(inquiry.createdAt).toLocaleString()}
                     </p>
                     <div className="mt-4 flex flex-wrap items-center gap-2">
@@ -1376,7 +1375,7 @@ function InquiriesPanel({
                         <Mail className="size-3.5" aria-hidden="true" />
                         Reply by email
                       </a>
-                      <label className="flex items-center gap-2 text-xs font-semibold text-cream/60">
+                      <label className="flex items-center gap-2 text-xs font-semibold text-mist">
                         Status
                         <select
                           value={inquiry.status}
@@ -1398,7 +1397,7 @@ function InquiriesPanel({
                         <button
                           type="button"
                           onClick={() => deleteMessage(inquiry)}
-                          className="btn btn-ghost-soft btn-sm border-red-400/30 text-red-300 hover:bg-red-500/15"
+                          className="btn btn-ghost-soft btn-sm border-cherry/50/30 text-cherry-light hover:bg-cherry/15"
                           disabled={updating === inquiry.id}
                         >
                           <Trash2 className="size-3.5" aria-hidden="true" />
@@ -1517,7 +1516,7 @@ function LeadershipPanel({
     <Panel title="Leadership" icon={<Users className="size-5" />}>
       <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
         <div>
-          <h3 className="text-xs font-bold uppercase tracking-wider text-cream/50">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-mist">
             {editingId ? "Edit member" : "Add a member"}
           </h3>
           <form onSubmit={submit} className="mt-4 space-y-4">
@@ -1636,7 +1635,7 @@ function LeadershipPanel({
               />
             </li>
           ) : !leaders ? (
-            <li className="grid place-items-center py-12 text-cream/50">
+            <li className="grid place-items-center py-12 text-mist">
               <Loader2 className="size-6 animate-spin" />
             </li>
           ) : (
@@ -1662,7 +1661,7 @@ function LeadershipPanel({
                     <p className="truncate text-sm font-semibold">
                       {leader.name}
                     </p>
-                    <p className="text-[12px] text-cream/55">
+                    <p className="text-[12px] text-mist">
                       {leader.title} · order {leader.displayOrder}
                     </p>
                   </div>
@@ -1775,7 +1774,7 @@ function LogoPanel({
             ) : (
               <span className="grid size-24 shrink-0 place-items-center rounded-2xl bg-white/5 ring-1 ring-white/10">
                 <ImageIcon
-                  className="size-8 text-cream/40"
+                  className="size-8 text-mist"
                   aria-hidden="true"
                 />
               </span>
@@ -1791,7 +1790,7 @@ function LogoPanel({
               Reset to default
             </button>
           </div>
-          <p className="mt-4 text-xs leading-relaxed text-cream/50">
+          <p className="mt-4 text-xs leading-relaxed text-mist">
             The logo appears on the dark site header and footer below the
             wordmark. It renders on a transparent background, so use a logo with
             a light/white design to stay clearly visible.
@@ -1842,7 +1841,7 @@ function LogoPanel({
           onRetry={() => void load()}
         />
       ) : !info ? (
-        <p className="mt-4 text-sm text-cream/45">
+        <p className="mt-4 text-sm text-mist">
           No cooperative settings found. Save the About section first.
         </p>
       ) : null}
@@ -1966,7 +1965,7 @@ function SuccessStoriesPanel({
       <Panel title="Success Stories" icon={<Award className="size-5" />}>
         <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-cream/50">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-mist">
               {editingId ? "Edit story" : "Add a success story"}
             </h3>
             <form onSubmit={submit} className="mt-4 space-y-4">
@@ -2070,11 +2069,11 @@ function SuccessStoriesPanel({
                 />
               </li>
             ) : !stories ? (
-              <li className="grid place-items-center py-12 text-cream/50">
+              <li className="grid place-items-center py-12 text-mist">
                 <Loader2 className="size-6 animate-spin" />
               </li>
             ) : stories.length === 0 ? (
-              <li className="rounded-2xl bg-white/5 px-4 py-10 text-center text-sm text-cream/50">
+              <li className="rounded-2xl bg-white/5 px-4 py-10 text-center text-sm text-mist">
                 No success stories yet.
               </li>
             ) : (
@@ -2100,7 +2099,7 @@ function SuccessStoriesPanel({
                       <p className="truncate text-sm font-semibold">
                         {story.title}
                       </p>
-                      <p className="text-[12px] text-cream/55">
+                      <p className="text-[12px] text-mist">
                         order {story.displayOrder}
                         {story.metric ? ` · ${story.metric}` : ""}
                       </p>
@@ -2118,7 +2117,7 @@ function SuccessStoriesPanel({
                       type="button"
                       onClick={() => remove(story)}
                       aria-label="Delete success story"
-                      className="grid size-8 place-items-center rounded-lg bg-red-500/10 text-red-300 ring-1 ring-red-400/20 transition-colors hover:bg-red-500/20"
+                      className="grid size-8 place-items-center rounded-lg bg-cherry/10 text-cherry-light ring-1 ring-cherry/20 transition-colors hover:bg-cherry/20"
                     >
                       <Trash2 className="size-3.5" aria-hidden="true" />
                     </button>
@@ -2249,7 +2248,7 @@ function ProductsPanel({
     >
       <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
         <div>
-          <h3 className="text-xs font-bold uppercase tracking-wider text-cream/50">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-mist">
             {editingId ? "Edit product" : "Add a product"}
           </h3>
           <form onSubmit={submit} className="mt-4 space-y-4">
@@ -2362,7 +2361,7 @@ function ProductsPanel({
                 onChange={(e) =>
                   setForm({ ...form, isAvailable: e.target.checked })
                 }
-                className="size-4 accent-[#d5a83d]"
+                className="size-4 accent-gold"
               />
               Available to the public
             </label>
@@ -2402,7 +2401,7 @@ function ProductsPanel({
               />
             </li>
           ) : !products ? (
-            <li className="grid place-items-center py-12 text-cream/50">
+            <li className="grid place-items-center py-12 text-mist">
               <Loader2 className="size-6 animate-spin" />
             </li>
           ) : (
@@ -2428,14 +2427,14 @@ function ProductsPanel({
                     <p className="truncate text-sm font-semibold">
                       {product.title}
                     </p>
-                    <p className="text-[12px] text-cream/55">
+                    <p className="text-[12px] text-mist">
                       {product.category.replaceAll("_", " ")}
                       {product.price ? ` · ${product.price}` : ""}
                       <span
                         className={`ml-2 ${
                           product.isAvailable
-                            ? "text-emerald-300"
-                            : "text-red-300"
+                            ? "text-action-light"
+                            : "text-cherry-light"
                         }`}
                       >
                         {product.isAvailable ? "available" : "unavailable"}
@@ -2621,7 +2620,7 @@ function HomePanel({
         </Field>
 
         <div className="lg:col-span-2">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-cream/50">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-mist">
             Today at the Cooperative
           </h3>
           <div className="mt-3 space-y-3">
@@ -2673,7 +2672,7 @@ function HomePanel({
                     })
                   }
                   aria-label="Remove item"
-                  className="grid size-9 place-items-center rounded-lg bg-red-500/10 text-red-300 ring-1 ring-red-400/20 transition-colors hover:bg-red-500/20"
+                  className="grid size-9 place-items-center rounded-lg bg-cherry/10 text-cherry-light ring-1 ring-cherry/20 transition-colors hover:bg-cherry/20"
                 >
                   <Trash2 className="size-3.5" aria-hidden="true" />
                 </button>
@@ -2719,7 +2718,7 @@ function HomePanel({
           onRetry={() => void load()}
         />
       ) : !hero ? (
-        <p className="mt-4 text-sm text-cream/45">
+        <p className="mt-4 text-sm text-mist">
           No hero content found in the database yet. Submit to create it.
         </p>
       ) : null}
@@ -2863,7 +2862,7 @@ function AboutPanel({
             onRetry={() => void load()}
           />
         ) : !info ? (
-          <p className="mt-4 text-sm text-cream/45">
+          <p className="mt-4 text-sm text-mist">
             No cooperative settings found. Submit to create the initial record.
           </p>
         ) : null}

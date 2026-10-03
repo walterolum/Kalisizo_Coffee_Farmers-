@@ -18,17 +18,17 @@ function escapeHtml(value: string): string {
 function renderInquiryHtml(inquiry: ContactInquiry): string {
   const row = (label: string, value: string) => `
     <tr>
-      <td style="padding:8px 12px;color:#64748b;font-size:13px;vertical-align:top;white-space:nowrap;">${label}</td>
-      <td style="padding:8px 12px;color:#0f172a;font-size:14px;vertical-align:top;">${value}</td>
+      <td style="padding:8px 12px;color:#6b4a33;font-size:13px;vertical-align:top;white-space:nowrap;">${label}</td>
+      <td style="padding:8px 12px;color:#4a2c1a;font-size:14px;vertical-align:top;">${value}</td>
     </tr>`;
 
   return `
   <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;">
-    <div style="background:#0e3d28;padding:20px 24px;border-radius:12px 12px 0 0;">
-      <h1 style="margin:0;color:#fbf7ef;font-size:18px;">New Contact Inquiry</h1>
-      <p style="margin:4px 0 0;color:#eac76c;font-size:13px;">Kalisizo Coffee Farmers Cooperative Society Ltd</p>
+    <div style="background:#2b4a2a;padding:20px 24px;border-radius:12px 12px 0 0;">
+      <h1 style="margin:0;color:#faf6ee;font-size:18px;">New Contact Inquiry</h1>
+      <p style="margin:4px 0 0;color:#e8c06a;font-size:13px;">Kalisizo Coffee Farmers Cooperative Society Ltd</p>
     </div>
-    <table style="width:100%;border-collapse:collapse;background:#ffffff;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 12px 12px;">
+    <table style="width:100%;border-collapse:collapse;background:#faf6ee;border:1px solid #eaf2e3;border-top:none;border-radius:0 0 12px 12px;">
       ${row("Full Name", escapeHtml(inquiry.fullName))}
       ${row("Email", escapeHtml(inquiry.email))}
       ${row("Phone", escapeHtml(inquiry?.phone ?? "—"))}
@@ -36,14 +36,14 @@ function renderInquiryHtml(inquiry: ContactInquiry): string {
       ${row("Subject", escapeHtml(inquiry?.subject ?? "—"))}
       ${row("Status", escapeHtml(inquiry.status))}
       <tr>
-        <td style="padding:8px 12px;color:#64748b;font-size:13px;vertical-align:top;">Message</td>
-        <td style="padding:8px 12px;color:#0f172a;font-size:14px;vertical-align:top;">${escapeHtml(
+        <td style="padding:8px 12px;color:#6b4a33;font-size:13px;vertical-align:top;">Message</td>
+        <td style="padding:8px 12px;color:#4a2c1a;font-size:14px;vertical-align:top;">${escapeHtml(
           inquiry.message
         )}</td>
       </tr>
       <tr>
-        <td style="padding:8px 12px;color:#64748b;font-size:13px;">Received</td>
-        <td style="padding:8px 12px;color:#0f172a;font-size:13px;">${new Date(
+        <td style="padding:8px 12px;color:#6b4a33;font-size:13px;">Received</td>
+        <td style="padding:8px 12px;color:#4a2c1a;font-size:13px;">${new Date(
           inquiry.createdAt
         ).toLocaleString()}</td>
       </tr>

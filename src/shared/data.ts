@@ -104,8 +104,8 @@ export const SERVICES: Service[] = [
       "Prices quoted openly and payments made on transparent schedules",
       "Domestic and export buyers linked for premium member returns",
     ],
-    accent: "from-[#d5a83d] to-[#a87a1d]",
-    ring: "ring-[#d5a83d]/40",
+    accent: "from-gold to-gold/70",
+    ring: "ring-gold/40",
   },
   {
     id: "production",
@@ -124,8 +124,8 @@ export const SERVICES: Service[] = [
       "Advisory on fertilizer rates and coffee nutrition",
       "Crop protection, mulching and shade management support",
     ],
-    accent: "from-[#1f7345] to-[#0e3d28]",
-    ring: "ring-[#1f7345]/40",
+    accent: "from-action to-forest-deep",
+    ring: "ring-action/40",
   },
   {
     id: "sacco",
@@ -144,8 +144,8 @@ export const SERVICES: Service[] = [
       "Safe, audited and transparent record keeping",
       "Group welfare and savings mobilisation drives",
     ],
-    accent: "from-[#4a2c11] to-[#7a4a1f]",
-    ring: "ring-[#6b3f1a]/40",
+    accent: "from-coffee to-clay",
+    ring: "ring-coffee/40",
   },
   {
     id: "capacity",
@@ -164,8 +164,8 @@ export const SERVICES: Service[] = [
       "Financial literacy and simple farm business records",
       "Farmer group mentorship and guided field visits",
     ],
-    accent: "from-[#1f7345] to-[#269558]",
-    ring: "ring-[#1f7345]/40",
+    accent: "from-brand to-action",
+    ring: "ring-action/40",
   },
 ];
 
@@ -188,7 +188,7 @@ export const LEADERS: Leader[] = [
     photo: "/leadership/muwonge-deo.jpeg",
     initials: "MD",
     icon: "crown",
-    gradient: "from-[#d5a83d] to-[#a87a1d]",
+    gradient: "from-gold to-gold/70",
   },
   {
     name: "Kanyangira Fred",
@@ -198,7 +198,7 @@ export const LEADERS: Leader[] = [
     photo: "/leadership/kanyangira-fred.jpeg",
     initials: "KF",
     icon: "crown",
-    gradient: "from-[#0e3d28] to-[#1f7345]",
+    gradient: "from-forest to-action",
   },
   {
     name: "Kasumba Denis Collins",
@@ -208,7 +208,7 @@ export const LEADERS: Leader[] = [
     photo: "/leadership/kasumba-denis-collins.jpeg",
     initials: "DC",
     icon: "briefcase",
-    gradient: "from-[#1f7345] to-[#0e3d28]",
+    gradient: "from-action to-forest-deep",
   },
   {
     name: "Nakayiki Rose",
@@ -218,7 +218,7 @@ export const LEADERS: Leader[] = [
     photo: "/leadership/nakayiki-rose.jpeg",
     initials: "NR",
     icon: "wallet",
-    gradient: "from-[#4a2c11] to-[#6b3f1a]",
+    gradient: "from-clay to-coffee",
   },
   {
     name: "Kasule Richard",
@@ -228,7 +228,7 @@ export const LEADERS: Leader[] = [
     photo: "/leadership/kasule-richard.jpeg",
     initials: "KR",
     icon: "file",
-    gradient: "from-[#1f7345] to-[#2b9757]",
+    gradient: "from-action to-brand",
   },
   {
     name: "Nanyondo Berna",
@@ -238,7 +238,7 @@ export const LEADERS: Leader[] = [
     photo: "/leadership/nanyondo-berna.jpeg",
     initials: "NB",
     icon: "users",
-    gradient: "from-[#a87a1d] to-[#d5a83d]",
+    gradient: "from-gold/70 to-gold",
   },
 ];
 
@@ -275,7 +275,7 @@ export const PRODUCTS: Product[] = [
       "Diammonium phosphate for vigorous root development, strong flowering and better fruit set.",
     icon: FlaskConical,
     cta: "Enquire about availability",
-    tone: "bg-gradient-to-br from-[#0e3d28] to-[#1f7345]",
+    tone: "bg-gradient-to-br from-forest to-action",
   },
   {
     name: "NPK 17-17-17",
@@ -285,7 +285,7 @@ export const PRODUCTS: Product[] = [
       "A complete, balanced blend applied at establishment to support healthy overall growth.",
     icon: Sprout,
     cta: "Enquire about availability",
-    tone: "bg-gradient-to-br from-[#d5a83d] to-[#a87a1d]",
+    tone: "bg-gradient-to-br from-gold to-gold/70",
   },
   {
     name: "Urea 46% N",
@@ -295,7 +295,7 @@ export const PRODUCTS: Product[] = [
       "High-nitrogen fertiliser to fuel vegetative growth and canopy development after harvest.",
     icon: Leaf,
     cta: "Enquire about availability",
-    tone: "bg-gradient-to-br from-[#1f7345] to-[#269558]",
+    tone: "bg-gradient-to-br from-brand to-action",
   },
   {
     name: "Organic Manure",
@@ -305,7 +305,7 @@ export const PRODUCTS: Product[] = [
       "Composted organic matter that restores soil structure, water retention and microbial life.",
     icon: Recycle,
     cta: "Enquire about availability",
-    tone: "bg-gradient-to-br from-[#4a2c11] to-[#6b3f1a]",
+    tone: "bg-gradient-to-br from-clay to-coffee",
   },
   {
     name: "Washed Arabica",
@@ -315,7 +315,7 @@ export const PRODUCTS: Product[] = [
       "High-altitude, carefully washed arabica with refined acidity and a clean cup profile.",
     icon: Coffee,
     cta: "Request sample for wholesale",
-    tone: "bg-gradient-to-br from-[#d5a83d] to-[#9c7419]",
+    tone: "bg-gradient-to-br from-gold to-clay",
   },
   {
     name: "Natural Robusta",
@@ -325,7 +325,7 @@ export const PRODUCTS: Product[] = [
       "Sun-dried robusta with bold body and chocolate notes, ideal for blends and espresso.",
     icon: Coffee,
     cta: "Request sample for wholesale",
-    tone: "bg-gradient-to-br from-[#4a2c11] to-[#2a1508]",
+    tone: "bg-gradient-to-br from-clay to-coffee",
   },
   {
     name: "Export-Grade Green",
@@ -335,7 +335,7 @@ export const PRODUCTS: Product[] = [
       "Verified, moisture-checked green lots sourced transparently from member farms.",
     icon: Wheat,
     cta: "Request export quotation",
-    tone: "bg-gradient-to-br from-[#0e3d28] to-[#0f6b40]",
+    tone: "bg-gradient-to-br from-forest-deep to-action",
   },
   {
     name: "Savings Deposit Account",
@@ -345,7 +345,7 @@ export const PRODUCTS: Product[] = [
       "Secure member savings accounts that grow your capital while building financial discipline.",
     icon: PiggyBank,
     cta: "Open an account",
-    tone: "bg-gradient-to-br from-[#1f7345] to-[#0e3d28]",
+    tone: "bg-gradient-to-br from-action to-forest-deep",
   },
   {
     name: "Affordable Credit Loans",
@@ -355,7 +355,7 @@ export const PRODUCTS: Product[] = [
       "Low-interest loans designed around your farming calendar, from inputs to harvest.",
     icon: Landmark,
     cta: "Check loan terms",
-    tone: "bg-gradient-to-br from-[#a87a1d] to-[#d5a83d]",
+    tone: "bg-gradient-to-br from-gold/70 to-gold",
   },
   {
     name: "Seasonal & Group Loans",
@@ -365,7 +365,7 @@ export const PRODUCTS: Product[] = [
       "Group-backed and seasonal credit that keeps the cooperative's money working for members.",
     icon: Users,
     cta: "Check loan terms",
-    tone: "bg-gradient-to-br from-[#4a2c11] to-[#7a4a1f]",
+    tone: "bg-gradient-to-br from-coffee to-clay",
   },
 ];
 

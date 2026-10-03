@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 import { PageHero, EmptyState } from "@/frontend/components/PageHero";
@@ -24,7 +25,7 @@ export default async function ProgramsPage() {
         description="Everything the cooperative runs for its members: from buying and marketing coffee to inputs, savings and hands-on training."
       />
 
-      <section className="bg-cream py-20 sm:py-24">
+      <section className="bg-leaf py-20 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {programs.length === 0 ? (
             <EmptyState
@@ -35,33 +36,47 @@ export default async function ProgramsPage() {
             <ul className="grid gap-7 md:grid-cols-2">
               {programs.map((program, i) => (
                 <Reveal key={program.id} as="li" delay={Math.min(i, 4) * 80}>
-                  <article className="group relative flex h-full flex-col bg-white p-7 ring-1 ring-charcoal/8 transition-colors duration-300 hover:ring-gold/40 sm:p-8">
-                    <h2 className="font-display text-xl font-semibold text-forest">
-                      {program.title}
-                    </h2>
-                    <p className="mt-2 text-sm font-semibold text-gold-deep">
-                      {program.tagline}
-                    </p>
-                    {program.points.length > 0 && (
-                      <ul className="mt-5 flex-1 space-y-2.5">
-                        {program.points.map((point) => (
-                          <li key={point} className="flex gap-2.5 text-sm text-charcoal/70">
-                            <Check
-                              className="mt-0.5 size-4 shrink-0 text-emerald-brand"
-                              aria-hidden="true"
-                            />
-                            <span>{point}</span>
-                          </li>
-                        ))}
-                      </ul>
+                  <article className="group relative flex h-full flex-col overflow-hidden bg-white ring-1 ring-coffee/8 transition-all duration-300 hover:-translate-y-1 hover:shadow-card hover:ring-action/35">
+                    {program.imageUrl && (
+                      <div className="relative aspect-[16/9] overflow-hidden bg-leaf">
+                        <Image
+                          src={program.imageUrl}
+                          alt={program.title}
+                          fill
+                          sizes="(min-width: 768px) 50vw, 100vw"
+                          quality={65}
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      </div>
                     )}
-                    <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-bold text-forest">
-                      Learn more
-                      <ArrowRight
-                        className="size-4 transition-transform duration-300 group-hover:translate-x-1"
-                        aria-hidden="true"
-                      />
-                    </span>
+                    <div className="flex flex-1 flex-col p-7 sm:p-8">
+                      <h2 className="font-display text-xl font-semibold text-coffee">
+                        {program.title}
+                      </h2>
+                      <p className="mt-2 inline-flex w-fit rounded-full bg-gold/20 px-3 py-1 text-sm font-semibold text-coffee">
+                        {program.tagline}
+                      </p>
+                      {program.points.length > 0 && (
+                        <ul className="mt-5 flex-1 space-y-2.5">
+                          {program.points.map((point) => (
+                            <li key={point} className="flex gap-2.5 text-sm text-muted">
+                              <Check
+                                className="mt-0.5 size-4 shrink-0 text-forest"
+                                aria-hidden="true"
+                              />
+                              <span>{point}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-bold text-forest transition-colors group-hover:text-action">
+                        Learn more
+                        <ArrowRight
+                          className="size-4 transition-transform duration-300 group-hover:translate-x-1"
+                          aria-hidden="true"
+                        />
+                      </span>
+                    </div>
                     <Link
                       href={`/programs/${program.slug}`}
                       className="absolute inset-0 z-10"

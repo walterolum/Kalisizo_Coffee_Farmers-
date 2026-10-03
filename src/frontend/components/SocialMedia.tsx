@@ -30,11 +30,11 @@ export function SocialMedia() {
   return (
     <section
       id="social"
-      className="relative overflow-hidden bg-forest py-28 lg:py-36"
+      className="surface-dark relative overflow-hidden bg-forest py-28 lg:py-36"
       aria-labelledby="social-heading"
     >
       <div
-        className="absolute -left-32 -top-24 h-80 w-80 rounded-full bg-emerald-brand/40 blur-3xl"
+        className="absolute -left-32 -top-24 h-80 w-80 rounded-full bg-brand/40 blur-3xl"
         aria-hidden="true"
       />
       <div
@@ -87,8 +87,8 @@ export function SocialMedia() {
         </div>
 
         <Reveal delay={120}>
-          <p className="mt-10 flex items-center justify-center gap-2 text-center text-sm text-cream/60">
-            <Globe className="size-4 text-gold" aria-hidden="true" />
+          <p className="mt-10 flex items-center justify-center gap-2 text-center text-sm text-mist">
+            <Globe className="size-4 text-gold-light" aria-hidden="true" />
             Official pages run as “Kalisizo Coffee Farmers Cooperative Society
             Ltd”, farm family to farm family.
           </p>

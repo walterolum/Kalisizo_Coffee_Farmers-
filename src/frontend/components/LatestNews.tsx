@@ -14,9 +14,9 @@ export async function LatestNews() {
   if (articles.length === 0) return null;
 
   return (
-    // bg-sand rather than bg-cream: Location is bg-cream and sits directly
+    // bg-leaf rather than bg-cream: Location is bg-cream and sits directly
     // above, so the two were one continuous surface.
-    <section className="bg-sand py-24 sm:py-28" aria-labelledby="latest-news-heading">
+    <section className="bg-leaf py-24 sm:py-28" aria-labelledby="latest-news-heading">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <Reveal>
           <SectionHeading

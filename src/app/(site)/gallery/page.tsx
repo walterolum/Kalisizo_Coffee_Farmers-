@@ -66,7 +66,7 @@ export default async function GalleryPage({ searchParams }: PageProps) {
               <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                 {visible.map((image, i) => (
                   <Reveal key={image.id} as="li" delay={Math.min(i, 7) * 50}>
-                    <figure className="group relative overflow-hidden rounded-2xl bg-sand ring-1 ring-charcoal/8">
+                    <figure className="group relative overflow-hidden rounded-2xl bg-leaf ring-1 ring-coffee/8">
                       <div className="relative aspect-square w-full">
                         <Image
                           src={image.thumbnailUrl || image.url}
@@ -76,9 +76,11 @@ export default async function GalleryPage({ searchParams }: PageProps) {
                           quality={50}
                           className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
+                        {/* Wash after the image: both are absolutely positioned,
+                            so DOM order is what puts the gradient on top. */}
                       </div>
                       {image.caption && (
-                        <figcaption className="px-3 py-2.5 text-[12.5px] leading-snug text-charcoal/60">
+                        <figcaption className="px-3 py-2.5 text-[12.5px] leading-snug text-muted">
                           {image.caption}
                         </figcaption>
                       )}
@@ -110,7 +112,7 @@ function AlbumChip({
       className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
         active
           ? "bg-forest text-cream"
-          : "bg-white text-charcoal/65 ring-1 ring-charcoal/10 hover:bg-sand"
+          : "bg-white text-muted ring-1 ring-coffee/10 hover:bg-leaf"
       }`}
     >
       {label}

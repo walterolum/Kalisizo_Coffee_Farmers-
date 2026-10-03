@@ -108,7 +108,7 @@ function Tooltip({ label, children }: { label: string; children: ReactNode }) {
       {children}
       <span
         role="tooltip"
-        className="pointer-events-none absolute left-full top-1/2 z-50 ml-2 hidden -translate-y-1/2 whitespace-nowrap rounded-md bg-charcoal px-2 py-1 text-[11px] font-medium text-cream opacity-0 shadow-soft transition-opacity group-hover/tooltip:block group-hover/tooltip:opacity-100 group-focus-within/tooltip:block group-focus-within/tooltip:opacity-100"
+        className="pointer-events-none absolute left-full top-1/2 z-50 ml-2 hidden -translate-y-1/2 whitespace-nowrap rounded-md bg-coffee px-2 py-1 text-[11px] font-medium text-cream opacity-0 shadow-soft transition-opacity group-hover/tooltip:block group-hover/tooltip:opacity-100 group-focus-within/tooltip:block group-focus-within/tooltip:opacity-100"
       >
         {label}
       </span>
@@ -139,7 +139,7 @@ function NavButton({
         collapsed ? "justify-center px-2" : "px-3",
         active
           ? "bg-gold/12 text-cream"
-          : "text-cream/65 hover:bg-white/[0.06] hover:text-cream",
+          : "text-mist hover:bg-white/[0.06] hover:text-cream",
       ].join(" ")}
     >
       {/* Active marker: a solid bar plus weight change, so the current page is
@@ -152,7 +152,7 @@ function NavButton({
       />
       <Icon
         className={`size-[18px] shrink-0 transition-colors ${
-          active ? "text-gold" : "text-cream/50 group-hover:text-cream/80"
+          active ? "text-gold-light" : "text-mist group-hover:text-cream/80"
         }`}
         aria-hidden="true"
       />
@@ -345,7 +345,7 @@ export function AdminShell({
   }, [query, user.role]);
 
   const sidebar = (
-    <div className="flex h-full flex-col bg-forest-deep">
+    <div className="surface-dark flex h-full flex-col bg-forest-deep">
       <div
         className={`flex h-16 shrink-0 items-center border-b border-white/10 ${
           collapsed ? "justify-center px-2" : "gap-3 px-4"
@@ -353,7 +353,7 @@ export function AdminShell({
       >
         <Link
           href="/"
-          className="grid size-9 shrink-0 place-items-center rounded-lg bg-gold/15 text-gold"
+          className="grid size-9 shrink-0 place-items-center rounded-lg bg-gold/15 text-gold-light"
           aria-label="Kalisizo Coffee, view public site"
         >
           <span className="font-display text-sm font-bold">KC</span>
@@ -363,7 +363,7 @@ export function AdminShell({
             <span className="block truncate font-display text-[13px] font-semibold text-cream">
               Kalisizo Coffee
             </span>
-            <span className="block text-[10px] font-semibold uppercase tracking-[0.14em] text-cream/40">
+            <span className="block text-[10px] font-semibold uppercase tracking-[0.14em] text-mist">
               Content management
             </span>
           </span>
@@ -371,7 +371,7 @@ export function AdminShell({
         <button
           type="button"
           onClick={() => setDrawerOpen(false)}
-          className="ml-auto rounded-lg p-1.5 text-cream/60 hover:bg-white/10 hover:text-cream lg:hidden"
+          className="ml-auto rounded-lg p-1.5 text-mist hover:bg-white/10 hover:text-cream lg:hidden"
           aria-label="Close navigation"
         >
           <X className="size-5" aria-hidden="true" />
@@ -428,8 +428,8 @@ export function AdminShell({
                   className={[
                     "flex w-full items-center justify-center rounded-lg py-2 transition-colors duration-150",
                     groupIsActive
-                      ? "bg-white/[0.07] text-gold"
-                      : "text-cream/50 hover:bg-white/[0.06] hover:text-cream",
+                      ? "bg-white/[0.07] text-gold-light"
+                      : "text-mist hover:bg-white/[0.06] hover:text-cream",
                   ].join(" ")}
                 >
                   <GroupIcon className="size-[18px]" aria-hidden="true" />
@@ -446,13 +446,13 @@ export function AdminShell({
                 aria-expanded={isOpen}
                 aria-controls={panelId}
                 className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold transition-colors duration-150 hover:bg-white/[0.06] ${
-                  groupIsActive ? "text-cream" : "text-cream/60"
+                  groupIsActive ? "text-cream" : "text-mist"
                 }`}
               >
-                <GroupIcon className="size-[18px] shrink-0 text-cream/50" aria-hidden="true" />
+                <GroupIcon className="size-[18px] shrink-0 text-mist" aria-hidden="true" />
                 <span className="flex-1 text-left">{group.label}</span>
                 <ChevronDown
-                  className={`size-4 shrink-0 text-cream/40 transition-transform duration-200 ease-out ${
+                  className={`size-4 shrink-0 text-mist transition-transform duration-200 ease-out ${
                     isOpen ? "rotate-180" : "rotate-0"
                   }`}
                   aria-hidden="true"
@@ -481,7 +481,7 @@ export function AdminShell({
       <div className="shrink-0 space-y-1 border-t border-white/10 p-3">
         <Link
           href="/"
-          className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-cream/60 transition-colors hover:bg-white/[0.06] hover:text-cream ${
+          className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-mist transition-colors hover:bg-white/[0.06] hover:text-cream ${
             collapsed ? "justify-center" : ""
           }`}
         >
@@ -491,7 +491,7 @@ export function AdminShell({
         <button
           type="button"
           onClick={() => setCollapsed((value) => !value)}
-          className={`hidden w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-cream/60 transition-colors hover:bg-white/[0.06] hover:text-cream lg:flex ${
+          className={`hidden w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-mist transition-colors hover:bg-white/[0.06] hover:text-cream lg:flex ${
             collapsed ? "justify-center" : ""
           }`}
           aria-label={collapsed ? "Expand navigation" : "Collapse navigation"}
@@ -508,11 +508,11 @@ export function AdminShell({
   );
 
   return (
-    <div className="min-h-screen bg-forest-deep text-cream">
+    <div className="surface-dark min-h-screen bg-forest-deep text-cream">
 
       <a
         href="#admin-main"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-gold focus:px-4 focus:py-2 focus:font-semibold focus:text-forest-deep"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-gold focus:px-4 focus:py-2 focus:font-semibold focus:text-coffee"
       >
         Skip to content
       </a>
@@ -549,7 +549,7 @@ export function AdminShell({
 
         <div className="flex min-w-0 flex-1 flex-col">
           {/* top bar */}
-          <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b border-white/10 bg-forest-deep/85 px-4 backdrop-blur-md sm:px-6">
+          <header className="surface-dark sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b border-white/10 bg-forest-deep/85 px-4 backdrop-blur-md sm:px-6">
             <button
               ref={menuButtonRef}
               type="button"
@@ -568,7 +568,7 @@ export function AdminShell({
                   return (
                     <li key={crumb.label} className="flex min-w-0 items-center gap-1.5">
                       {index > 0 && (
-                        <span aria-hidden="true" className="text-cream/25">
+                        <span aria-hidden="true" className="text-mist">
                           /
                         </span>
                       )}
@@ -583,7 +583,7 @@ export function AdminShell({
                         <button
                           type="button"
                           onClick={crumb.onSelect}
-                          className="truncate text-cream/55 transition-colors hover:text-cream"
+                          className="truncate text-mist transition-colors hover:text-cream"
                         >
                           {crumb.label}
                         </button>
@@ -615,7 +615,7 @@ export function AdminShell({
                 {pendingCount > 0 && (
                   <span
                     aria-hidden="true"
-                    className="absolute right-1 top-1 grid min-w-4 place-items-center rounded-full bg-gold px-1 text-[10px] font-bold leading-4 text-forest-deep"
+                    className="absolute right-1 top-1 grid min-w-4 place-items-center rounded-full bg-gold px-1 text-[10px] font-bold leading-4 text-coffee"
                   >
                     {pendingCount > 9 ? "9+" : pendingCount}
                   </span>
@@ -626,7 +626,7 @@ export function AdminShell({
                 <div
                   role="dialog"
                   aria-label="Notifications"
-                  className="absolute right-0 top-full z-40 mt-2 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-xl bg-forest ring-1 ring-white/15 shadow-glass"
+                  className="surface-dark absolute right-0 top-full z-40 mt-2 w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-xl bg-forest ring-1 ring-white/15 shadow-glass"
                 >
                   <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
                     <p className="text-[13px] font-semibold text-cream">
@@ -637,11 +637,11 @@ export function AdminShell({
                     )}
                   </div>
                   {notifications === null ? (
-                    <p className="px-4 py-6 text-center text-[13px] text-cream/50">
+                    <p className="px-4 py-6 text-center text-[13px] text-mist">
                       Loading…
                     </p>
                   ) : notifications.length === 0 ? (
-                    <p className="px-4 py-6 text-center text-[13px] text-cream/50">
+                    <p className="px-4 py-6 text-center text-[13px] text-mist">
                       Nothing is waiting for a reply.
                     </p>
                   ) : (
@@ -656,7 +656,7 @@ export function AdminShell({
                             <p className="truncate text-[13px] font-medium text-cream">
                               {inquiry.subject || "No subject"}
                             </p>
-                            <p className="mt-0.5 truncate text-[12px] text-cream/50">
+                            <p className="mt-0.5 truncate text-[12px] text-mist">
                               {inquiry.fullName} · {timeAgo(inquiry.createdAt)}
                             </p>
                           </button>
@@ -668,7 +668,7 @@ export function AdminShell({
                     <button
                       type="button"
                       onClick={() => select("inquiries")}
-                      className="w-full px-4 py-2.5 text-center text-[13px] font-semibold text-gold transition-colors hover:bg-white/[0.05]"
+                      className="w-full px-4 py-2.5 text-center text-[13px] font-semibold text-gold-light transition-colors hover:bg-white/[0.05]"
                     >
                       View all messages
                     </button>
@@ -691,7 +691,7 @@ export function AdminShell({
               >
                 <span
                   aria-hidden="true"
-                  className="grid size-8 shrink-0 place-items-center rounded-full bg-gold/20 text-[12px] font-bold text-gold"
+                  className="grid size-8 shrink-0 place-items-center rounded-full bg-gold/20 text-[12px] font-bold text-gold-light"
                 >
                   {initials(user.name)}
                 </span>
@@ -699,12 +699,12 @@ export function AdminShell({
                   <span className="block truncate text-[13px] font-semibold text-cream">
                     {user.name}
                   </span>
-                  <span className="block truncate text-[11px] text-cream/50">
+                  <span className="block truncate text-[11px] text-mist">
                     {ROLE_LABEL[user.role]}
                   </span>
                 </span>
                 <ChevronDown
-                  className={`hidden size-4 text-cream/40 transition-transform duration-200 sm:block ${
+                  className={`hidden size-4 text-mist transition-transform duration-200 sm:block ${
                     profileOpen ? "rotate-180" : "rotate-0"
                   }`}
                   aria-hidden="true"
@@ -714,13 +714,13 @@ export function AdminShell({
               {profileOpen && (
                 <div
                   role="menu"
-                  className="absolute right-0 top-full z-40 mt-2 w-64 overflow-hidden rounded-xl bg-forest ring-1 ring-white/15 shadow-glass"
+                  className="surface-dark absolute right-0 top-full z-40 mt-2 w-64 overflow-hidden rounded-xl bg-forest ring-1 ring-white/15 shadow-glass"
                 >
                   <div className="border-b border-white/10 px-4 py-3">
                     <p className="truncate text-[13px] font-semibold text-cream">
                       {user.name}
                     </p>
-                    <p className="truncate text-[12px] text-cream/50">{user.email}</p>
+                    <p className="truncate text-[12px] text-mist">{user.email}</p>
                     <p className="mt-1.5">
                       <Badge tone="info">{ROLE_LABEL[user.role]}</Badge>
                     </p>
@@ -737,7 +737,7 @@ export function AdminShell({
                     type="button"
                     role="menuitem"
                     onClick={onLogout}
-                    className="flex w-full items-center gap-2.5 border-t border-white/10 px-4 py-2.5 text-left text-[13px] font-semibold text-red-300 transition-colors hover:bg-red-500/10"
+                    className="flex w-full items-center gap-2.5 border-t border-white/10 px-4 py-2.5 text-left text-[13px] font-semibold text-cherry-light transition-colors hover:bg-cherry/10"
                   >
                     <LogOut className="size-4" aria-hidden="true" />
                     Sign out
@@ -751,7 +751,7 @@ export function AdminShell({
             {children}
           </main>
 
-          <footer className="border-t border-white/10 px-4 py-5 text-center text-[11px] text-cream/35 sm:px-6">
+          <footer className="border-t border-white/10 px-4 py-5 text-center text-[11px] text-mist sm:px-6">
             Kalisizo Coffee Farmers Cooperative Society Ltd, secure admin area.
           </footer>
         </div>
@@ -786,7 +786,7 @@ function NavSearch({
       <button
         type="button"
         onClick={() => setCollapsedHint()}
-        className="flex w-full items-center justify-center rounded-lg py-2 text-cream/50 transition-colors hover:bg-white/[0.06] hover:text-cream"
+        className="flex w-full items-center justify-center rounded-lg py-2 text-mist transition-colors hover:bg-white/[0.06] hover:text-cream"
         aria-label="Search sections"
         title="Search sections"
       >
@@ -801,7 +801,7 @@ function NavSearch({
         Search admin sections
       </label>
       <Search
-        className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-cream/35"
+        className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-mist"
         aria-hidden="true"
       />
       <input
@@ -826,17 +826,17 @@ function NavSearch({
         aria-expanded={showPanel}
         aria-controls={showPanel ? `${listId}-results` : undefined}
         aria-autocomplete="list"
-        className="w-full rounded-lg border border-white/10 bg-white/[0.05] py-2 pl-9 pr-2.5 text-[13px] text-cream placeholder:text-cream/35 outline-none transition-colors focus:border-gold/60 focus:bg-white/[0.07]"
+        className="w-full rounded-lg border border-white/10 bg-white/[0.05] py-2 pl-9 pr-2.5 text-[13px] text-cream placeholder:text-mist outline-none transition-colors focus:border-gold/60 focus:bg-white/[0.07]"
       />
 
       {showPanel && (
         <div
           id={`${listId}-results`}
           role="listbox"
-          className="absolute left-0 right-0 top-full z-40 mt-1 overflow-hidden rounded-lg bg-forest ring-1 ring-white/15 shadow-glass"
+          className="surface-dark absolute left-0 right-0 top-full z-40 mt-1 overflow-hidden rounded-lg bg-forest ring-1 ring-white/15 shadow-glass"
         >
           {results.length === 0 ? (
-            <p className="px-3 py-2.5 text-[13px] text-cream/50">
+            <p className="px-3 py-2.5 text-[13px] text-mist">
               No section matches “{value.trim()}”.
             </p>
           ) : (
@@ -852,7 +852,7 @@ function NavSearch({
                       onClick={() => onSelect(item.id)}
                       className="flex w-full items-center gap-2.5 px-3 py-2 text-left transition-colors hover:bg-white/[0.07]"
                     >
-                      <Icon className="size-4 shrink-0 text-cream/45" aria-hidden="true" />
+                      <Icon className="size-4 shrink-0 text-mist" aria-hidden="true" />
                       <span className="truncate text-[13px] text-cream">{item.label}</span>
                     </button>
                   </li>

@@ -59,10 +59,10 @@ export function MissionVision() {
               <span className="grid size-12 place-items-center rounded-full bg-forest text-gold-light">
                 <Target className="size-5" aria-hidden="true" />
               </span>
-              <p className="mt-7 text-[11px] font-semibold uppercase tracking-[0.3em] text-gold-deep">
+              <p className="mt-7 text-[11px] font-semibold uppercase tracking-[0.3em] text-clay">
                 Our Mission
               </p>
-              <p className="mt-6 text-pretty text-[clamp(1.0625rem,0.3vw+1rem,1.25rem)] leading-[1.7] text-charcoal/75">
+              <p className="mt-6 text-pretty text-[clamp(1.0625rem,0.3vw+1rem,1.25rem)] leading-[1.7] text-muted">
                 {mission ?? (
                   <>
                     To strengthen members&apos; cooperation through{" "}
@@ -81,7 +81,7 @@ export function MissionVision() {
                 {MISSION_POINTS.map((point) => (
                   <li
                     key={point}
-                    className="flex items-start gap-3 text-[15px] leading-relaxed text-charcoal/70"
+                    className="flex items-start gap-3 text-[15px] leading-relaxed text-muted"
                   >
                     <span className="mt-2 size-1 shrink-0 rounded-full bg-gold" aria-hidden="true" />
                     {point}
@@ -101,10 +101,10 @@ export function MissionVision() {
               <span className="grid size-12 place-items-center rounded-full bg-forest text-gold-light">
                 <Eye className="size-5" aria-hidden="true" />
               </span>
-              <p className="mt-7 text-[11px] font-semibold uppercase tracking-[0.3em] text-gold-deep">
+              <p className="mt-7 text-[11px] font-semibold uppercase tracking-[0.3em] text-clay">
                 Our Vision
               </p>
-              <p className="mt-6 text-pretty text-[clamp(1.0625rem,0.3vw+1rem,1.25rem)] leading-[1.7] text-charcoal/75">
+              <p className="mt-6 text-pretty text-[clamp(1.0625rem,0.3vw+1rem,1.25rem)] leading-[1.7] text-muted">
                 {vision ?? (
                   <>
                     A sustainable coffee farming cooperative that serves its
@@ -117,7 +117,7 @@ export function MissionVision() {
                 {VISION_POINTS.map((point) => (
                   <li
                     key={point}
-                    className="flex items-start gap-3 text-[15px] leading-relaxed text-charcoal/70"
+                    className="flex items-start gap-3 text-[15px] leading-relaxed text-muted"
                   >
                     <span className="mt-2 size-1 shrink-0 rounded-full bg-gold" aria-hidden="true" />
                     {point}
@@ -129,7 +129,10 @@ export function MissionVision() {
         </div>
 
         <Reveal delay={120}>
-          <div className="relative mt-20 overflow-hidden rounded-3xl bg-forest px-5 py-14 sm:px-12 sm:py-16">
+                      {/* The quote is set directly on the photograph - no panel. One
+              localised scrim sits behind the type and fades out before the
+              card edge, written after the `<Image>` so it paints on top. */}
+          <div className="surface-dark relative mt-20 overflow-hidden rounded-3xl bg-forest px-5 py-14 sm:px-12 sm:py-16">
             <div className="absolute inset-0" aria-hidden="true">
               <Image
                 src="/pictures/coffee-farms.jpg"
@@ -139,24 +142,17 @@ export function MissionVision() {
                 quality={65}
                 className="object-cover"
               />
-              {/* One overlay, not three stacked ones. The image plus a single
-                  left-weighted scrim is enough to hold cream type, and it keeps
-                  the photograph readable as a photograph. */}
-              <div className="absolute inset-0 bg-gradient-to-r from-forest/95 via-forest/88 to-forest/70" />
+              <div className="photo-scrim" />
             </div>
-            <div
-              className="absolute -right-24 -top-24 size-72 rounded-full bg-gold/20 blur-3xl"
-              aria-hidden="true"
-            />
-            <div className="relative mx-auto max-w-3xl text-center">
+            <div className="on-photo relative mx-auto max-w-3xl text-center">
               <Quote
-                className="mx-auto size-12 text-gold/70"
+                className="on-photo-sm mx-auto size-12 text-gold-light"
                 aria-hidden="true"
               />
               <p className="mt-4 font-display text-2xl font-semibold leading-snug text-cream sm:text-4xl">
                 {motto}
               </p>
-              <p className="mx-auto mt-5 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-gold-light">
+              <p className="on-photo-sm mx-auto mt-5 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-gold-light">
                 <HeartHandshake className="size-4" aria-hidden="true" />
                 {valuesLine}
               </p>

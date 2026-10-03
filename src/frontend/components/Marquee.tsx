@@ -24,7 +24,7 @@ export function Marquee() {
   const items = [...taglines, ...taglines];
   return (
     <div
-      className="relative overflow-hidden border-y border-gold/20 bg-forest-deep py-4"
+      className="surface-dark relative overflow-hidden border-y border-gold/20 bg-forest-deep py-4"
       aria-hidden="true"
     >
       <div className="flex w-max animate-marquee marquee-track">
@@ -34,7 +34,7 @@ export function Marquee() {
               key={i}
               className="flex items-center gap-3 text-sm font-medium tracking-wide uppercase text-cream/75"
             >
-              <Bean className="size-3.5 text-gold" />
+              <Bean className="size-3.5 text-gold-light" />
               {t}
             </span>
           ))}
@@ -45,7 +45,7 @@ export function Marquee() {
               key={`b-${i}`}
               className="flex items-center gap-3 text-sm font-medium tracking-wide uppercase text-cream/75"
             >
-              <Bean className="size-3.5 text-gold" />
+              <Bean className="size-3.5 text-gold-light" />
               {t}
             </span>
           ))}

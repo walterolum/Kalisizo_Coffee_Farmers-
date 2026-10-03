@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Activity log screen. Shows the audit trail of CMS changes: who did what, when,
  * and with what outcome. Super Administrators only, because the trail records
  * account and permission changes.
@@ -10,15 +10,15 @@ import { listAudit, type AuditEntry } from "@/shared/admin-api";
 
 /** Distinctive colour per action so the log can be scanned quickly. */
 const ACTION_STYLES: Record<string, string> = {
-  CREATE: "bg-emerald-500/15 text-emerald-300",
+  CREATE: "bg-action/15 text-action-light",
   UPDATE: "bg-sky-500/15 text-sky-300",
-  STATUS_CHANGE: "bg-amber-500/15 text-amber-300",
-  DELETE: "bg-red-500/15 text-red-300",
+  STATUS_CHANGE: "bg-gold/15 text-gold-light",
+  DELETE: "bg-cherry/15 text-cherry-light",
   LOGIN: "bg-white/[0.06] text-cream/80",
-  LOGIN_FAILED: "bg-red-500/15 text-red-300",
-  DELETE_USER: "bg-red-500/15 text-red-300",
+  LOGIN_FAILED: "bg-cherry/15 text-cherry-light",
+  DELETE_USER: "bg-cherry/15 text-cherry-light",
   UPDATE_USER: "bg-sky-500/15 text-sky-300",
-  CREATE_USER: "bg-emerald-500/15 text-emerald-300",
+  CREATE_USER: "bg-action/15 text-action-light",
   UPLOAD: "bg-violet-500/15 text-violet-300",
 };
 
@@ -60,14 +60,14 @@ export function AuditPanel() {
     <div className="space-y-6">
       <header>
         <h2 className="text-2xl font-semibold text-cream">Activity log</h2>
-        <p className="mt-1 max-w-2xl text-sm text-cream/65">
+        <p className="mt-1 max-w-2xl text-sm text-mist">
           The 100 most recent CMS changes, newest first. Select an entry to see the
           record before and after the change.
         </p>
       </header>
 
       {error && (
-        <p className="rounded-lg bg-red-500/10 px-4 py-2 text-sm text-red-300 ring-1 ring-red-400/20" role="alert">
+        <p className="rounded-lg bg-cherry/10 px-4 py-2 text-sm text-cherry-light ring-1 ring-cherry/20" role="alert">
           {error}
         </p>
       )}
@@ -91,9 +91,9 @@ export function AuditPanel() {
       )}
 
       {loading ? (
-        <p className="text-sm text-cream/50">Loading…</p>
+        <p className="text-sm text-mist">Loading…</p>
       ) : visible.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-white/20 px-4 py-8 text-center text-sm text-cream/50">
+        <p className="rounded-lg border border-dashed border-white/20 px-4 py-8 text-center text-sm text-mist">
           No activity recorded yet.
         </p>
       ) : (
@@ -117,7 +117,7 @@ export function AuditPanel() {
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-sm text-cream">{entry.summary}</span>
-                    <span className="block text-xs text-cream/50">
+                    <span className="block text-xs text-mist">
                       {entry.actor?.name ?? "System"} ·{" "}
                       {new Date(entry.createdAt).toLocaleString("en-GB")}
                     </span>
@@ -141,7 +141,7 @@ export function AuditPanel() {
 function JsonBlock({ label, value }: { label: string; value: unknown }) {
   return (
     <div>
-      <p className="mb-1 text-xs font-medium uppercase tracking-wide text-cream/50">{label}</p>
+      <p className="mb-1 text-xs font-medium uppercase tracking-wide text-mist">{label}</p>
       <pre className="max-h-56 overflow-auto rounded border border-white/10 bg-black/30 p-2 text-xs text-cream/80">
         {format(value)}
       </pre>

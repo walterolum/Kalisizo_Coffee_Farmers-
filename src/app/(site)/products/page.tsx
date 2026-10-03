@@ -65,7 +65,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
               className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
                 !active
                   ? "bg-forest text-cream"
-                  : "bg-white text-charcoal/65 ring-1 ring-charcoal/10 hover:bg-sand"
+                  : "bg-white text-muted ring-1 ring-coffee/10 hover:bg-leaf"
               }`}
             >
               All
@@ -78,7 +78,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
                 className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
                   option.value === active
                     ? "bg-forest text-cream"
-                    : "bg-white text-charcoal/65 ring-1 ring-charcoal/10 hover:bg-sand"
+                    : "bg-white text-muted ring-1 ring-coffee/10 hover:bg-leaf"
                 }`}
               >
                 {option.label}
@@ -103,9 +103,9 @@ export default async function ProductsPage({ searchParams }: PageProps) {
               <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {products.map((product, i) => (
                   <Reveal key={product.id} as="li" delay={Math.min(i, 5) * 70}>
-                    <article className="group flex h-full flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-charcoal/8 transition-colors duration-300 hover:ring-gold/40">
+                    <article className="group flex h-full flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-coffee/8 transition-colors duration-300 hover:ring-gold/40">
                       {product.imageUrl ? (
-                        <div className="relative aspect-[4/3] overflow-hidden bg-sand">
+                        <div className="relative aspect-[4/3] overflow-hidden bg-leaf">
                           <Image
                             src={product.imageUrl}
                             alt={product.title}
@@ -114,16 +114,17 @@ export default async function ProductsPage({ searchParams }: PageProps) {
                             quality={65}
                             className="object-cover transition-transform duration-500 group-hover:scale-105"
                           />
+                          {/* Untreated photograph - nothing is laid over it. */}
                         </div>
                       ) : (
                         <div
-                          className="aspect-[4/3] bg-gradient-to-br from-forest to-forest-deep"
+                          className="relative aspect-[4/3] bg-gradient-to-br from-forest via-action to-forest-deep"
                           aria-hidden="true"
                         />
                       )}
                       <div className="flex flex-1 flex-col p-6">
                         {product.badge && (
-                          <span className="inline-flex w-fit rounded-full bg-gold/12 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-gold-deep">
+                          <span className="inline-flex w-fit rounded-full bg-gold/12 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-clay">
                             {product.badge}
                           </span>
                         )}
@@ -131,16 +132,16 @@ export default async function ProductsPage({ searchParams }: PageProps) {
                           {product.title}
                         </h2>
                         {product.description && (
-                          <p className="mt-2.5 flex-1 text-sm leading-relaxed text-charcoal/65">
+                          <p className="mt-2.5 flex-1 text-sm leading-relaxed text-muted">
                             {product.description}
                           </p>
                         )}
-                        <div className="mt-5 border-t border-charcoal/8 pt-4">
+                        <div className="mt-5 border-t border-coffee/8 pt-4">
                           {product.price && (
                             <p className="font-display text-base font-semibold text-forest">
                               {product.price}
                               {product.unit && (
-                                <span className="ml-1 text-sm font-normal text-charcoal/55">
+                                <span className="ml-1 text-sm font-normal text-muted">
                                   per {product.unit}
                                 </span>
                               )}

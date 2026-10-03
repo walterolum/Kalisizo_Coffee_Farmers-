@@ -53,7 +53,7 @@ export type RenderedSocial = {
 /** Used for any platform with no design of its own, so nothing renders blank. */
 const GENERIC: SocialLook = {
   icon: Globe,
-  tile: "bg-gold/10 text-gold",
+  tile: "bg-gold/10 text-gold-light",
   hover: "hover:border-gold/40",
   description: "News, offers and updates from the cooperative.",
 };
@@ -128,7 +128,7 @@ const LOOKS: Record<string, SocialLook> = {
   },
   Email: {
     icon: Mail,
-    tile: "bg-gold/10 text-gold",
+    tile: "bg-gold/10 text-gold-light",
     hover: "hover:border-gold/40",
     description: "Write to the cooperative.",
   },

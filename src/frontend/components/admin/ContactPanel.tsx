@@ -246,7 +246,7 @@ export function ContactPanel({
           </div>
         )}
         {!info && !loadError && (
-          <p className="mt-4 text-sm text-cream/45">
+          <p className="mt-4 text-sm text-mist">
             No cooperative settings found. Submit to create the initial record.
           </p>
         )}

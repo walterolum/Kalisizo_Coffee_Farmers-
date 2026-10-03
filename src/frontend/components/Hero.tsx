@@ -105,9 +105,15 @@ export function Hero() {
   return (
     <section
       id="home"
-      className="relative isolate flex min-h-svh items-center overflow-hidden bg-forest-deep py-32 sm:py-36 lg:py-40"
+      className="surface-dark relative isolate flex min-h-svh items-center overflow-hidden bg-forest-deep py-32 sm:py-36 lg:py-40"
       aria-labelledby="hero-heading"
     >
+      {/* The photograph is untouched apart from one localised scrim, and the copy
+          sits directly on the picture rather than on a card. The scrim is
+          darkest under the headline and fades to fully transparent before the
+          frame, so the edges of the photograph stay clean. See `.photo-scrim` in
+          globals.css. It is written AFTER the `<Image>` because both are
+          absolutely positioned and DOM order alone decides which paints on top. */}
       <div className="absolute inset-0 -z-10" aria-hidden="true">
         <Image
           src={backgroundImage}
@@ -118,18 +124,12 @@ export function Hero() {
           quality={70}
           className="animate-kenburns object-cover"
         />
-        {/* Three layers rather than one flat wash: a broad vertical scrim for
-            overall legibility, a radial that keeps the centre from going muddy
-            behind the headline, and a bottom fade so the photograph dissolves
-            into the next section instead of ending on a hard edge. */}
-        <div className="absolute inset-0 bg-gradient-to-b from-forest-deep/90 via-forest-deep/72 to-forest-deep/96" />
-        <div className="absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_45%,transparent_0%,rgb(8_35_24/0.55)_78%)]" />
-        <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-forest-deep to-transparent" />
+        <div className="photo-scrim" />
       </div>
 
-      <div className="relative mx-auto flex w-full max-w-5xl flex-col items-center px-5 text-center sm:px-6">
+      <div className="on-photo relative mx-auto flex w-full max-w-5xl flex-col items-center px-5 text-center sm:px-6">
         <p
-          className="animate-fade-up text-[11px] font-semibold uppercase tracking-[0.34em] text-gold-light/90 sm:text-xs"
+          className="on-photo-sm animate-fade-up text-[11px] font-semibold uppercase tracking-[0.34em] text-gold-light sm:text-xs"
           style={{ animationDelay: "60ms" }}
         >
           Kyotera District &middot; Uganda
@@ -142,9 +142,12 @@ export function Hero() {
           {badges.slice(0, 3).map((badge) => (
             <span
               key={badge}
-              className="inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.16em] text-cream/70"
+              className="on-photo-sm inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.16em] text-cream ring-1 ring-white/25"
             >
-              <span className="size-1 rounded-full bg-gold" aria-hidden="true" />
+              <span
+                className="size-1.5 rounded-full bg-gold ring-2 ring-gold/25"
+                aria-hidden="true"
+              />
               {badge}
             </span>
           ))}
@@ -166,7 +169,7 @@ export function Hero() {
         />
 
         <p
-          className="mt-8 max-w-2xl animate-fade-up text-pretty text-[clamp(1rem,0.5vw+0.9rem,1.15rem)] leading-[1.75] text-cream/75"
+          className="mt-8 max-w-2xl animate-fade-up text-pretty text-[clamp(1rem,0.5vw+0.9rem,1.15rem)] leading-[1.75] text-cream/85"
           style={{ animationDelay: "300ms" }}
         >
           {subtitle}
@@ -201,7 +204,7 @@ export function Hero() {
                 alt={`Portrait of ${leader.name}`}
                 width={96}
                 height={96}
-                className="size-10 rounded-full object-cover ring-2 ring-cream/20 transition-opacity duration-300 hover:opacity-90"
+                className="size-10 rounded-full object-cover ring-2 ring-gold/50 transition-transform duration-300 hover:scale-105"
               />
             ))}
           </div>
@@ -221,7 +224,7 @@ export function Hero() {
       <a
         href="#about"
         aria-label="Scroll to about section"
-        className="absolute bottom-8 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-cream/45 transition-colors hover:text-gold-light md:flex"
+        className="on-photo-sm absolute bottom-8 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-cream/85 transition-colors hover:text-gold-light md:flex"
       >
         <span className="text-[10px] font-semibold uppercase tracking-[0.28em]">
           Scroll
@@ -266,14 +269,14 @@ export function TodayAtCoop() {
   return (
     <section
       aria-label="Today at the cooperative"
-      className="relative border-y border-forest/10 bg-sand/60"
+      className="relative border-y border-forest/10 bg-leaf/60"
     >
       <div className="mx-auto max-w-7xl px-5 py-12 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:gap-12">
           <div className="flex items-center gap-3 lg:shrink-0 lg:pr-4">
             <span className="relative flex size-2" aria-hidden="true">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-brand opacity-60" />
-              <span className="relative inline-flex size-2 rounded-full bg-emerald-brand" />
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand opacity-60" />
+              <span className="relative inline-flex size-2 rounded-full bg-brand" />
             </span>
             <h2 className="font-display text-sm font-semibold uppercase tracking-[0.2em] text-forest">
               Open Today
@@ -286,14 +289,14 @@ export function TodayAtCoop() {
               return (
                 <li key={item.title} className="flex items-start gap-3">
                   <Icon
-                    className="mt-0.5 size-5 shrink-0 text-gold-deep"
+                    className="mt-0.5 size-5 shrink-0 text-clay"
                     aria-hidden="true"
                   />
                   <span>
                     <span className="block text-[15px] font-semibold text-forest">
                       {item.title}
                     </span>
-                    <span className="mt-0.5 block text-[13px] leading-relaxed text-charcoal/60">
+                    <span className="mt-0.5 block text-[13px] leading-relaxed text-muted">
                       {item.sub}
                     </span>
                   </span>

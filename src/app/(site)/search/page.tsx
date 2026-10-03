@@ -52,7 +52,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
             </label>
             <div className="relative flex-1">
               <SearchIcon
-                className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-charcoal/35"
+                className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted"
                 aria-hidden="true"
               />
               <input
@@ -62,7 +62,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
                 defaultValue={query}
                 placeholder="e.g. washing station"
                 maxLength={120}
-                className="w-full rounded-full border border-charcoal/12 bg-white py-3.5 pl-12 pr-4 text-charcoal outline-none transition-colors placeholder:text-charcoal/35 focus:border-gold"
+                className="w-full rounded-full border border-coffee/12 bg-white py-3.5 pl-12 pr-4 text-coffee outline-none transition-colors placeholder:text-muted focus:border-gold"
               />
             </div>
             <button type="submit" className="btn btn-primary shrink-0">
@@ -97,7 +97,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
               </EmptyState>
             ) : (
               <>
-                <p className="text-sm text-charcoal/60" role="status">
+                <p className="text-sm text-muted" role="status">
                   {results.length} result{results.length === 1 ? "" : "s"} for{" "}
                   <span className="font-semibold text-forest">{trimmed}</span>
                 </p>
@@ -108,16 +108,18 @@ export default async function SearchPage({ searchParams }: PageProps) {
                       <li key={`${hit.type}-${hit.slug}`}>
                         <Link
                           href={hit.href}
-                          className="group flex gap-4 bg-white p-5 ring-1 ring-charcoal/8 transition-colors duration-300 hover:ring-gold/40"
+                          className="group flex gap-4 bg-white p-5 ring-1 ring-coffee/8 transition-colors duration-300 hover:ring-gold/40"
                         >
                           {hit.imageUrl ? (
-                            <Image
-                              src={hit.imageUrl}
-                              alt=""
-                              width={80}
-                              height={80}
-                              className="size-20 shrink-0 rounded-xl object-cover"
-                            />
+                            <span className="relative size-20 shrink-0 overflow-hidden rounded-xl bg-leaf">
+                              <Image
+                                src={hit.imageUrl}
+                                alt=""
+                                fill
+                                sizes="5rem"
+                                className="object-cover"
+                              />
+                            </span>
                           ) : (
                             <span
                               className="flex size-20 shrink-0 items-center justify-center rounded-xl bg-forest text-gold-light"
@@ -127,20 +129,20 @@ export default async function SearchPage({ searchParams }: PageProps) {
                             </span>
                           )}
                           <div className="min-w-0 flex-1">
-                            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-gold-deep">
+                            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-clay">
                               <Icon className="size-3.5" aria-hidden="true" />
                               {TYPE_LABEL[hit.type]}
                             </span>
                             <h2 className="mt-1.5 font-display text-base font-semibold leading-snug text-forest">
                               {hit.title}
                             </h2>
-                            <p className="mt-1.5 line-clamp-2 text-sm text-charcoal/65">
+                            <p className="mt-1.5 line-clamp-2 text-sm text-muted">
                               {hit.summary}
                             </p>
                             {hit.date && (
                               <time
                                 dateTime={hit.date}
-                                className="mt-2 block text-[12px] text-charcoal/40"
+                                className="mt-2 block text-[12px] text-muted"
                               >
                                 {formatDate(hit.date)}
                               </time>

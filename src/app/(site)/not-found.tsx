@@ -35,7 +35,7 @@ const SUGGESTIONS = [
 
 export default function NotFound() {
   return (
-    <section className="relative overflow-hidden bg-forest-deep py-32 sm:py-40">
+    <section className="surface-dark relative overflow-hidden bg-forest-deep py-32 sm:py-40">
       <div
         className="absolute -top-24 right-0 h-80 w-80 rounded-full bg-gold/10 blur-3xl"
         aria-hidden="true"
@@ -58,7 +58,7 @@ export default function NotFound() {
         <div className="mt-11 flex flex-wrap items-center justify-center gap-3">
           <Link
             href="/"
-            className="inline-flex items-center justify-center rounded-full bg-gold px-7 py-3 text-sm font-semibold text-forest-deep transition-colors hover:bg-gold-light"
+            className="inline-flex items-center justify-center rounded-full bg-gold px-7 py-3 text-sm font-semibold text-coffee transition-colors hover:bg-gold-light"
           >
             Back to home
           </Link>

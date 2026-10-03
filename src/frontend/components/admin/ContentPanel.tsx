@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Generic editorial panel: list, filter, create, edit, transition and archive.
  *
  * One component serves every content type in `TYPE_CONFIGS`, so adding a new
@@ -45,9 +45,9 @@ type Props = {
 
 const STATUS_STYLES: Record<ContentStatus, string> = {
   DRAFT: "bg-white/[0.06] text-cream/80",
-  IN_REVIEW: "bg-amber-500/15 text-amber-300",
-  PUBLISHED: "bg-emerald-500/15 text-emerald-300",
-  ARCHIVED: "bg-white/[0.08] text-cream/50",
+  IN_REVIEW: "bg-gold/15 text-gold-light",
+  PUBLISHED: "bg-action/15 text-action-light",
+  ARCHIVED: "bg-white/[0.08] text-mist",
 };
 
 const STATUS_LABELS: Record<ContentStatus, string> = {
@@ -149,7 +149,7 @@ export function ContentPanel({
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h2 className="text-2xl font-semibold text-cream">{config.label}</h2>
-          <p className="mt-1 max-w-2xl text-sm text-cream/65">
+          <p className="mt-1 max-w-2xl text-sm text-mist">
             {config.description}
           </p>
         </div>
@@ -159,28 +159,28 @@ export function ContentPanel({
             setCreating(true);
             setEditing(null);
           }}
-          className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-forest-deep transition-colors hover:bg-gold-light"
+          className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-coffee transition-colors hover:bg-gold-light"
         >
           New {config.singular}
         </button>
       </header>
 
       {notice && (
-        // Was `bg-emerald-50` — a near-white background — with `text-emerald-300`,
+        // Was `bg-emerald-50` — a near-white background — with `text-action-light`,
         // a light green. That is roughly 1.2:1 contrast, so the confirmation that
         // an edit was saved rendered as invisible text on the dark panel. The
         // tokens now match the dark theme, as the error notice below already did.
         // `role="status"` announces it politely instead of interrupting.
         <p
           role="status"
-          className="rounded-lg bg-emerald-500/15 px-4 py-2 text-sm text-emerald-300 ring-1 ring-emerald-400/25"
+          className="rounded-lg bg-action/15 px-4 py-2 text-sm text-action-light ring-1 ring-brand/25"
         >
           {notice}
         </p>
       )}
       {error && (
         <p
-          className="rounded-lg bg-red-500/10 px-4 py-2 text-sm text-red-300 ring-1 ring-red-400/20"
+          className="rounded-lg bg-cherry/10 px-4 py-2 text-sm text-cherry-light ring-1 ring-cherry/20"
           role="alert"
         >
           {error}
@@ -268,15 +268,15 @@ export function ContentPanel({
       )}
 
       {loading ? (
-        <p className="text-sm text-cream/50">Loading…</p>
+        <p className="text-sm text-mist">Loading…</p>
       ) : rows.length === 0 ? (
-        <p className="rounded-lg border border-dashed border-white/20 px-4 py-8 text-center text-sm text-cream/50">
+        <p className="rounded-lg border border-dashed border-white/20 px-4 py-8 text-center text-sm text-mist">
           No {config.label.toLowerCase()} yet. Create the first one.
         </p>
       ) : (
         <div className="overflow-x-auto rounded-lg border border-white/10">
           <table className="w-full text-left text-sm">
-            <thead className="bg-white/[0.04] text-xs uppercase tracking-wide text-cream/50">
+            <thead className="bg-white/[0.04] text-xs uppercase tracking-wide text-mist">
               <tr>
                 <th className="px-4 py-3 font-medium">Title</th>
                 {config.listMeta?.map((meta) => (
@@ -298,7 +298,7 @@ export function ContentPanel({
                       {String(record[config.titleField] ?? "Untitled")}
                     </td>
                     {config.listMeta?.map((meta) => (
-                      <td key={meta.field} className="px-4 py-3 text-cream/65">
+                      <td key={meta.field} className="px-4 py-3 text-mist">
                         {formatMeta(record, meta.field)}
                       </td>
                     ))}
@@ -315,7 +315,7 @@ export function ContentPanel({
                         "—"
                       )}
                     </td>
-                    <td className="px-4 py-3 text-cream/65">
+                    <td className="px-4 py-3 text-mist">
                       {formatDate(String(record.updatedAt ?? ""))}
                     </td>
                     <td className="px-4 py-3 text-right">
@@ -324,7 +324,7 @@ export function ContentPanel({
                           <button
                             type="button"
                             onClick={() => onRestore(record)}
-                            className="rounded-md border border-white/20 px-2 py-1 text-xs text-cream bg-white/[0.05] text-cream placeholder:text-cream/35 transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 hover:bg-white/[0.08]"
+                            className="rounded-md border border-white/20 px-2 py-1 text-xs text-cream bg-white/[0.05] text-cream placeholder:text-mist transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 hover:bg-white/[0.08]"
                           >
                             Restore
                           </button>
@@ -335,7 +335,7 @@ export function ContentPanel({
                             setEditing(record);
                             setCreating(false);
                           }}
-                          className="rounded-md border border-white/20 px-2 py-1 text-xs text-cream bg-white/[0.05] text-cream placeholder:text-cream/35 transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 hover:bg-white/[0.08]"
+                          className="rounded-md border border-white/20 px-2 py-1 text-xs text-cream bg-white/[0.05] text-cream placeholder:text-mist transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 hover:bg-white/[0.08]"
                         >
                           Edit
                         </button>
@@ -354,7 +354,7 @@ export function ContentPanel({
           className="flex items-center justify-between text-sm"
           aria-label="Pagination"
         >
-          <p className="text-cream/65">
+          <p className="text-mist">
             Page {result.page} of {result.totalPages} · {result.total} total
           </p>
           <div className="flex gap-2">
@@ -362,7 +362,7 @@ export function ContentPanel({
               type="button"
               disabled={!result.hasPrevious}
               onClick={() => setPage((p) => p - 1)}
-              className="rounded-md border border-white/20 px-3 py-1 bg-white/[0.05] text-cream placeholder:text-cream/35 transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 disabled:opacity-40"
+              className="rounded-md border border-white/20 px-3 py-1 bg-white/[0.05] text-cream placeholder:text-mist transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 disabled:opacity-40"
             >
               Previous
             </button>
@@ -370,7 +370,7 @@ export function ContentPanel({
               type="button"
               disabled={!result.hasNext}
               onClick={() => setPage((p) => p + 1)}
-              className="rounded-md border border-white/20 px-3 py-1 bg-white/[0.05] text-cream placeholder:text-cream/35 transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 disabled:opacity-40"
+              className="rounded-md border border-white/20 px-3 py-1 bg-white/[0.05] text-cream placeholder:text-mist transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 disabled:opacity-40"
             >
               Next
             </button>
@@ -606,7 +606,7 @@ function ContentForm({
 
       {error && (
         <p
-          className="rounded-lg bg-red-500/10 px-4 py-2 text-sm text-red-300 ring-1 ring-red-400/20"
+          className="rounded-lg bg-cherry/10 px-4 py-2 text-sm text-cherry-light ring-1 ring-cherry/20"
           role="alert"
         >
           {error}
@@ -616,7 +616,7 @@ function ContentForm({
 
       {relationFailures.length > 0 && (
         <p
-          className="rounded-lg bg-amber-50 px-4 py-2 text-sm text-amber-300"
+          className="rounded-lg bg-gold/15 px-4 py-2 text-sm text-gold-light"
           role="status"
         >
           Could not load the list for{" "}
@@ -679,7 +679,7 @@ function ContentForm({
         <button
           type="submit"
           disabled={saving}
-          className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-forest-deep transition-colors hover:bg-gold-light disabled:opacity-50"
+          className="rounded-lg bg-gold px-4 py-2 text-sm font-semibold text-coffee transition-colors hover:bg-gold-light disabled:opacity-50"
         >
           {saving
             ? "Saving…"
@@ -698,13 +698,13 @@ function ContentForm({
           <button
             type="button"
             onClick={onDelete}
-            className="ml-auto rounded-lg border border-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50"
+            className="ml-auto rounded-lg border border-cherry/40 px-4 py-2 text-sm font-medium text-cherry-light hover:bg-cherry/15"
           >
             Archive
           </button>
         )}
         {!canPublish && (
-          <p className="text-xs text-cream/50">
+          <p className="text-xs text-mist">
             Your role can edit drafts but not change publication status.
           </p>
         )}
@@ -735,7 +735,7 @@ function Field({
 }: FieldProps) {
   const id = `field-${field.name}`;
   const describedBy = field.help ? `${id}-help` : undefined;
-  const invalidStyle = invalid ? "border-red-400" : "border-white/20";
+  const invalidStyle = invalid ? "border-cherry/50" : "border-white/20";
 
   const label = (
     <label
@@ -743,11 +743,11 @@ function Field({
       className="mb-1 block text-sm font-medium text-cream/80"
     >
       {field.label}
-      {field.required && <span className="ml-1 text-red-400">*</span>}
+      {field.required && <span className="ml-1 text-cherry-light">*</span>}
     </label>
   );
   const help = field.help ? (
-    <p id={describedBy} className="mt-1 text-xs text-cream/50">
+    <p id={describedBy} className="mt-1 text-xs text-mist">
       {field.help}
     </p>
   ) : null;
@@ -771,7 +771,7 @@ function Field({
             />
             <label htmlFor={id} className="text-sm text-cream/80">
               {field.label}
-              {field.required && <span className="ml-1 text-red-400">*</span>}
+              {field.required && <span className="ml-1 text-cherry-light">*</span>}
             </label>
           </div>
           {help}
@@ -906,7 +906,7 @@ function TagInput({
             .filter(Boolean),
         );
       }}
-      className="w-full rounded-lg border border-white/20 px-3 py-2 text-sm bg-white/[0.05] text-cream placeholder:text-cream/35 transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20$select"
+      className="w-full rounded-lg border border-white/20 px-3 py-2 text-sm bg-white/[0.05] text-cream placeholder:text-mist transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20$select"
     />
   );
 }

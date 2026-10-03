@@ -43,7 +43,7 @@ export default async function EventDetailPage({ params }: PageProps) {
       <section className="bg-cream py-16 sm:py-20">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           {event.imageUrl && (
-            <div className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl ring-1 ring-charcoal/8">
+            <div className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl bg-leaf ring-1 ring-coffee/8">
               <Image
                 src={event.imageUrl}
                 alt={event.imageAlt || event.title}
@@ -57,12 +57,12 @@ export default async function EventDetailPage({ params }: PageProps) {
           )}
 
           <dl className="mt-10 grid gap-4 sm:grid-cols-2">
-            <div className="rounded-2xl bg-white px-5 py-4 ring-1 ring-charcoal/8">
-              <dt className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-gold-deep">
+            <div className="rounded-2xl bg-white px-5 py-4 ring-1 ring-coffee/8">
+              <dt className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-clay">
                 <CalendarDays className="size-3.5" aria-hidden="true" />
                 When
               </dt>
-              <dd className="mt-2 text-charcoal/80">
+              <dd className="mt-2 text-muted">
                 <time dateTime={event.startAt.toISOString()}>
                   {formatDateTime(event.startAt)}
                 </time>
@@ -77,42 +77,42 @@ export default async function EventDetailPage({ params }: PageProps) {
               </dd>
             </div>
             {event.location && (
-              <div className="rounded-2xl bg-white px-5 py-4 ring-1 ring-charcoal/8">
-                <dt className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-gold-deep">
+              <div className="rounded-2xl bg-white px-5 py-4 ring-1 ring-coffee/8">
+                <dt className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-clay">
                   <MapPin className="size-3.5" aria-hidden="true" />
                   Where
                 </dt>
-                <dd className="mt-2 text-charcoal/80">{event.location}</dd>
+                <dd className="mt-2 text-muted">{event.location}</dd>
               </div>
             )}
             {event.organizer && (
-              <div className="rounded-2xl bg-white px-5 py-4 ring-1 ring-charcoal/8">
-                <dt className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-gold-deep">
+              <div className="rounded-2xl bg-white px-5 py-4 ring-1 ring-coffee/8">
+                <dt className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-clay">
                   <UserRound className="size-3.5" aria-hidden="true" />
                   Organiser
                 </dt>
-                <dd className="mt-2 text-charcoal/80">{event.organizer}</dd>
+                <dd className="mt-2 text-muted">{event.organizer}</dd>
               </div>
             )}
             {event.registrationInfo && (
-              <div className="rounded-2xl bg-white px-5 py-4 ring-1 ring-charcoal/8">
-                <dt className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-gold-deep">
+              <div className="rounded-2xl bg-white px-5 py-4 ring-1 ring-coffee/8">
+                <dt className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-clay">
                   <Ticket className="size-3.5" aria-hidden="true" />
                   Registration
                 </dt>
-                <dd className="mt-2 text-charcoal/80">{event.registrationInfo}</dd>
+                <dd className="mt-2 text-muted">{event.registrationInfo}</dd>
               </div>
             )}
           </dl>
 
           {event.description && (
             <div
-              className="prose-article mt-12 text-[1.05rem] leading-[1.75] text-charcoal/80"
+              className="prose-article mt-12 text-[1.05rem] leading-[1.75] text-muted"
               dangerouslySetInnerHTML={{ __html: event.description }}
             />
           )}
 
-          <div className="mt-12 border-t border-charcoal/10 pt-8">
+          <div className="mt-12 border-t border-coffee/10 pt-8">
             <Link
               href="/events"
               className="inline-flex items-center gap-2 text-sm font-bold text-forest underline-offset-4 hover:underline"

@@ -32,7 +32,7 @@ export function BackToTop() {
       // again, which is when it is actually useful.
       tabIndex={visible ? 0 : -1}
       aria-hidden={visible ? undefined : true}
-      className={`fixed bottom-6 left-6 z-40 grid size-12 place-items-center rounded-full bg-forest text-cream shadow-card ring-1 ring-white/15 transition-all duration-300 hover:-translate-y-1 hover:bg-emerald-brand ${
+      className={`fixed bottom-6 left-6 z-40 grid size-12 place-items-center rounded-full bg-forest text-cream shadow-card ring-1 ring-white/15 transition-all duration-300 hover:-translate-y-1 hover:bg-action ${
         visible
           ? "translate-y-0 opacity-100"
           : "pointer-events-none translate-y-4 opacity-0"

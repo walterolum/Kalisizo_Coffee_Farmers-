@@ -107,10 +107,10 @@ export async function apiFetch<T>(
 /* ---------------------------------------------------------------- form helpers */
 
 export const inputBase =
-  "w-full rounded-xl border border-white/15 bg-forest/80 px-3.5 py-2.5 text-sm text-cream placeholder:text-cream/55 outline-none transition-colors focus:border-gold focus:ring-2 focus:ring-gold/20";
+  "w-full rounded-xl border border-white/15 bg-forest/80 px-3.5 py-2.5 text-sm text-cream placeholder:text-mist outline-none transition-colors focus:border-gold focus:ring-2 focus:ring-gold/20";
 
 export const labelBase =
-  "text-xs font-bold uppercase tracking-wider text-cream/60";
+  "text-xs font-bold uppercase tracking-wider text-mist";
 
 /**
  * Label wrapper used by the panels still on the older bespoke form helpers.
@@ -130,7 +130,7 @@ export function Field({
       <span className={labelBase}>{label}</span>
       {children}
       {hint ? (
-        <span className="text-[12px] leading-relaxed text-cream/45">
+        <span className="text-[12px] leading-relaxed text-mist">
           {hint}
         </span>
       ) : null}
@@ -210,12 +210,12 @@ export const PRODUCT_CATEGORIES = [
 ];
 
 export const GRADIENT_OPTIONS = [
-  "from-[#d5a83d] to-[#a87a1d]",
-  "from-[#1f7345] to-[#0e3d28]",
-  "from-[#4a2c11] to-[#6b3f1a]",
-  "from-[#0e3d28] to-[#1f7345]",
-  "from-[#a87a1d] to-[#d5a83d]",
-  "from-[#0e3d28] to-[#0f6b40]",
+  "from-gold to-gold/70",
+  "from-action to-forest-deep",
+  "from-clay to-coffee",
+  "from-forest to-action",
+  "from-gold/70 to-gold",
+  "from-forest-deep to-action",
 ];
 
 export const HERO_TODAY_ICON_OPTIONS = [
@@ -305,7 +305,7 @@ export function UploadButton({
         />
       </label>
       {error && (
-        <span className="text-xs font-semibold text-red-300">{error}</span>
+        <span className="text-xs font-semibold text-cherry-light">{error}</span>
       )}
     </div>
   );

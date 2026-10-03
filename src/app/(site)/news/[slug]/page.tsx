@@ -67,10 +67,10 @@ export default async function NewsArticlePage({ params }: PageProps) {
 
       <article className="bg-cream py-16 sm:py-20">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-charcoal/55">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted">
             {article.publishedAt && (
               <span className="flex items-center gap-2">
-                <CalendarDays className="size-4 text-gold-deep" aria-hidden="true" />
+                <CalendarDays className="size-4 text-clay" aria-hidden="true" />
                 <time dateTime={article.publishedAt.toISOString()}>
                   {formatDate(article.publishedAt)}
                 </time>
@@ -78,14 +78,14 @@ export default async function NewsArticlePage({ params }: PageProps) {
             )}
             {article.author?.name && (
               <span className="flex items-center gap-2">
-                <User className="size-4 text-gold-deep" aria-hidden="true" />
+                <User className="size-4 text-clay" aria-hidden="true" />
                 {article.author.name}
               </span>
             )}
           </div>
 
           {article.featuredImageUrl && (
-            <div className="relative mt-8 aspect-[16/9] w-full overflow-hidden rounded-3xl ring-1 ring-charcoal/8">
+            <div className="relative mt-8 aspect-[16/9] w-full overflow-hidden rounded-3xl bg-leaf ring-1 ring-coffee/8">
               <Image
                 src={article.featuredImageUrl}
                 alt={article.imageAlt || article.title}
@@ -98,21 +98,21 @@ export default async function NewsArticlePage({ params }: PageProps) {
             </div>
           )}
 
-          <p className="mt-10 font-display text-lg leading-relaxed text-charcoal/80">
+          <p className="mt-10 font-display text-lg leading-relaxed text-muted">
             {article.excerpt}
           </p>
 
           {/* Article bodies are authored in the CMS as trusted HTML. */}
           <div
-            className="prose-article mt-6 text-[1.05rem] leading-[1.75] text-charcoal/80"
+            className="prose-article mt-6 text-[1.05rem] leading-[1.75] text-muted"
             dangerouslySetInnerHTML={{ __html: article.content }}
           />
 
           {article.tags.length > 0 && (
-            <ul className="mt-12 flex flex-wrap gap-2 border-t border-charcoal/10 pt-8">
+            <ul className="mt-12 flex flex-wrap gap-2 border-t border-coffee/10 pt-8">
               {article.tags.map((tag) => (
                 <li key={tag.slug}>
-                  <span className="inline-flex rounded-full bg-charcoal/6 px-3 py-1 text-[12px] font-semibold text-charcoal/60">
+                  <span className="inline-flex rounded-full bg-coffee/6 px-3 py-1 text-[12px] font-semibold text-muted">
                     #{tag.name}
                   </span>
                 </li>

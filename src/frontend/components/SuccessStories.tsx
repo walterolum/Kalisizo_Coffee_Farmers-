@@ -70,14 +70,14 @@ export function SuccessStories() {
   return (
     <section
       id="success-stories"
-      className="relative overflow-hidden bg-forest py-28 lg:py-36"
+      className="surface-dark relative overflow-hidden bg-forest py-28 lg:py-36"
       aria-labelledby="stories-heading"
     >
-      {/* Dark, and deliberately so: this sat on bg-sand directly after
-          Leadership, which is also bg-sand, so the two full-height content
+      {/* Dark, and deliberately so: this sat on bg-leaf directly after
+          Leadership, which is also bg-leaf, so the two full-height content
           sections ran together with no seam between them. "Real Impact" also
           earns the strongest surface on the page, and the white story cards
-          read far better against forest than against sand. */}
+          read far better against the forest background. */}
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <Reveal>
           <SectionHeading
@@ -96,8 +96,8 @@ export function SuccessStories() {
                   than sit inside a rounded, shadowed tile inside a rounded,
                   shadowed card — which is where the nesting was starting to
                   show. */}
-              <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-forest/8 transition-colors duration-300 hover:ring-gold/40">
-                <div className="relative aspect-[4/3] overflow-hidden bg-forest">
+              <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-forest/8 transition-all duration-300 hover:-translate-y-1 hover:shadow-card hover:ring-action/35">
+                <div className="relative aspect-[4/3] overflow-hidden bg-leaf">
                   {story.imageUrl ? (
                     <Image
                       src={story.imageUrl}
@@ -114,34 +114,32 @@ export function SuccessStories() {
                       fill
                       sizes="(min-width: 1024px) 33vw, 100vw"
                       quality={65}
-                      className="object-cover opacity-80 transition-transform duration-700 ease-out group-hover:scale-105"
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                     />
                   )}
-                  <div
-                    className="absolute inset-0 bg-gradient-to-t from-forest/75 via-forest/10 to-transparent"
-                    aria-hidden="true"
-                  />
+                  {/* Opaque gold disc, so the 12px metric is legible on any
+                      photograph without a shadow. Nothing washes the image. */}
                   {story.metric && (
-                    <span className="absolute bottom-4 left-4 inline-flex items-center gap-1.5 bg-cream/95 px-3.5 py-1.5 text-[12px] font-bold text-forest">
+                    <span className="absolute bottom-4 left-4 inline-flex items-center gap-1.5 rounded-full bg-gold px-3.5 py-1.5 text-[12px] font-bold text-coffee shadow-card">
                       <TrendingUp className="size-3.5" aria-hidden="true" />
                       {story.metric}
                     </span>
                   )}
                 </div>
                 <div className="flex flex-1 flex-col p-5 sm:p-6">
-                  <h3 className="font-display text-xl font-semibold leading-tight text-forest">
+                  <h3 className="font-display text-xl font-semibold leading-tight text-coffee">
                     {story.title}
                   </h3>
                   {story.quote && (
-                    <p className="mt-3 border-l-2 border-gold pl-3 text-sm italic leading-relaxed text-gold-deep">
+                    <p className="mt-3 border-l-2 border-gold pl-3 text-sm italic leading-relaxed text-muted">
                       {story.quote}
                     </p>
                   )}
-                  <p className="mt-3 flex-1 text-sm leading-relaxed text-charcoal/70">
+                  <p className="mt-3 flex-1 text-sm leading-relaxed text-muted">
                     {story.description}
                   </p>
-                  <span className="mt-6 flex items-center gap-2 border-t border-forest/8 pt-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-forest/50">
-                    <Users className="size-3.5" aria-hidden="true" />
+                  <span className="mt-6 flex items-center gap-2 border-t border-coffee/10 pt-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted">
+                    <Users className="size-3.5 text-forest" aria-hidden="true" />
                     Member outcome
                   </span>
                 </div>

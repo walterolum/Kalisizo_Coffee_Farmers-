@@ -25,11 +25,11 @@ export default function AdminPage() {
 function AdminShellFallback() {
   return (
     <div
-      className="grid min-h-screen place-items-center bg-forest-deep text-cream"
+      className="surface-dark grid min-h-screen place-items-center bg-forest-deep text-cream"
       role="status"
       aria-label="Loading admin"
     >
-      <Loader2 className="size-7 animate-spin text-gold" aria-hidden="true" />
+      <Loader2 className="size-7 animate-spin text-gold-light" aria-hidden="true" />
       <span className="sr-only">Loading the admin dashboard…</span>
     </div>
   );

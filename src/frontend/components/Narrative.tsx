@@ -44,8 +44,9 @@ export type Statement = {
 /**
  * Full-bleed photographic band with a single centred line over it.
  *
- * Used to break the rhythm between text sections. The caption sits on a soft
- * scrim rather than a card so the photograph stays the subject.
+ * Used to break the rhythm between text sections. The photograph is shown
+ * untreated and the copy sits on an opaque forest-deep panel, so the picture
+ * stays the subject and the text never depends on the image behind it.
  */
 export function ImageStatement({
   image,
@@ -65,8 +66,11 @@ export function ImageStatement({
   return (
     <section
       aria-label={title}
-      className={`relative isolate flex items-center justify-center overflow-hidden ${h}`}
+      className={`surface-dark relative isolate flex items-center justify-center overflow-hidden ${h}`}
     >
+      {/* Untreated photograph, copy set directly on it - no panel. One localised
+          scrim sits under the type; the scrim follows the `<Image>` in the DOM
+          so it paints on top of it. */}
       <Image
         src={image}
         alt={alt}
@@ -75,13 +79,10 @@ export function ImageStatement({
         quality={70}
         className="-z-10 object-cover"
       />
-      <div
-        className="absolute inset-0 -z-10 bg-gradient-to-b from-forest-deep/70 via-forest-deep/60 to-forest-deep/75"
-        aria-hidden="true"
-      />
-      <div className="relative mx-auto max-w-4xl px-5 py-24 text-center sm:px-6">
+      <div className="photo-scrim -z-10" aria-hidden="true" />
+      <div className="on-photo relative mx-auto max-w-4xl px-5 py-24 text-center sm:px-6">
         <Reveal>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-gold-light">
+          <p className="on-photo-sm text-[11px] font-semibold uppercase tracking-[0.3em] text-gold-light">
             {eyebrow}
           </p>
           <h2 className="mt-7 font-display text-balance text-[clamp(1.7rem,0.9rem+2.6vw,3.1rem)] font-semibold leading-[1.14] tracking-[-0.015em] text-cream">
@@ -140,6 +141,7 @@ export function StorySplit({
                   quality={70}
                   className="object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.05]"
                 />
+                {/* Untreated photograph - no gradient, scrim or tint over it. */}
               </div>
               <div
                 className="pointer-events-none absolute inset-0 rounded-[1.75rem] ring-1 ring-inset ring-black/5"
@@ -152,7 +154,7 @@ export function StorySplit({
             <div className="max-w-xl">
               <p
                 className={`text-[11px] font-semibold uppercase tracking-[0.3em] ${
-                  dark ? "text-gold-light" : "text-gold-deep"
+                  dark ? "text-gold-light" : "text-clay"
                 }`}
               >
                 {eyebrow}
@@ -169,7 +171,7 @@ export function StorySplit({
                   <p
                     key={para.slice(0, 32)}
                     className={`text-[17px] leading-[1.75] ${
-                      dark ? "text-cream/70" : "text-charcoal/70"
+                      dark ? "text-cream/70" : "text-muted"
                     }`}
                   >
                     {para}
@@ -210,17 +212,17 @@ export function Journey({
   steps: { label: string; title: string; body: string }[];
 }) {
   return (
-    <section className="relative overflow-hidden bg-sand/50 py-24 lg:py-32">
+    <section className="relative overflow-hidden bg-leaf/50 py-24 lg:py-32">
       <div className="relative mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
         <Reveal>
           <div className="mx-auto max-w-3xl text-center">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-gold-deep">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-clay">
               How It Works
             </p>
             <h2 className="mt-6 font-display text-balance text-[clamp(1.85rem,0.9rem+2.7vw,3.2rem)] font-semibold leading-[1.1] tracking-[-0.018em] text-forest">
               From the field to a better price
             </h2>
-            <p className="mt-6 text-[17px] leading-[1.75] text-charcoal/65">
+            <p className="mt-6 text-[17px] leading-[1.75] text-muted">
               Four steps, each visible to the member. Nothing in the chain is
               hidden behind a summary.
             </p>
@@ -239,15 +241,15 @@ export function Journey({
                   className="relative z-10 grid size-[22px] place-items-center rounded-full border border-gold/40 bg-cream"
                   aria-hidden="true"
                 >
-                  <span className="size-1.5 rounded-full bg-gold-deep" />
+                  <span className="size-1.5 rounded-full bg-gold" />
                 </span>
-                <p className="mt-7 text-[11px] font-semibold uppercase tracking-[0.24em] text-gold-deep">
+                <p className="mt-7 text-[11px] font-semibold uppercase tracking-[0.24em] text-clay">
                   {String(i + 1).padStart(2, "0")} {step.label}
                 </p>
                 <h3 className="mt-3 font-display text-xl font-semibold leading-snug text-forest">
                   {step.title}
                 </h3>
-                <p className="mt-3 text-[15px] leading-[1.7] text-charcoal/65">
+                <p className="mt-3 text-[15px] leading-[1.7] text-muted">
                   {step.body}
                 </p>
               </div>
@@ -273,9 +275,9 @@ export function Impact({
   title?: string;
 }) {
   return (
-    <section className="relative overflow-hidden bg-forest py-24 lg:py-32">
+    <section className="surface-dark relative overflow-hidden bg-forest py-24 lg:py-32">
       <div
-        className="absolute -left-32 top-1/4 size-96 rounded-full bg-emerald-brand/20 blur-3xl"
+        className="absolute -left-32 top-1/4 size-96 rounded-full bg-brand/20 blur-3xl"
         aria-hidden="true"
       />
       <div
@@ -307,7 +309,7 @@ export function Impact({
                       {stat.value}
                     </span>
                     <span className="mt-4 flex items-center justify-center gap-2 text-sm text-cream/70">
-                      <Icon className="size-4 text-gold/80" aria-hidden="true" />
+                      <Icon className="size-4 text-gold-light/90" aria-hidden="true" />
                       {stat.label}
                     </span>
                   </dd>
@@ -346,7 +348,9 @@ export function ClosingCta({
   secondaryHref?: string;
 }) {
   return (
-    <section className="relative isolate flex min-h-[68svh] items-center justify-center overflow-hidden">
+    <section className="surface-dark relative isolate flex min-h-[68svh] items-center justify-center overflow-hidden">
+      {/* Untreated photograph; the copy sits directly on it over one localised
+          scrim, placed after the image in the DOM. */}
       <Image
         src={image}
         alt={alt}
@@ -355,13 +359,10 @@ export function ClosingCta({
         quality={70}
         className="-z-10 object-cover"
       />
-      <div
-        className="absolute inset-0 -z-10 bg-forest-deep/80"
-        aria-hidden="true"
-      />
-      <div className="relative mx-auto max-w-3xl px-5 py-28 text-center sm:px-6">
+      <div className="photo-scrim -z-10" aria-hidden="true" />
+      <div className="on-photo relative mx-auto max-w-3xl px-5 py-28 text-center sm:px-6">
         <Reveal>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-gold-light">
+          <p className="on-photo-sm text-[11px] font-semibold uppercase tracking-[0.3em] text-gold-light">
             {eyebrow}
           </p>
           <h2 className="mt-7 font-display text-balance text-[clamp(1.85rem,0.9rem+2.7vw,3.2rem)] font-semibold leading-[1.08] tracking-[-0.02em] text-cream">

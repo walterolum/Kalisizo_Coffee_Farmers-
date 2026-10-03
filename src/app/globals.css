@@ -1,25 +1,91 @@
 @import "tailwindcss";
 
-@theme inline {
-  --color-forest: #0e3d28;
-  --color-forest-deep: #082318;
-  --color-emerald-brand: #1f7345;
-  --color-bean: #4a2c11;
-  --color-bean-light: #6b3f1a;
-  --color-gold: #d5a83d;
-  --color-gold-light: #eac76c;
-  --color-gold-deep: #8a6416;
-  --color-cream: #fbf7ef;
-  --color-sand: #f2ece4;
-  --color-charcoal: #1a1a1a;
+/*
+ * ============================================================================
+ * PALETTE — the single source of truth for colour in this codebase.
+ * ============================================================================
+ *
+ * Every colour in the site resolves to one of the tokens below. Do not introduce
+ * a literal hex in a component; add a token here instead. The split exists
+ * because the roles have different accessibility requirements, and treating them
+ * as interchangeable is how a "new palette" silently regresses contrast.
+ *
+ *   brand   #689D4B  decorative fills, icons, borders, image overlays, dots.
+ *                    NOT for small text, and NOT under white text (2.3:1).
+ *   action  #4F7A38  buttons and links that carry white/cream text (5.0:1).
+ *   forest  #2B4A2A  dark sections, footer, image overlays.
+ *   leaf    #EAF2E3  light coloured section backgrounds.
+ *   cream   #FAF6EE  page background, and text on dark surfaces.
+ *   coffee  #4A2C1A  body text and headings on light surfaces (11.7:1).
+ *   gold    #D9A441  harvest gold. FILL ONLY, always with coffee text (5.6:1).
+ *                    Never gold text on a light background (2.1:1).
+ *
+ * Three tokens exist only because the previous design encoded hierarchy with
+ * alpha modifiers (`text-muted`, `text-mist`). Coffee and cream are
+ * both far lighter than the near-black and off-white they replaced, so those
+ * alpha steps no longer reach 4.5:1. These named steps replace the opacity
+ * ramp and were each checked against every surface they are used on:
+ *
+ *   muted       #6B4A33  secondary text on cream/leaf/white (7.3 / 6.9 / 7.9).
+ *   clay        #7E5430  warm accent text on cream/leaf (6.1 / 5.7). Replaces
+ *                      the old `gold-deep`, which was gold text on a light
+ *                      background and could not survive the new gold.
+ *   mist        #C9D9C0  secondary text on forest/forest-deep (6.7 / 8.4).
+ *   gold-light  #E8C06A  gold *text* on dark surfaces (5.8 / 7.2). Needed
+ *                      because gold itself only reaches 4.4:1 on forest.
+ *   cherry      #B23A48  errors, alerts, "new" tags (5.4 / 5.1 / 5.9).
+ *
+ * The admin CMS is dark, and its status badges need a *light* label on a
+ * *tinted* fill, so each semantic family carries a matching `-light` step:
+ * `cherry-light` (5.0:1 on a cherry/15 badge), `action-light` (5.3:1 on an
+ * action/15 badge) and the existing `gold-light` (4.5:1 on a gold/15 badge).
+ * The three are deliberately distinguishable — the audit log encodes event type
+ * in colour, so collapsing them to one neutral would lose information.
+ *
+ * Measured ratios are against the exact palette above. `action` deliberately
+ * clears 4.5:1 on cream (4.67) but not on leaf (4.39), which is why green text
+ * on light surfaces uses `forest` (9.2 / 8.7) rather than `action`.
+ *
+ * Declared `static`, not `inline`. Under `inline` Tailwind substitutes each value
+ * into the utilities and drops any `--color-*` variable no utility happens to
+ * reference — so a hand-written rule like `.prose { color: var(--color-mist) }`
+ * would compile cleanly and then resolve to nothing, with no error anywhere.
+ * `static` keeps every token emitted as a real custom property, which is what
+ * makes "add a token here instead" safe to actually follow.
+ */
+@theme static {
+  /* Brand green — decorative only. */
+  --color-brand: #689d4b;
+  /* Action green — fills under white/cream text, plus its hover step. */
+  --color-action: #4f7a38;
+  --color-action-deep: #3f6330;
+  /* Deep forest — dark sections, footer, image overlays. */
+  --color-forest: #2b4a2a;
+  --color-forest-deep: #1f3a1f;
+  /* Light surfaces. */
+  --color-leaf: #eaf2e3;
+  --color-cream: #faf6ee;
+  /* Text on light surfaces. */
+  --color-coffee: #4a2c1a;
+  --color-muted: #6b4a33;
+  --color-clay: #7e5430;
+  /* Text on dark surfaces. */
+  --color-mist: #c9d9c0;
+  --color-gold-light: #e8c06a;
+  --color-cherry-light: #f4b3ba;
+  --color-action-light: #b5d3a3;
+  /* Harvest gold — fill only. */
+  --color-gold: #d9a441;
+  /* Errors and alerts. */
+  --color-cherry: #b23a48;
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
 
-  --shadow-card: 0 18px 38px -24px rgb(14 61 40 / 0.22);
-  --shadow-soft: 0 10px 24px -18px rgb(26 26 26 / 0.12);
-  --shadow-glass: 0 10px 28px rgb(8 35 24 / 0.18);
-  --shadow-glint: 0 12px 26px -12px rgb(213 168 61 / 0.45);
+  --shadow-card: 0 18px 38px -24px rgb(43 74 42 / 0.22);
+  --shadow-soft: 0 10px 24px -18px rgb(74 44 26 / 0.14);
+  --shadow-glass: 0 10px 28px rgb(31 58 31 / 0.18);
+  --shadow-glint: 0 12px 26px -12px rgb(217 164 65 / 0.45);
 
   --animate-fade-up: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-marquee: marquee 38s linear infinite;
@@ -68,6 +134,28 @@
   }
 }
 
+/*
+ * Focus ring.
+ *
+ * A single-colour ring cannot be visible on both a cream page and a forest
+ * section, and the ring this replaced (gold) measured 2.07:1 on cream — below
+ * the 3:1 required of a UI component, so it was failing before the palette
+ * changed. The ring is therefore two-tone: a forest outline with a cream band
+ * immediately inside it. One of the two always contrasts, so the ring stays
+ * visible on light and dark surfaces alike without per-component overrides.
+ *
+ * `outline` is retained rather than replaced by `box-shadow` alone, so forced
+ * colours / high-contrast mode still renders it.
+ *
+ * On a dark section, flip the pair with `.surface-dark` (or the
+ * `surface-dark` utility class) so the light ring leads and the dark band
+ * separates it from the surface.
+ */
+:root {
+  --focus-ring: var(--color-forest);
+  --focus-halo: var(--color-cream);
+}
+
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 96px;
@@ -78,7 +166,7 @@ html {
 body {
   position: relative;
   background-color: var(--color-cream);
-  color: var(--color-charcoal);
+  color: var(--color-coffee);
   font-family: var(--font-sans);
   line-height: 1.6;
   font-feature-settings:
@@ -91,41 +179,47 @@ body {
 
 ::selection {
   background: var(--color-gold);
-  color: var(--color-forest);
+  color: var(--color-coffee);
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-gold);
-  outline-offset: 3px;
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--focus-halo);
   border-radius: 4px;
 }
 
 input,
 textarea,
 select {
-  caret-color: var(--color-gold-deep);
+  caret-color: var(--color-action);
 }
 
 ::-webkit-scrollbar {
   width: 11px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--color-sand);
+  background: var(--color-leaf);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-emerald-brand);
+  background: var(--color-action);
   border-radius: 8px;
-  border: 2px solid var(--color-sand);
+  border: 2px solid var(--color-leaf);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-gold);
+  background: var(--color-forest);
 }
 
 @supports (scrollbar-width: thin) {
   * {
     scrollbar-width: thin;
-    scrollbar-color: var(--color-emerald-brand) var(--color-sand);
+    scrollbar-color: var(--color-action) var(--color-leaf);
   }
+}
+
+@utility surface-dark {
+  --focus-ring: var(--color-cream);
+  --focus-halo: var(--color-forest);
 }
 
 @utility glass-dark {
@@ -197,20 +291,23 @@ select {
   font-size: 0.92rem;
 }
 
+/* Harvest gold fill. Gold is only ever a fill, so the label is coffee — the one
+   pairing in the palette that clears 4.5:1 by a wide margin (5.6:1). */
 .btn-primary {
-  background: #d5a83d;
-  color: #082318;
-  box-shadow: 0 12px 22px -14px rgb(213 168 61 / 0.5);
+  background: var(--color-gold);
+  color: var(--color-coffee);
+  box-shadow: 0 12px 22px -14px rgb(217 164 65 / 0.5);
 }
 
 .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 16px 28px -16px rgb(213 168 61 / 0.65);
+  background: var(--color-gold-light);
+  box-shadow: 0 16px 28px -16px rgb(217 164 65 / 0.65);
 }
 
 .btn-light {
-  background: #fbf7ef;
-  color: #0e3d28;
+  background: var(--color-cream);
+  color: var(--color-forest);
   box-shadow: 0 12px 22px -16px rgb(0 0 0 / 0.28);
 }
 
@@ -219,20 +316,22 @@ select {
   box-shadow: 0 16px 28px -16px rgb(0 0 0 / 0.34);
 }
 
+/* Action green under cream text — 4.7:1. */
 .btn-green {
-  background: #1f7345;
-  color: #fbf7ef;
-  box-shadow: 0 12px 22px -14px rgb(14 61 40 / 0.44);
+  background: var(--color-action);
+  color: var(--color-cream);
+  box-shadow: 0 12px 22px -14px rgb(43 74 42 / 0.44);
 }
 
 .btn-green:hover {
   transform: translateY(-1px);
-  box-shadow: 0 16px 28px -16px rgb(14 61 40 / 0.52);
+  background: var(--color-action-deep);
+  box-shadow: 0 16px 28px -16px rgb(43 74 42 / 0.52);
 }
 
 .btn-ghost {
   border: 1px solid rgb(255 255 255 / 0.22);
-  color: #fbf7ef;
+  color: var(--color-cream);
   background: rgb(255 255 255 / 0.06);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -246,7 +345,7 @@ select {
 
 .btn-ghost-soft {
   border: 1px solid rgb(255 255 255 / 0.14);
-  color: #fbf7ef;
+  color: var(--color-cream);
   background: transparent;
 }
 
@@ -257,16 +356,16 @@ select {
 }
 
 .btn-outline {
-  border: 1px solid rgb(14 61 40 / 0.2);
-  color: #0e3d28;
+  border: 1px solid rgb(43 74 42 / 0.24);
+  color: var(--color-forest);
   background: transparent;
 }
 
 .btn-outline:hover {
   transform: translateY(-1px);
-  border-color: #0e3d28;
-  background: #0e3d28;
-  color: #fbf7ef;
+  border-color: var(--color-forest);
+  background: var(--color-forest);
+  color: var(--color-cream);
 }
 
 .marquee-track {
@@ -312,7 +411,7 @@ select {
   font-size: clamp(1.35rem, 0.5vw + 1.2rem, 1.75rem);
   font-weight: 600;
   line-height: 1.2;
-  color: var(--color-forest);
+  color: var(--color-coffee);
 }
 
 .prose-article h3 {
@@ -320,7 +419,7 @@ select {
   font-family: var(--font-fraunces), Georgia, serif;
   font-size: clamp(1.15rem, 0.4vw + 1.05rem, 1.35rem);
   font-weight: 600;
-  color: var(--color-forest);
+  color: var(--color-coffee);
 }
 
 .prose-article p {
@@ -331,8 +430,10 @@ select {
   margin-top: 0;
 }
 
+/* Links stay coffee rather than action green: `action` is defined as a fill for
+   light-on-green, and it does not clear 4.5:1 on every light surface. */
 .prose-article a {
-  color: var(--color-forest);
+  color: var(--color-coffee);
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -340,7 +441,8 @@ select {
 }
 
 .prose-article a:hover {
-  text-decoration-color: var(--color-gold-deep);
+  color: var(--color-forest);
+  text-decoration-color: var(--color-clay);
 }
 
 .prose-article ul,
@@ -368,7 +470,7 @@ select {
   font-family: var(--font-fraunces), Georgia, serif;
   font-size: 1.1em;
   font-style: italic;
-  color: color-mix(in srgb, var(--color-charcoal) 85%, transparent);
+  color: var(--color-muted);
 }
 
 .prose-article img {
@@ -385,7 +487,7 @@ select {
 .prose-article hr {
   margin-top: 2em;
   border: 0;
-  border-top: 1px solid color-mix(in srgb, var(--color-charcoal) 12%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--color-coffee) 12%, transparent);
 }
 
 .prose-article table {
@@ -397,17 +499,111 @@ select {
 
 .prose-article th,
 .prose-article td {
-  border-bottom: 1px solid color-mix(in srgb, var(--color-charcoal) 12%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-coffee) 12%, transparent);
   padding: 0.6em 0.5em;
   text-align: left;
 }
 
 .prose-article th {
   font-weight: 700;
-  color: var(--color-forest);
+  color: var(--color-coffee);
 }
 
 /* Long words (e.g. URLs) must not overflow narrow viewports. */
 .prose-article {
   overflow-wrap: break-word;
+}
+
+/* ---------------------------------------------------------------------------
+   Type set directly on a photograph
+
+   No colour is painted over any image on this site - no scrim, no gradient, no
+   panel behind the copy. Where text sits on a photo, legibility therefore has
+   to come from the type itself rather than from a background. That is what these
+   two classes do.
+
+   They are deliberately tight. A text shadow spreads a few pixels from the edge
+   of each glyph; it does not tint the frame. A wide blur would start to read as
+   a wash, which is exactly what these sections no longer have.
+
+   Two passes, not one. A single soft shadow reads as a glow and its spread
+   lightens the strokes it is meant to separate; the tight pass re-establishes
+   the edge, and the wide pass only softens the surround.
+
+   Caveat worth stating plainly: a shadow improves contrast against the pixels it
+   covers, but it cannot guarantee a ratio against an arbitrary photograph. These
+   images come from the CMS and can be swapped at any time. They are a legibility
+   aid, not a substitute for choosing a photograph with room for the copy.
+   ------------------------------------------------------------------------- */
+.on-photo {
+  text-shadow:
+    0 1px 2px color-mix(in srgb, var(--color-forest-deep) 80%, transparent),
+    0 2px 12px color-mix(in srgb, var(--color-forest-deep) 70%, transparent);
+}
+
+/* Small type needs a harder, closer shadow than display type: at 11-14px the
+   glyph strokes are too thin for a soft spread to separate them. */
+.on-photo-sm {
+  text-shadow:
+    0 1px 1px color-mix(in srgb, var(--color-forest-deep) 88%, transparent),
+    0 1px 5px color-mix(in srgb, var(--color-forest-deep) 82%, transparent),
+    0 0 14px color-mix(in srgb, var(--color-forest-deep) 55%, transparent);
+}
+
+/* Opaque button fills already carry their own contrast, and a dark shadow would
+   only muddy the label against gold or cream. The translucent ghost variants sit
+   on the photograph, so they keep the shadow. */
+.on-photo :is(.btn-primary, .btn-light, .btn-green) {
+  text-shadow: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Minimal scrims for photographs that carry copy directly on them
+
+   This is the compromise the layout actually needs. A full-frame duotone tints
+   the whole picture and flattens it; no scrim at all leaves the headline at the
+   mercy of whatever the CMS loads. A scrim that is *localised* solves both: the
+   darkest point sits behind the copy and the gradient reaches fully transparent
+   before it touches the frame, so the photograph keeps clean open edges and only
+   the area behind the text is affected.
+
+   Weights are chosen so the copy is legible rather than merely visible. Measured
+   against a photograph that is pure white - the worst case a real image can
+   produce, and a bound rather than an expectation - the centre stop gives cream
+   body text 5.6:1 and the gold-light eyebrow 3.6:1. Past roughly 60% radius the
+   wash is a supplement to the `.on-photo` shadow rather than the thing carrying
+   the contrast.
+
+   `color-mix` keeps every stop on a palette token, so the scrim cannot drift
+   away from the rest of the colour system.
+
+   DOM ORDER IS LOAD-BEARING. The `<Image fill>` is absolutely positioned, and so
+   is this scrim, with no z-index on either - so whichever comes later in the
+   markup paints on top. A scrim written *before* the image is invisible and
+   nothing warns you: Tailwind 4 emits no error for an unknown class, so a typo
+   here fails silently. Always place the scrim after the `<Image>`.
+   ------------------------------------------------------------------------- */
+.photo-scrim {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    ellipse 80% 62% at 50% 50%,
+    color-mix(in srgb, var(--color-forest-deep) 78%, transparent) 0%,
+    color-mix(in srgb, var(--color-forest-deep) 58%, transparent) 46%,
+    transparent 80%
+  );
+}
+
+/* For photographs that live inside a rounded card rather than edge to edge. The
+   card is the image's boundary, so a wider wash costs nothing visually, and the
+   copy needs full coverage because the whole panel is text. */
+.photo-scrim-panel {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    ellipse 95% 90% at 50% 50%,
+    color-mix(in srgb, var(--color-forest-deep) 80%, transparent) 0%,
+    color-mix(in srgb, var(--color-forest-deep) 62%, transparent) 50%,
+    transparent 96%
+  );
 }

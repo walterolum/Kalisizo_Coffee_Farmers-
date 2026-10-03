@@ -46,7 +46,7 @@ export default async function EventsPage({ searchParams }: PageProps) {
                   className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
                     isActive
                       ? "bg-forest text-cream"
-                      : "bg-white text-charcoal/65 ring-1 ring-charcoal/10 hover:bg-sand"
+                      : "bg-white text-muted ring-1 ring-coffee/10 hover:bg-leaf"
                   }`}
                 >
                   {option.label}

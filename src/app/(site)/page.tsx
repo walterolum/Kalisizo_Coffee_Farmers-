@@ -57,11 +57,11 @@ export default async function Home() {
 
       {/* Introduction — dark, centred, minimal. */}
       <section
-        className="relative overflow-hidden bg-forest py-28 lg:py-36"
+        className="surface-dark relative overflow-hidden bg-forest py-28 lg:py-36"
         aria-labelledby="intro-heading"
       >
         <div
-          className="absolute left-1/2 top-0 size-[34rem] -translate-x-1/2 rounded-full bg-emerald-brand/12 blur-3xl"
+          className="absolute left-1/2 top-0 size-[34rem] -translate-x-1/2 rounded-full bg-brand/12 blur-3xl"
           aria-hidden="true"
         />
         <div className="relative mx-auto max-w-4xl px-5 text-center sm:px-6">

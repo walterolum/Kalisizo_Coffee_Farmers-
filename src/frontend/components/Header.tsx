@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Mail, MapPin, Phone, Search, ShieldCheck, X } from "lucide-react";
+import { Menu, Mail, MapPin, Phone, ShieldCheck, X } from "lucide-react";
 import { Logo } from "@/frontend/components/Logo";
 import { CONTACT, NAV_LINKS } from "@/shared/data";
 import { fetchSettings, type ApiSettings } from "@/shared/api";
@@ -104,7 +104,7 @@ export function Header() {
       <header
         className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
           scrolled && !open
-            ? "border-b border-white/10 bg-forest/90 shadow-[0_10px_30px_rgba(8,35,24,0.18)] backdrop-blur-xl"
+            ? "border-b border-white/10 bg-forest/90 shadow-[0_10px_30px_rgba(31,58,31,0.18)] backdrop-blur-xl"
             : "border-b border-transparent bg-transparent"
         }`}
       >
@@ -136,14 +136,6 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          <Link
-            href="/search"
-            aria-label="Search the site"
-            className="grid size-11 shrink-0 place-items-center rounded-xl border border-white/15 bg-white/5 text-cream transition-colors hover:bg-white/10"
-          >
-            <Search className="size-5" aria-hidden="true" />
-          </Link>
-
           <Link
             href="/contact#inquiry"
             className="btn btn-primary btn-sm hidden md:inline-flex"
@@ -220,7 +212,7 @@ export function Header() {
                     }`}
                   >
                     {link.label}
-                    <span className="text-xs text-gold opacity-0 transition-opacity group-hover:opacity-100">
+                    <span className="text-xs text-gold-light opacity-0 transition-opacity group-hover:opacity-100">
                       {String(i + 1).padStart(2, "0")}
                     </span>
                   </Link>
@@ -230,18 +222,9 @@ export function Header() {
           </ul>
 
           <Link
-            href="/search"
-            onClick={close}
-            className="btn btn-ghost btn-lg mt-8 w-full"
-          >
-            <Search className="size-4" aria-hidden="true" />
-            Search the site
-          </Link>
-
-          <Link
             href="/contact#inquiry"
             onClick={close}
-            className="btn btn-primary btn-lg mt-3 w-full"
+            className="btn btn-primary btn-lg mt-8 w-full"
           >
             <ShieldCheck className="size-4" aria-hidden="true" />
             Join Cooperative / Inquire
@@ -267,15 +250,15 @@ export function Header() {
 
           <div className="mt-8 space-y-3 border-t border-white/10 pt-7 text-sm text-cream/70">
             <p className="flex items-center gap-3">
-              <Phone className="size-4 shrink-0 text-gold" aria-hidden="true" />
+              <Phone className="size-4 shrink-0 text-gold-light" aria-hidden="true" />
               {drawerPhone}
             </p>
             <p className="flex items-center gap-3">
-              <Mail className="size-4 shrink-0 text-gold" aria-hidden="true" />
+              <Mail className="size-4 shrink-0 text-gold-light" aria-hidden="true" />
               <span className="min-w-0 break-words">{drawerEmail}</span>
             </p>
             <p className="flex items-center gap-3">
-              <MapPin className="size-4 shrink-0 text-gold" aria-hidden="true" />
+              <MapPin className="size-4 shrink-0 text-gold-light" aria-hidden="true" />
               {drawerAddress}
             </p>
           </div>

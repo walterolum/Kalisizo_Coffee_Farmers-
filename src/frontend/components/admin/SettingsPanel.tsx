@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Site settings screen: mission, vision, contact details and social links.
  *
  * These values appear across the whole site (footer, contact page, header), so
@@ -116,13 +116,13 @@ export function SettingsPanel() {
   }
 
   if (loading)
-    return <p className="text-sm text-cream/50">Loading settings…</p>;
+    return <p className="text-sm text-mist">Loading settings…</p>;
 
   return (
     <form onSubmit={onSubmit} className="max-w-3xl space-y-6">
       <header>
         <h2 className="text-2xl font-semibold text-cream">Site settings</h2>
-        <p className="mt-1 text-sm text-cream/65">
+        <p className="mt-1 text-sm text-mist">
           Contact details and social links shown in the footer, header and on
           the contact page. Remove a social row to take that link off the site.
         </p>
@@ -130,19 +130,19 @@ export function SettingsPanel() {
 
       {notice && (
         // Same contrast bug as `ContentPanel`: `bg-emerald-50` is a near-white
-        // background and `text-emerald-300` is a light green, so the saved
+        // background and `text-action-light` is a light green, so the saved
         // confirmation was invisible against the dark panel. `role="status"`
         // announces it politely.
         <p
           role="status"
-          className="rounded-lg bg-emerald-500/15 px-4 py-2 text-sm text-emerald-300 ring-1 ring-emerald-400/25"
+          className="rounded-lg bg-action/15 px-4 py-2 text-sm text-action-light ring-1 ring-brand/25"
         >
           {notice}
         </p>
       )}
       {error && (
         <p
-          className="rounded-lg bg-red-500/10 px-4 py-2 text-sm text-red-300 ring-1 ring-red-400/20"
+          className="rounded-lg bg-cherry/10 px-4 py-2 text-sm text-cherry-light ring-1 ring-cherry/20"
           role="alert"
         >
           {error}
@@ -159,7 +159,7 @@ export function SettingsPanel() {
             rows={3}
             value={mission}
             onChange={(event) => setMission(event.target.value)}
-            className="w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-cream/35 transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
+            className="w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-mist transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
           />
         </label>
         <label className="block text-sm">
@@ -168,7 +168,7 @@ export function SettingsPanel() {
             rows={3}
             value={vision}
             onChange={(event) => setVision(event.target.value)}
-            className="w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-cream/35 transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
+            className="w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-mist transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
           />
         </label>
         <label className="block text-sm">
@@ -177,10 +177,10 @@ export function SettingsPanel() {
             rows={4}
             value={taglines}
             onChange={(event) => setTaglines(event.target.value)}
-            className="w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-cream/35 transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
+            className="w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-mist transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
             placeholder="One tagline per line"
           />
-          <span className="mt-1 block text-xs text-cream/50">
+          <span className="mt-1 block text-xs text-mist">
             One per line.
           </span>
         </label>
@@ -198,10 +198,10 @@ export function SettingsPanel() {
             rows={3}
             value={phoneNumbers}
             onChange={(event) => setPhoneNumbers(event.target.value)}
-            className="w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-cream/35 transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
+            className="w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-mist transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
             placeholder="One number per line"
           />
-          <span className="mt-1 block text-xs text-cream/50">
+          <span className="mt-1 block text-xs text-mist">
             One per line, in international format.
           </span>
         </label>
@@ -213,7 +213,7 @@ export function SettingsPanel() {
             type="email"
             value={officialEmail}
             onChange={(event) => setOfficialEmail(event.target.value)}
-            className="w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-cream/35 transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
+            className="w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-mist transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
           />
         </label>
         <label className="block text-sm">
@@ -222,7 +222,7 @@ export function SettingsPanel() {
             rows={2}
             value={address}
             onChange={(event) => setAddress(event.target.value)}
-            className="w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-cream/35 transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
+            className="w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-mist transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
           />
         </label>
         <label className="block text-sm">
@@ -231,7 +231,7 @@ export function SettingsPanel() {
             value={logoUrl}
             onChange={(event) => setLogoUrl(event.target.value)}
             placeholder="https://..."
-            className="w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-cream/35 transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
+            className="w-full rounded-lg border border-white/20 px-3 py-2 bg-white/[0.05] text-cream placeholder:text-mist transition-colors focus:border-gold/60 focus:outline-none focus:ring-2 focus:ring-gold/20 [&_option]:bg-forest [&_option]:text-cream"
           />
         </label>
       </fieldset>
@@ -255,7 +255,7 @@ export function SettingsPanel() {
       <button
         type="submit"
         disabled={saving}
-        className="rounded-lg bg-gold px-5 py-2 text-sm font-semibold text-forest-deep transition-colors hover:bg-gold-light disabled:opacity-50"
+        className="rounded-lg bg-gold px-5 py-2 text-sm font-semibold text-coffee transition-colors hover:bg-gold-light disabled:opacity-50"
       >
         {saving ? "Saving…" : "Save settings"}
       </button>

@@ -79,11 +79,11 @@ export function Services() {
   return (
     <section
       id="services"
-      className="relative overflow-hidden bg-sand py-28 lg:py-36"
+      className="relative overflow-hidden bg-leaf py-28 lg:py-36"
       aria-labelledby="services-heading"
     >
       <div
-        className="absolute -left-32 top-24 h-72 w-72 rounded-full bg-emerald-brand/10 blur-3xl"
+        className="absolute -left-32 top-24 h-72 w-72 rounded-full bg-brand/10 blur-3xl"
         aria-hidden="true"
       />
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -126,17 +126,17 @@ export function Services() {
                 <h3 className="mt-6 font-display text-xl font-semibold text-forest">
                   {service.title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-charcoal/60">
+                <p className="mt-2 text-sm leading-relaxed text-muted">
                   {service.tagline}
                 </p>
                 <ul className="mt-5 space-y-2.5">
                   {service.points.map((point) => (
                     <li
                       key={point}
-                      className="flex items-start gap-2 text-[13.5px] leading-snug text-charcoal/70"
+                      className="flex items-start gap-2 text-[13.5px] leading-snug text-muted"
                     >
                       <Check
-                        className="mt-0.5 size-3.5 shrink-0 text-gold-deep"
+                        className="mt-0.5 size-3.5 shrink-0 text-clay"
                         aria-hidden="true"
                       />
                       {point}
@@ -144,8 +144,8 @@ export function Services() {
                   ))}
                 </ul>
                 <span
-                  className={`mt-6 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider transition-colors ${
-                    active.id === service.id ? "text-gold-deep" : "text-emerald-brand"
+                  className={`mt-6 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold uppercase tracking-wider transition-colors ${
+                    active.id === service.id ? "bg-gold/25 text-coffee" : "text-muted"
                   }`}
                 >
                   <Sparkles className="size-3.5" aria-hidden="true" />
@@ -157,11 +157,16 @@ export function Services() {
         </div>
 
         <Reveal delay={120}>
+          {/* Untreated photograph with the copy set directly on it - no panel, no
+              blur. One scrim sits behind the text and is clipped by the card; it
+              is written after the `<Image>` so it paints on top. The sub-card on
+              the right keeps its own ring because it holds a button rather than a
+              heading. */}
           <div
-            className="mt-6 overflow-hidden rounded-3xl bg-forest"
+            className="surface-dark mt-6 overflow-hidden rounded-3xl bg-forest"
             aria-live="polite"
           >
-            <div className="relative bg-white/[0.04] px-6 py-8 sm:px-10" key={active.id}>
+            <div className="relative" key={active.id}>
               <div className="pointer-events-none absolute inset-0" aria-hidden="true">
                 <Image
                   src="/pictures/nursery-beds.jpg"
@@ -169,35 +174,34 @@ export function Services() {
                   fill
                   sizes="100vw"
                   quality={50}
-                  className="object-cover opacity-20"
+                  className="object-cover"
                 />
-                <div className="absolute inset-0 bg-forest/70" />
+                <div className="photo-scrim-panel" />
               </div>
-              <div
-                className="absolute -right-20 -top-20 size-56 rounded-full bg-gold/15 blur-3xl"
-                aria-hidden="true"
-              />
-              <p className="relative text-[11px] font-bold uppercase tracking-[0.22em] text-gold-light">
-                How it works: {active.title}
-              </p>
-              <div className="relative mt-5 grid gap-6 md:grid-cols-2">
+              <div className="on-photo relative px-6 py-8 sm:px-10">
+                <p className="on-photo-sm text-[11px] font-bold uppercase tracking-[0.22em] text-gold-light">
+                  How it works: {active.title}
+                </p>
+                <div className="relative mt-5 grid gap-6 md:grid-cols-2">
                 <ul className="space-y-3.5">
                   {active.details.map((detail, i) => (
                     <li
                       key={detail}
-                      className="flex items-start gap-3 text-[15px] leading-relaxed text-cream/85"
+                      className="flex items-start gap-3 text-[15px] leading-relaxed text-cream/90"
                     >
-                      <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-gold/20 text-[11px] font-bold text-gold-light">
+                      <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-gold text-[11px] font-bold text-coffee">
                         {i + 1}
                       </span>
                       {detail}
                     </li>
                   ))}
                 </ul>
-                <div className="flex flex-col justify-between gap-6 rounded-2xl bg-white/5 p-6 ring-1 ring-white/10">
-                  <p className="text-sm leading-relaxed text-cream/70">
+                {/* No fill: the photograph reads through this card, which is marked
+                    by a ring alone. */}
+                <div className="flex flex-col justify-between gap-6 rounded-2xl p-6 ring-1 ring-white/30">
+                  <p className="text-sm leading-relaxed text-cream/85">
                     Every pillar is delivered with the cooperative values of{" "}
-                    <span className="font-semibold text-gold-light">
+                    <span className="on-photo-sm font-semibold text-gold-light">
                       transparency, fairness and respect
                     </span>{" "}
                     putting members first at every step.
@@ -212,6 +216,7 @@ export function Services() {
                 </div>
               </div>
             </div>
+          </div>
           </div>
         </Reveal>
       </div>

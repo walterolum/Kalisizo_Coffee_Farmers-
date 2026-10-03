@@ -32,10 +32,10 @@ const SERVICE_ICON_OPTIONS = [
 
 /** Accent gradient -> matching focus ring, so the two cannot drift apart. */
 const ACCENT_RING: Record<string, string> = {
-  "from-[#d5a83d] to-[#a87a1d]": "ring-[#d5a83d]/40",
-  "from-[#1f7345] to-[#0e3d28]": "ring-[#1f7345]/40",
-  "from-[#4a2c11] to-[#7a4a1f]": "ring-[#6b3f1a]/40",
-  "from-[#1f7345] to-[#269558]": "ring-[#1f7345]/40",
+  "from-gold to-gold/70": "ring-gold/40",
+  "from-action to-forest-deep": "ring-action/40",
+  "from-coffee to-clay": "ring-coffee/40",
+  "from-brand to-action": "ring-action/40",
 };
 const ACCENT_OPTIONS = Object.keys(ACCENT_RING);
 
@@ -227,7 +227,7 @@ export function ServicesPanel({
       <Panel title="Core Services" icon={<FileText className="size-5" />}>
         <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-cream/50">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-mist">
               {editingId ? "Edit service" : "Add a service"}
             </h3>
             <form onSubmit={submit} className="mt-4 space-y-4">
@@ -382,7 +382,7 @@ export function ServicesPanel({
           {loadError && services && (
             <p
               role="alert"
-              className="rounded-lg bg-red-500/10 px-4 py-2 text-sm text-red-300 ring-1 ring-red-400/20"
+              className="rounded-lg bg-cherry/10 px-4 py-2 text-sm text-cherry-light ring-1 ring-cherry/20"
             >
               Showing the last successful load. Could not refresh: {loadError}
             </p>
@@ -393,7 +393,7 @@ export function ServicesPanel({
           {(!loadError || services) && (
             <ul className="space-y-3">
               {!services ? (
-                <li className="grid place-items-center py-12 text-cream/50">
+                <li className="grid place-items-center py-12 text-mist">
                   <Loader2 className="size-6 animate-spin" />
                 </li>
               ) : (
@@ -410,7 +410,7 @@ export function ServicesPanel({
                         <p className="truncate text-sm font-semibold">
                           {service.title}
                         </p>
-                        <p className="text-[12px] text-cream/55">
+                        <p className="text-[12px] text-mist">
                           order {service.displayOrder} · {service.points.length}{" "}
                           points
                         </p>
@@ -431,7 +431,7 @@ export function ServicesPanel({
                         type="button"
                         onClick={() => remove(service)}
                         aria-label={`Delete ${service.title}`}
-                        className="grid size-8 place-items-center rounded-lg bg-red-500/10 text-red-300 ring-1 ring-red-400/20 transition-colors hover:bg-red-500/20"
+                        className="grid size-8 place-items-center rounded-lg bg-cherry/10 text-cherry-light ring-1 ring-cherry/20 transition-colors hover:bg-cherry/20"
                       >
                         <Trash2 className="size-3.5" aria-hidden="true" />
                       </button>

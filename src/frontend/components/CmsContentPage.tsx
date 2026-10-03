@@ -71,7 +71,7 @@ export async function CmsContentPage({ slug, eyebrow, fallback }: Props) {
       <section className="bg-cream py-16 sm:py-20">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           {imageUrl && (
-            <div className="relative mb-12 aspect-[21/9] w-full overflow-hidden rounded-3xl ring-1 ring-charcoal/8">
+            <div className="relative mb-12 aspect-[21/9] w-full overflow-hidden rounded-3xl bg-leaf ring-1 ring-coffee/8">
               <Image
                 src={imageUrl}
                 alt={imageAlt || title}
@@ -84,7 +84,7 @@ export async function CmsContentPage({ slug, eyebrow, fallback }: Props) {
           )}
 
           <div
-            className="prose-article text-[1.05rem] leading-[1.75] text-charcoal/80"
+            className="prose-article text-[1.05rem] leading-[1.75] text-muted"
             dangerouslySetInnerHTML={{ __html: content }}
           />
         </div>

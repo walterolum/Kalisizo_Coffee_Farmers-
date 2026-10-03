@@ -68,16 +68,16 @@ export function Location() {
         <div className="grid items-stretch gap-8 lg:grid-cols-[0.9fr_1.1fr]">
           <Reveal delay={80}>
             <div className="flex h-full flex-col rounded-3xl bg-white p-6 shadow-card ring-1 ring-forest/5 sm:p-8">
-              <span className="grid size-14 place-items-center rounded-2xl bg-gradient-to-br from-[#1f7345] to-[#0e3d28] text-cream shadow-card">
+              <span className="grid size-14 place-items-center rounded-2xl bg-gradient-to-br from-action to-forest-deep text-cream shadow-card">
                 <MapPin className="size-7" aria-hidden="true" />
               </span>
               <h3 className="mt-6 font-display text-2xl font-semibold leading-tight text-forest">
                 {location?.name || "Kalisizo Coffee Farmers Cooperative Society Ltd"}
               </h3>
-              <p className="mt-1 text-xs font-bold uppercase tracking-wider text-gold-deep">
+              <p className="mt-1 text-xs font-bold uppercase tracking-wider text-clay">
                 Main Office & Buying Point, Kyotera District, Uganda
               </p>
-              <address className="mt-5 space-y-4 text-[15px] not-italic leading-relaxed text-charcoal/75">
+              <address className="mt-5 space-y-4 text-[15px] not-italic leading-relaxed text-muted">
                 <a
                   href={shortMapsUrl}
                   target="_blank"
@@ -85,24 +85,24 @@ export function Location() {
                   className="flex items-start gap-3 transition-colors hover:text-forest"
                   title="Open verified pin in Google Maps: https://maps.app.goo.gl/f5Q3ezaYKhCCbGSe9"
                 >
-                  <MapPin className="mt-0.5 size-5 shrink-0 text-gold-deep" aria-hidden="true" />
+                  <MapPin className="mt-0.5 size-5 shrink-0 text-clay" aria-hidden="true" />
                   <span>
                     {address}
-                    <span className="mt-1 block text-xs text-charcoal/55">
+                    <span className="mt-1 block text-xs text-muted">
                       Kalisizo Sub County · {district}, Uganda
                     </span>
                   </span>
                 </a>
                 <p className="flex flex-wrap items-center gap-2 text-xs">
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-forest/5 px-3 py-1.5 font-mono text-forest ring-1 ring-forest/10">
-                    <MapPin className="size-3.5 text-gold-deep" aria-hidden="true" />
+                    <MapPin className="size-3.5 text-clay" aria-hidden="true" />
                     {dmsLabel} · {coordsLabel}
                   </span>
                   <a
                     href={shortMapsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-semibold text-gold-deep underline decoration-gold/30 underline-offset-4 hover:text-forest"
+                    className="font-semibold text-clay underline decoration-gold/30 underline-offset-4 hover:text-forest"
                   >
                     {shortMapsUrl.replace("https://", "")}
                   </a>
@@ -112,15 +112,15 @@ export function Location() {
                     <a
                       key={phone}
                       href={`tel:${phone.replace(/\s/g, "")}`}
-                      className="flex items-center gap-3 font-semibold text-forest transition-colors hover:text-gold-deep"
+                      className="flex items-center gap-3 font-semibold text-forest transition-colors hover:text-clay"
                     >
-                      <Phone className="size-5 shrink-0 text-gold-deep" aria-hidden="true" />
+                      <Phone className="size-5 shrink-0 text-clay" aria-hidden="true" />
                       {phone}
                     </a>
                   ))}
                 </p>
                 <p className="flex items-center gap-3">
-                  <Clock className="size-5 shrink-0 text-gold-deep" aria-hidden="true" />
+                  <Clock className="size-5 shrink-0 text-clay" aria-hidden="true" />
                   Visit during office hours for buying, inputs & savings support.
                 </p>
               </address>
@@ -143,9 +143,9 @@ export function Location() {
                   Call the Office
                 </a>
               </div>
-              <p className="mt-3 text-center text-[11px] leading-relaxed text-charcoal/45 sm:text-left">
+              <p className="mt-3 text-center text-[11px] leading-relaxed text-muted sm:text-left">
                 Verified pin in Kalisizo, Kyotera District, also open via{" "}
-                <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-gold-deep hover:text-forest">
+                <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="font-semibold text-clay hover:text-forest">
                   coordinate search
                 </a>
                 .
@@ -164,17 +164,17 @@ export function Location() {
                 allowFullScreen
               />
 
-              {/* Subtle overlay for label readability - does not block iframe interaction */}
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-forest/30 to-transparent" aria-hidden="true" />
-
+              {/* No gradient or tint is laid over the map. The two labels below are
+                  floating cards with their own solid backing, so legibility does
+                  not depend on the map tiles underneath. */}
               <div className="pointer-events-none absolute left-1/2 top-1/2 mt-10 w-max -translate-x-1/2 rounded-2xl glass-light px-5 py-3 text-center shadow-soft">
                 <p className="text-sm font-bold text-forest">
                   Kalisizo Coffee Cooperative
                 </p>
-                <p className="text-xs font-medium text-charcoal/60">
+                <p className="text-xs font-medium text-muted">
                   {subCounty} · {district}, Uganda
                 </p>
-                <p className="mt-1 text-[11px] font-mono text-charcoal/50">
+                <p className="mt-1 text-[11px] font-mono text-muted">
                   {dmsLabel} · {coordsLabel}
                 </p>
               </div>
