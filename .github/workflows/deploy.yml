@@ -146,8 +146,14 @@ jobs:
           # StrictHostKeyChecking=no. That flag is the usual shortcut here and it
           # accepts any key, which removes the protection against a MITM on the one
           # path that runs arbitrary code on the production host.
-          if [ ! -s ~/.ssh/known_hosts ]; then
-            echo "error: ~/.ssh/known_hosts is empty; VPS_SSH_KNOWN_HOSTS must hold the host key line" >&2
+          #
+          # `grep -vEv`, not `test -s`. A missing secret arrives as an empty
+          # string, so the file Configure SSH writes can be a single newline
+          # byte, and `-s` calls that non-empty. Require an actual usable key
+          # line, and treat a missing file the same as an empty one: grep exits
+          # nonzero on a nonexistent file, which `!` turns into the same refusal.
+          if ! grep -qEv '^[[:space:]]*(#|$)' ~/.ssh/known_hosts 2>/dev/null; then
+            echo "error: ~/.ssh/known_hosts holds no host key line; set VPS_SSH_KNOWN_HOSTS to the output of ssh-keyscan" >&2
             exit 1
           fi
 

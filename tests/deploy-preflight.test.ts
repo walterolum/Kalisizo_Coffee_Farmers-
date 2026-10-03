@@ -87,14 +87,32 @@ function findBash(): string | null {
 const BASH = findBash();
 
 /**
+ * Builds a throwaway HOME containing a usable known_hosts.
+ *
+ * The guard reads `~/.ssh/known_hosts`, so every case gets its own. Without this
+ * the result depends on whose machine is running the suite: a developer with a
+ * populated known_hosts sees the guard pass, a fresh CI runner has no file at
+ * all and sees it refuse. That is exactly how the first version of this file
+ * passed locally and failed on GitHub.
+ */
+function fakeHome(contents = "203.0.113.10 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI...\n"): string {
+  const home = mkdtempSync(join(tmpdir(), "deploy-home-"));
+  mkdirSync(join(home, ".ssh"), { recursive: true });
+  writeFileSync(join(home, ".ssh", "known_hosts"), contents);
+  return home;
+}
+
+/**
  * Runs a shell script body under bash with the given variables set, and returns
  * its exit code and stderr. `null` means "leave this variable unset", which is
- * distinct from the empty string a real missing secret produces.
+ * distinct from the empty string a real missing secret produces. HOME defaults
+ * to a throwaway directory and can be overridden per case.
  */
-function runBash(body: string, vars: Record<string, string | null>) {
+function runBash(body: string, vars: Record<string, string | null> = {}) {
   const dir = mkdtempSync(join(tmpdir(), "deploy-guard-"));
   const script = join(dir, "guard.sh");
-  const prelude = Object.entries(vars)
+  const effective = { HOME: fakeHome(), ...vars };
+  const prelude = Object.entries(effective)
     .map(([name, value]) => (value === null ? `unset ${name}` : `export ${name}=${JSON.stringify(value)}`))
     .join("\n");
   // The prelude must come first: it establishes the variables the guard reads.
@@ -224,16 +242,28 @@ describe("deploy workflow pre-flight", () => {
     // An empty known_hosts is what a missing host key secret produces, and the
     // whole reason StrictHostKeyChecking=yes must not be relaxed: ssh would
     // otherwise be free to accept whatever key the server presents.
-    const home = mkdtempSync(join(tmpdir(), "deploy-home-"));
-    mkdirSync(join(home, ".ssh"), { recursive: true });
-    writeFileSync(join(home, ".ssh", "known_hosts"), "");
+    const missingFile = fakeHome("");
+    const absent = runBash(guard, { VPS_HOST: "203.0.113.10", VPS_USER: "deploy", HOME: missingFile });
+    expect(absent.code).toBe(1);
+    expect(absent.stderr).toContain("known_hosts");
 
-    const empty = runBash(guard, { VPS_HOST: "203.0.113.10", VPS_USER: "deploy", HOME: home });
-    expect(empty.code).toBe(1);
-    expect(empty.stderr).toContain("known_hosts");
+    // A file that does not exist at all is the same condition and must also be
+    // refused, not treated as "nothing to check".
+    const noFile = mkdtempSync(join(tmpdir(), "deploy-home-"));
+    mkdirSync(join(noFile, ".ssh"), { recursive: true });
+    const absentEntirely = runBash(guard, { VPS_HOST: "203.0.113.10", VPS_USER: "deploy", HOME: noFile });
+    expect(absentEntirely.code).toBe(1);
 
-    writeFileSync(join(home, ".ssh", "known_hosts"), "203.0.113.10 ssh-ed25519 AAAA...\n");
-    const populated = runBash(guard, { VPS_HOST: "203.0.113.10", VPS_USER: "deploy", HOME: home });
+    // A single newline is what `printf '%s\n' ""` leaves behind, which is how
+    // this whole bug started: -s says the file has content, and it does not.
+    const blankOnly = fakeHome("\n");
+    const blank = runBash(guard, { VPS_HOST: "203.0.113.10", VPS_USER: "deploy", HOME: blankOnly });
+    expect(blank.code).toBe(1);
+    expect(blank.stderr).toContain("known_hosts");
+
+    // And with real content the guard lets it through, so the check is not
+    // simply refusing everything.
+    const populated = runBash(guard, { VPS_HOST: "203.0.113.10", VPS_USER: "deploy" });
     expect(populated.code).toBe(0);
   });
 
